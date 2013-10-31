@@ -2,6 +2,7 @@ buildscript {
     repositories {
         mavenCentral()
     }
+
     dependencies {
         classpath 'com.android.tools.build:gradle:0.6.+'
     }
@@ -10,6 +11,7 @@ apply plugin: 'android'
 
 repositories {
     mavenCentral()
+    maven { url 'http://4thline.org/m2' }
 }
 
 android {
@@ -23,5 +25,7 @@ android {
 }
 
 dependencies {
-	compile 'com.android.support:appcompat-v7:+'
+    compile 'com.android.support:appcompat-v7:+'
+    compile group: 'org.teleal.cling', name: 'cling-core', version: '1.0.5'
+    compile group: 'org.teleal.cling', name: 'cling-support', version: '1.0.5'
 }
