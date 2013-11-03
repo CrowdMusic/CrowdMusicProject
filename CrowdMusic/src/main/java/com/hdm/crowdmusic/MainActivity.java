@@ -1,17 +1,15 @@
 package com.hdm.crowdmusic;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
+import android.view.*;
+
+import java.io.File;
 
 public class MainActivity extends ActionBarActivity {
+
+    File imgFile = new File("R.drawable.crowdmusic");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
