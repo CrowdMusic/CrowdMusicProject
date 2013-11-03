@@ -1,15 +1,20 @@
 package com.hdm.crowdmusic;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.*;
+import android.widget.Button;
 
 import java.io.File;
 
 public class MainActivity extends ActionBarActivity {
 
     File imgFile = new File("R.drawable.crowdmusic");
+
+    Button createButton = (Button) findViewById(R.id.create_button);
+    Button connectButton = (Button) findViewById(R.id.connect_button);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +26,17 @@ public class MainActivity extends ActionBarActivity {
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+
+        createButton.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+//                Intent intent = new Intent(this, CreateServerActivity.class);
+            }
+        });
+        createButton.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+//                Intent intent = new Intent(this, ConnectServerActivity.class);
+            }
+        });
     }
 
 
