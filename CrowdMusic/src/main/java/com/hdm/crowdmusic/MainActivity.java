@@ -13,8 +13,7 @@ public class MainActivity extends ActionBarActivity {
 
     File imgFile = new File("R.drawable.crowdmusic");
 
-    Button createButton = (Button) findViewById(R.id.create_button);
-    Button connectButton = (Button) findViewById(R.id.connect_button);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +25,9 @@ public class MainActivity extends ActionBarActivity {
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+
+        Button createButton = (Button) findViewById(R.id.create_button);
+        Button connectButton = (Button) findViewById(R.id.connect_button);
 
         createButton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
@@ -74,6 +76,10 @@ public class MainActivity extends ActionBarActivity {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             return rootView;
         }
+    }
+
+    public void switchToCreateServer() {
+
     }
 
 }
