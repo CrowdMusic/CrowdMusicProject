@@ -7,7 +7,11 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.*;
 import android.widget.Button;
 
+
 import java.io.File;
+
+
+
 
 public class MainActivity extends ActionBarActivity {
 
@@ -31,10 +35,12 @@ public class MainActivity extends ActionBarActivity {
 
         createButton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-//                Intent intent = new Intent(this, CreateServerActivity.class);
+                Intent intent = new Intent(getBaseContext(), CreateServerActivity.class);
+                startActivity(intent);
+                System.out.println("onClick called");
             }
         });
-        createButton.setOnClickListener(new Button.OnClickListener() {
+        connectButton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
 //                Intent intent = new Intent(this, ConnectServerActivity.class);
             }
