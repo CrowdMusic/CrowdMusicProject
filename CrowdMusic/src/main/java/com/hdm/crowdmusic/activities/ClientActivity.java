@@ -8,40 +8,49 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
 import com.hdm.crowdmusic.R;
+import com.hdm.crowdmusic.core.CrowdMusicClient;
 import com.hdm.crowdmusic.core.devicelistener.AllDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
+import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.registry.RegistryListener;
 
 //import android.app.Fragment;
 
-public class ServiceBrowserActivity extends ListActivity {
+public class ClientActivity extends ListActivity {
 
-    private AndroidUpnpService upnpService;
+    private AndroidUpnpService clientService;
     private RegistryListener registryListener;
+    private CrowdMusicClient crowdMusicClient;
+    ArrayAdapter listAdapter;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
 
-            upnpService = (AndroidUpnpService) service;
+            clientService = (AndroidUpnpService) service;
 
             // Refresh the list with all known devices
-            ((AllDevicesBrowser) registryListener).refresh(upnpService);
+            ((AllDevicesBrowser) registryListener).refresh(clientService);
 
             // Getting ready for future device advertisements
-            upnpService.getRegistry().addListener(registryListener);
+            clientService.getRegistry().addListener(registryListener);
 
             // Search asynchronously for all devices
-            upnpService.getControlPoint().search();
+            clientService.getControlPoint().search();
         }
 
         public void onServiceDisconnected(ComponentName className) {
-            upnpService = null;
+            clientService = null;
         }
     };
 
@@ -49,7 +58,9 @@ public class ServiceBrowserActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ArrayAdapter listAdapter =  new ArrayAdapter(this, R.layout.fragment_servicebrowser);
+        crowdMusicClient = new CrowdMusicClient();
+
+        listAdapter =  new ArrayAdapter(this, R.layout.fragment_servicebrowser);
         setListAdapter(listAdapter);
         //registryListener = new AllDevicesBrowser(this, listAdapter);
         registryListener = new CrowdDevicesBrowser(this, listAdapter);
@@ -71,15 +82,15 @@ public class ServiceBrowserActivity extends ListActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        DeviceDisplay selectedDeviceDisplay = (DeviceDisplay) listAdapter.getItem(position);
+        final String deviceDetails = selectedDeviceDisplay.getDevice().getDisplayString();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), deviceDetails, 2).show();
+            }
+        });
     }
 
     public static class PlaceholderFragment extends Fragment {

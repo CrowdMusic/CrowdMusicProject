@@ -6,7 +6,7 @@ import org.teleal.cling.model.meta.Device;
  * Created by Hanno on 05.11.13.
  */
 
-class DeviceDisplay {
+public class DeviceDisplay {
     Device device;
 
     public DeviceDisplay(Device device) {
@@ -28,6 +28,11 @@ class DeviceDisplay {
     @Override
     public int hashCode() {
         return device.hashCode();
+    }
+
+
+    public void setDevice(Device device) {
+        this.device = device;
     }
 
     @Override

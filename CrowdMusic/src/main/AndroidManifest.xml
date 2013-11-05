@@ -32,7 +32,7 @@
                 android:label="@string/title_activity_server" >
         </activity>
         <activity
-                android:name="com.hdm.crowdmusic.activities.ServiceBrowserActivity"
+                android:name=".activities.ClientActivity"
                 android:label="@string/title_activity_servicebrowser" >
         </activity>
 

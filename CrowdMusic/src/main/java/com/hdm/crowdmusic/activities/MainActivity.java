@@ -46,7 +46,7 @@ public class MainActivity extends ActionBarActivity {
         startActivity(intent);
     }
     public void startServiceBrowser(View view) {
-        Intent intent = new Intent(this, ServiceBrowserActivity.class);
+        Intent intent = new Intent(this, ClientActivity.class);
         startActivity(intent);
     }
 
