@@ -1,9 +1,12 @@
-package com.hdm.crowdmusic;
+package com.hdm.crowdmusic.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.*;
+
+import com.hdm.crowdmusic.R;
 
 import java.io.File;
 
@@ -23,7 +26,6 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         
@@ -42,6 +44,11 @@ public class MainActivity extends ActionBarActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void startServer(View view) {
+        Intent intent = new Intent(this, ServerActivity.class);
+        startActivity(intent);
     }
 
     /**
