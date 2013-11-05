@@ -1,4 +1,4 @@
-package com.hdm.crowdmusic;
+package com.hdm.crowdmusic.activities;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.view.*;
 import android.widget.Button;
 
+
+import com.hdm.crowdmusic.R;
 
 import java.io.File;
 

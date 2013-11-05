@@ -1,4 +1,4 @@
-package com.hdm.crowdmusic;
+package com.hdm.crowdmusic.fragments;
 
 
 import android.app.TabActivity;
@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.hdm.crowdmusic.R;
 
 
 /**
