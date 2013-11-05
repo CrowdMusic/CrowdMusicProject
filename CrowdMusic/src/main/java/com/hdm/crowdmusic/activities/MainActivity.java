@@ -5,14 +5,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.*;
-
 import com.hdm.crowdmusic.R;
 
-import java.io.File;
-
 public class MainActivity extends ActionBarActivity {
-
-    File imgFile = new File("R.drawable.crowdmusic");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +43,10 @@ public class MainActivity extends ActionBarActivity {
 
     public void startServer(View view) {
         Intent intent = new Intent(this, ServerActivity.class);
+        startActivity(intent);
+    }
+    public void startClient(View view) {
+        Intent intent = new Intent(this, ClientActivity.class);
         startActivity(intent);
     }
 

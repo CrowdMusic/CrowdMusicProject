@@ -4,23 +4,4 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    tools:ignore="MergeRootFrame" android:clickable="true">
-    <ImageView
-            android:layout_width="681dp"
-            android:layout_height="423dp"
-            android:id="@+id/imageView" android:layout_gravity="center_horizontal|top"
-            android:background="@drawable/crowdmusic" android:layout_marginTop="-78dp"/>
-    <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="415dp" android:layout_gravity="center"
-            android:layout_marginBottom="-238dp">
-        <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Connect"
-                android:id="@+id/button" android:layout_gravity="center_horizontal"/>
-        <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Create"
-                android:id="@+id/button2" android:layout_gravity="center_horizontal"/>
-    </LinearLayout>
-</FrameLayout>
+    tools:ignore="MergeRootFrame" />
