@@ -1,36 +1,67 @@
 package com.hdm.crowdmusic.activities;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.*;
-
 import com.hdm.crowdmusic.R;
+import com.hdm.crowdmusic.core.CrowdMusicClient;
+import org.teleal.cling.android.AndroidUpnpService;
+import org.teleal.cling.android.AndroidUpnpServiceImpl;
+import org.teleal.cling.registry.RegistrationException;
 
-import java.io.File;
+public class ClientActivity extends ActionBarActivity {
 
-public class MainActivity extends ActionBarActivity {
+    private CrowdMusicClient crowdMusicClient = new CrowdMusicClient();
 
-    File imgFile = new File("R.drawable.crowdmusic");
+    private AndroidUpnpService upnpService;
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            upnpService = (AndroidUpnpService) service;
+
+            try {
+                upnpService.getRegistry().addDevice(crowdMusicClient.getLocalDevice());
+            } catch (RegistrationException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            upnpService = null;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_client);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+
+        getApplicationContext().bindService(
+                new Intent(this, AndroidUpnpServiceImpl.class),
+                serviceConnection,
+                Context.BIND_AUTO_CREATE
+        );
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.client, menu);
         return true;
     }
 
@@ -46,18 +77,6 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void startServer(View view) {
-        Intent intent = new Intent(this, ServerActivity.class);
-        startActivity(intent);
-    }
-    public void startClient(View view) {
-        Intent intent = new Intent(this, ClientActivity.class);
-        startActivity(intent);
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
     public static class PlaceholderFragment extends Fragment {
 
         public PlaceholderFragment() {
@@ -66,7 +85,7 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_client, container, false);
             return rootView;
         }
     }
