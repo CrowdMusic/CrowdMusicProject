@@ -1,6 +1,8 @@
 package com.hdm.crowdmusic.core;
 
-import org.teleal.cling.binding.annotations.*;
+import org.teleal.cling.binding.annotations.UpnpService;
+import org.teleal.cling.binding.annotations.UpnpServiceId;
+import org.teleal.cling.binding.annotations.UpnpServiceType;
 
 @UpnpService(
         serviceId = @UpnpServiceId("CrowdMusic"),

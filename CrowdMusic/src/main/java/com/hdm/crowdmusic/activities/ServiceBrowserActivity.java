@@ -1,5 +1,6 @@
 package com.hdm.crowdmusic.activities;
 
+import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -7,33 +8,38 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.view.*;
+import android.widget.ArrayAdapter;
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.core.CrowdMusicServer;
+import com.hdm.crowdmusic.core.AllDevicesBrowser;
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
-import org.teleal.cling.registry.RegistrationException;
+import org.teleal.cling.registry.RegistryListener;
 
-public class ServerActivity extends ActionBarActivity {
+//import android.app.Fragment;
 
-    private CrowdMusicServer crowdMusicServer = new CrowdMusicServer();
+public class ServiceBrowserActivity extends ListActivity {
 
     private AndroidUpnpService upnpService;
+    private RegistryListener registryListener;
+
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
+        public void onServiceConnected(ComponentName className, IBinder service) {
+
             upnpService = (AndroidUpnpService) service;
 
-            try {
-                upnpService.getRegistry().addDevice(crowdMusicServer.getLocalDevice());
-            } catch (RegistrationException e) {
-                e.printStackTrace();
-            }
+            // Refresh the list with all known devices
+            ((AllDevicesBrowser) registryListener).refresh(upnpService);
+
+            // Getting ready for future device advertisements
+            upnpService.getRegistry().addListener(registryListener);
+
+            // Search asynchronously for all devices
+            upnpService.getControlPoint().search();
         }
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
+        public void onServiceDisconnected(ComponentName className) {
             upnpService = null;
         }
     };
@@ -41,13 +47,10 @@ public class ServerActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_server);
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
-                    .commit();
-        }
+        ArrayAdapter listAdapter =  new ArrayAdapter(this, R.layout.fragment_servicebrowser);
+        setListAdapter(listAdapter);
+        registryListener = new AllDevicesBrowser(this, listAdapter);
 
         getApplicationContext().bindService(
                 new Intent(this, AndroidUpnpServiceImpl.class),
@@ -84,10 +87,9 @@ public class ServerActivity extends ActionBarActivity {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_server, container, false);
+                                 Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_servicebrowser, container, false);
             return rootView;
         }
     }
-
 }

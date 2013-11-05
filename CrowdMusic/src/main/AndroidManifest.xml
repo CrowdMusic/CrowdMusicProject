@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="7"
+        android:minSdkVersion="11"
         android:targetSdkVersion="18" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -28,8 +28,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.hdm.crowdmusic.activities.ServerActivity"
-            android:label="@string/title_activity_server" >
+                android:name="com.hdm.crowdmusic.activities.ServerActivity"
+                android:label="@string/title_activity_server" >
+        </activity>
+        <activity
+                android:name="com.hdm.crowdmusic.activities.ServiceBrowserActivity"
+                android:label="@string/title_activity_servicebrowser" >
         </activity>
 
         <service android:name="org.teleal.cling.android.AndroidUpnpServiceImpl" />

@@ -1,17 +1,10 @@
 package com.hdm.crowdmusic.activities;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
-
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
+import android.view.*;
 import com.hdm.crowdmusic.R;
 
 public class MainActivity extends ActionBarActivity {
@@ -50,6 +43,10 @@ public class MainActivity extends ActionBarActivity {
 
     public void startServer(View view) {
         Intent intent = new Intent(this, ServerActivity.class);
+        startActivity(intent);
+    }
+    public void startServiceBrowser(View view) {
+        Intent intent = new Intent(this, ServiceBrowserActivity.class);
         startActivity(intent);
     }
 

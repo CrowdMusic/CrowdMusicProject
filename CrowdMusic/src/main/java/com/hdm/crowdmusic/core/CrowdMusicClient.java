@@ -11,14 +11,14 @@ import org.teleal.cling.model.types.UDN;
 
 import java.io.IOException;
 
-public class CrowdMusicServer {
+public class CrowdMusicClient {
     private LocalDevice localDevice;
 
     public LocalDevice getLocalDevice() {
         return localDevice;
     }
 
-    public CrowdMusicServer() {
+    public CrowdMusicClient() {
         try {
             this.localDevice = createDevice();
         } catch (ValidationException e) {
