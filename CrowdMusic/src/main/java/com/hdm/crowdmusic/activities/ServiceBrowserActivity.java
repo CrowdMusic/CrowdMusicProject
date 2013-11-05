@@ -11,7 +11,8 @@ import android.support.v4.app.Fragment;
 import android.view.*;
 import android.widget.ArrayAdapter;
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.core.AllDevicesBrowser;
+import com.hdm.crowdmusic.core.devicelistener.AllDevicesBrowser;
+import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.registry.RegistryListener;
@@ -50,7 +51,8 @@ public class ServiceBrowserActivity extends ListActivity {
 
         ArrayAdapter listAdapter =  new ArrayAdapter(this, R.layout.fragment_servicebrowser);
         setListAdapter(listAdapter);
-        registryListener = new AllDevicesBrowser(this, listAdapter);
+        //registryListener = new AllDevicesBrowser(this, listAdapter);
+        registryListener = new CrowdDevicesBrowser(this, listAdapter);
 
         getApplicationContext().bindService(
                 new Intent(this, AndroidUpnpServiceImpl.class),

@@ -1,4 +1,4 @@
-package com.hdm.crowdmusic.core;
+package com.hdm.crowdmusic.core.devicelistener;
 
 import android.app.Activity;
 import android.app.ListActivity;
@@ -16,7 +16,7 @@ import org.teleal.cling.registry.Registry;
  */
 public class AllDevicesBrowser extends DefaultRegistryListener {
     private Activity hostActivity;
-    private ArrayAdapter<DeviceDisplay> listAdapter;
+    protected ArrayAdapter<DeviceDisplay> listAdapter;
 
     public AllDevicesBrowser(ListActivity hostActivity, ArrayAdapter listAdapter) {
         this.hostActivity = hostActivity;

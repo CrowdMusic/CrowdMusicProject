@@ -1,4 +1,4 @@
-package com.hdm.crowdmusic.core;
+package com.hdm.crowdmusic.core.devicelistener;
 
 import org.teleal.cling.model.meta.Device;
 

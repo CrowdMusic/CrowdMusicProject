@@ -12,6 +12,7 @@ import org.teleal.cling.model.types.UDN;
 import java.io.IOException;
 
 public class CrowdMusicServer {
+    public static DeviceIdentity CROWDMUSICSERVERIDENTITY = new DeviceIdentity(UDN.uniqueSystemIdentifier("CrowdMusicServer"));
     private LocalDevice localDevice;
 
     public LocalDevice getLocalDevice() {
@@ -29,10 +30,10 @@ public class CrowdMusicServer {
     }
 
     LocalDevice createDevice() throws ValidationException, LocalServiceBindingException, IOException {
-        DeviceIdentity identity =
-                new DeviceIdentity(
-                        UDN.uniqueSystemIdentifier("CrowdMusicServer")
-                );
+        DeviceIdentity identity = CROWDMUSICSERVERIDENTITY;
+                //new DeviceIdentity(
+                //        UDN.uniqueSystemIdentifier("CrowdMusicServer")
+                //);
 
         DeviceType type =
                 new UDADeviceType("CMSDevice", 1);
