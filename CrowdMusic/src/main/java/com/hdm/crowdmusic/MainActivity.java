@@ -1,9 +1,12 @@
 package com.hdm.crowdmusic;
 
+import android.app.Activity;
+import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
+
+
+
 import android.view.*;
 import android.widget.Button;
 
@@ -13,7 +16,7 @@ import java.io.File;
 
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends Activity {
 
     File imgFile = new File("R.drawable.crowdmusic");
 
@@ -25,8 +28,8 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+            getFragmentManager().beginTransaction()
+                    .add(R.id.container, new Fragment())
                     .commit();
         }
 

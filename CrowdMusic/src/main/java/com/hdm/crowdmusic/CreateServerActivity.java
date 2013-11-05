@@ -1,42 +1,46 @@
 package com.hdm.crowdmusic;
 
-import android.support.v4.app.FragmentTabHost;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v4.app.Fragment;
-import android.os.Bundle;
+import android.app.ActionBar;
+import android.app.Activity;
+import android.app.FragmentTransaction;
+import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.os.Bundle;
+import android.widget.Toast;
 
 
 import static com.hdm.crowdmusic.R.*;
 
-public class CreateServerActivity extends ActionBarActivity {
+public class CreateServerActivity extends Activity {
 
-    private FragmentTabHost mTabHost;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(layout.activity_createserver);
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
+            getFragmentManager().beginTransaction()
                     .add(id.container, new PlaceholderFragment())
                     .commit();
         }
 
-        mTabHost = (FragmentTabHost)findViewById(R.id.tabhost);
+      final ActionBar bar = getActionBar();
+      bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+      bar.setDisplayOptions(1, ActionBar.DISPLAY_SHOW_TITLE);
 
-        mTabHost.setup(this, getSupportFragmentManager(), id.tabFrameLayout);
-        mTabHost.addTab(
-                mTabHost.newTabSpec("automatic").setIndicator("Automatic"),
-                ServerAutomaticFragment.class, null);
-        mTabHost.setup(this, getSupportFragmentManager(), id.tabFrameLayout);
-        mTabHost.addTab(
-                mTabHost.newTabSpec("manual").setIndicator("Manual"),
-                ServerManualFragment.class, null);
+        bar.addTab(bar.newTab()
+                .setText("Automatic")
+                .setTabListener(new TabListener<ServerAutomaticFragment>(
+                        this, "automatic", ServerAutomaticFragment.class)));
+
+        bar.addTab(bar.newTab()
+                .setText("Manual")
+                .setTabListener(new TabListener<ServerManualFragment>(
+                        this, "manual", ServerManualFragment.class)));
     }
 
 
@@ -76,4 +80,53 @@ public class CreateServerActivity extends ActionBarActivity {
         }
     }
 
+    public static class TabListener<T extends Fragment> implements ActionBar.TabListener {
+        private final Activity mActivity;
+        private final String mTag;
+        private final Class<T> mClass;
+        private final Bundle mArgs;
+        private Fragment mFragment;
+
+        public TabListener(Activity activity, String tag, Class<T> clz) {
+            this(activity, tag, clz, null);
+        }
+
+        public TabListener(Activity activity, String tag, Class<T> clz, Bundle args) {
+            mActivity = activity;
+            mTag = tag;
+            mClass = clz;
+            mArgs = args;
+
+            // Check to see if we already have a fragment for this tab, probably
+            // from a previously saved state.  If so, deactivate it, because our
+            // initial state is that a tab isn't shown.
+            mFragment = mActivity.getFragmentManager().findFragmentByTag(mTag);
+            if (mFragment != null && !mFragment.isDetached()) {
+                FragmentTransaction ft = mActivity.getFragmentManager().beginTransaction();
+                ft.detach(mFragment);
+                ft.commit();
+            }
+        }
+
+        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+            if (mFragment == null) {
+                mFragment = Fragment.instantiate(mActivity, mClass.getName(), mArgs);
+                ft.add(android.R.id.content, mFragment, mTag);
+            } else {
+                ft.attach(mFragment);
+            }
+        }
+
+        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+            if (mFragment != null) {
+                ft.detach(mFragment);
+            }
+        }
+
+        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+            Toast.makeText(mActivity, "Reselected!", Toast.LENGTH_SHORT).show();
+        }
+    }
 }
+
+
