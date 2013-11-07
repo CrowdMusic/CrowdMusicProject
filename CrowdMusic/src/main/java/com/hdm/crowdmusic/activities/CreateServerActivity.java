@@ -14,8 +14,8 @@ import android.widget.Toast;
 
 
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.fragments.ServerAutomaticFragment;
-import com.hdm.crowdmusic.fragments.ServerManualFragment;
+import com.hdm.crowdmusic.fragments.ServerAdminUsersFragment;
+import com.hdm.crowdmusic.fragments.ServerPlaylistFragment;
 
 import static com.hdm.crowdmusic.R.*;
 
@@ -37,14 +37,14 @@ public class CreateServerActivity extends Activity {
       bar.setDisplayOptions(1, ActionBar.DISPLAY_SHOW_TITLE);
 
         bar.addTab(bar.newTab()
-                .setText("Automatic")
-                .setTabListener(new TabListener<ServerAutomaticFragment>(
-                        this, "automatic", ServerAutomaticFragment.class)));
+                .setText("Playlist")
+                .setTabListener(new TabListener<ServerPlaylistFragment>(
+                        this, "playlist", ServerPlaylistFragment.class)));
 
         bar.addTab(bar.newTab()
-                .setText("Manual")
-                .setTabListener(new TabListener<ServerManualFragment>(
-                        this, "manual", ServerManualFragment.class)));
+                .setText("Users")
+                .setTabListener(new TabListener<ServerAdminUsersFragment>(
+                        this, "admin", ServerAdminUsersFragment.class)));
     }
 
 

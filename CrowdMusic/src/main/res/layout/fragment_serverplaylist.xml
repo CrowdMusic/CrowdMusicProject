@@ -1,0 +1,148 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".MainActivity" >
+
+    <ImageView
+        android:id="@+id/ServerPlaylist_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_launcher" />
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/ServerPlaylist_icon"
+        android:id="@+id/scrollView">
+
+
+        <TableLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <TextView
+                    android:id="@+id/servername_label"
+                    style="?android:attr/listSeparatorTextViewStyle"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="ServerName:"
+                    android:layout_marginTop="10dp" />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/editText"
+                    android:layout_marginTop="0dp" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <TextView
+                    android:id="@+id/serverport_label"
+                    style="?android:attr/listSeparatorTextViewStyle"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Server Port:"
+                    android:layout_marginTop="10dp" />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:ems="10"
+                    android:id="@+id/serverport_edit" />
+            </TableRow>
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <TextView
+                    android:id="@+id/serverpassword_label"
+                    style="?android:attr/listSeparatorTextViewStyle"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Server password:"
+                    android:layout_marginTop="10dp" />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberPassword"
+                    android:ems="10"
+                    android:id="@+id/serverpassword_edit" />
+            </TableRow>
+
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <TextView
+                    android:id="@+id/serverTrackNumberLimit_label"
+                    style="?android:attr/listSeparatorTextViewStyle"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Max Tracks per User:"
+                    android:layout_marginTop="10dp" />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:ems="10"
+                    android:id="@+id/severnumberOfTracksPerUser_edit" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Create Server"
+                    android:id="@+id/serverCreateServer"
+                    android:layout_marginTop="10dp" />
+            </TableRow>
+
+        </TableLayout>
+    </ScrollView>
+
+</RelativeLayout>
