@@ -38,7 +38,7 @@ public class CrowdMusicServer {
 
         DeviceDetails details =
                 new DeviceDetails(
-                        "CrowdMusicServer",
+                        "CrowdMusicServer " + android.os.Build.MODEL,
                         new ManufacturerDetails("HdM"),
                         new ModelDetails(
                                 "CrowdMusic",
