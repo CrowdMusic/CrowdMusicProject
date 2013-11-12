@@ -1,4 +1,4 @@
-package com.hdm.crowdmusic.activities;
+package com.hdm.crowdmusic.gui.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -14,8 +14,8 @@ import android.widget.Toast;
 
 
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.fragments.ServerAdminUsersFragment;
-import com.hdm.crowdmusic.fragments.ServerPlaylistFragment;
+import com.hdm.crowdmusic.gui.fragments.ServerAdminUsersFragment;
+import com.hdm.crowdmusic.gui.fragments.ServerPlaylistFragment;
 
 import static com.hdm.crowdmusic.R.*;
 

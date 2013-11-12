@@ -1,4 +1,4 @@
-package com.hdm.crowdmusic.activities;
+package com.hdm.crowdmusic.gui.activities;
 
 import android.app.Activity;
 import android.app.Fragment;

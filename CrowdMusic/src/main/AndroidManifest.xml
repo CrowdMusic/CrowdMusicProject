@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Holo" >
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".gui.activities.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.CreateServerActivity"
+            android:name=".gui.activities.CreateServerActivity"
             android:label="@string/title_activity_create_server" >
         </activity>
     </application>
