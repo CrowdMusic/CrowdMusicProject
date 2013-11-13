@@ -9,7 +9,7 @@
     tools:context=".MainActivity" >
 
     <ImageView
-        android:id="@+id/ServerPlaylist_icon"
+        android:id="@+id/serverplaylist_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -21,15 +21,7 @@
         android:layout_height="fill_parent"
         android:background="#00FF00"
         android:layout_weight="1"
-        android:layout_below="@+id/ServerPlaylist_icon"
+        android:layout_below="@+id/serverplaylist_icon"
         android:drawSelectorOnTop="false"/>
-
-   <!-- <TextView android:id="@id/android:empty"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FF0000"
-        android:text="No data"/> -->
-
-
 
 </RelativeLayout>

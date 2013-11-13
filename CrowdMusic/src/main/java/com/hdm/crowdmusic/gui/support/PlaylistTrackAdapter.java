@@ -10,23 +10,23 @@ import android.widget.TextView;
 import com.hdm.crowdmusic.core.CrowdMusicTrack;
 import com.hdm.crowdmusic.R;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by jules on 12/11/13.
  */
 public class PlaylistTrackAdapter extends ArrayAdapter<CrowdMusicTrack> {
 
-    private ArrayList<CrowdMusicTrack> objects;
+    private List<CrowdMusicTrack> objects;
 
 
-    public PlaylistTrackAdapter(Context context, int textViewResourceId, ArrayList<CrowdMusicTrack> objects) {
+    public PlaylistTrackAdapter(Context context, int textViewResourceId, List<CrowdMusicTrack> objects) {
         super(context, textViewResourceId, objects);
         this.objects = objects;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent){
+    public View getView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
 
         if (v == null) {
@@ -37,28 +37,24 @@ public class PlaylistTrackAdapter extends ArrayAdapter<CrowdMusicTrack> {
 
         CrowdMusicTrack track = objects.get(position);
 
-        if ( track != null )
-        {
-            TextView trackName = (TextView) v.findViewById(R.id.playListItem_Track);
-            TextView artist = (TextView) v.findViewById(R.id.playListItem_Artist);
+        if (track != null) {
+            TextView trackName = (TextView) v.findViewById(R.id.playlist_item_track);
+            TextView artist = (TextView) v.findViewById(R.id.playlist_item_artist);
 
 
             //TODO: Extend for cover and duration, maybe upvote count
 
-            if (artist != null)
-            {
+            if (artist != null) {
                 artist.setText(track.getArtist());
-               // artist.setText("Asshole!");
             }
 
-            if (trackName != null)
-            {
+            if (trackName != null) {
                 trackName.setText(track.getTrackName());
             }
 
 
         }
-    return v;
+        return v;
     }
 
 }

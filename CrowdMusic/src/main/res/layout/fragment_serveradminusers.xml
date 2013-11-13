@@ -9,140 +9,21 @@
     tools:context=".MainActivity" >
 
     <ImageView
-        android:id="@+id/imageView1"
+        android:id="@+id/serveruserlist_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:src="@drawable/ic_launcher" />
 
-    <ScrollView
+    <ListView android:id="@id/android:list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/imageView1"
-        android:id="@+id/scrollView">
+        android:background="#00FF00"
+        android:layout_weight="1"
+        android:layout_below="@+id/serveruserlist_icon"
+        android:drawSelectorOnTop="false"/>
 
 
-        <TableLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-
-                <TextView
-                    android:id="@+id/servername_label"
-                    style="?android:attr/listSeparatorTextViewStyle"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="ServerName:"
-                    android:layout_marginTop="10dp" />
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/editText"
-                    android:layout_marginTop="0dp" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-
-                <TextView
-                    android:id="@+id/serverport_label"
-                    style="?android:attr/listSeparatorTextViewStyle"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Server Port:"
-                    android:layout_marginTop="10dp" />
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-
-                <EditText
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:ems="10"
-                    android:id="@+id/serverport_edit" />
-            </TableRow>
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-
-                <TextView
-                    android:id="@+id/serverpassword_label"
-                    style="?android:attr/listSeparatorTextViewStyle"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Server password:"
-                    android:layout_marginTop="10dp" />
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-
-                <EditText
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberPassword"
-                    android:ems="10"
-                    android:id="@+id/serverpassword_edit" />
-            </TableRow>
-
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-
-                <TextView
-                    android:id="@+id/serverTrackNumberLimit_label"
-                    style="?android:attr/listSeparatorTextViewStyle"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Max Tracks per User:"
-                    android:layout_marginTop="10dp" />
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-
-                <EditText
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:ems="10"
-                    android:id="@+id/severnumberOfTracksPerUser_edit" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Create Server"
-                    android:id="@+id/serverCreateServer"
-                    android:layout_marginTop="10dp" />
-            </TableRow>
-
-        </TableLayout>
-    </ScrollView>
 
 </RelativeLayout>
