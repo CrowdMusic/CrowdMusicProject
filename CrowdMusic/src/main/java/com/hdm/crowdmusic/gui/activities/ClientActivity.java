@@ -82,7 +82,7 @@ public class ClientActivity extends ListActivity {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         DeviceDisplay selectedDeviceDisplay = (DeviceDisplay) listAdapter.getItem(position);
-        final String deviceDetails = selectedDeviceDisplay.getDevice().getDisplayString();
+        final String deviceDetails = selectedDeviceDisplay.getDevice().getDetails().getFriendlyName();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
