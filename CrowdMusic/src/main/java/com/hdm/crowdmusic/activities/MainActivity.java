@@ -1,27 +1,18 @@
 package com.hdm.crowdmusic.activities;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.*;
 import com.hdm.crowdmusic.R;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 public class MainActivity extends ActionBarActivity {
-
-    private WifiManager wifiManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
@@ -58,63 +49,6 @@ public class MainActivity extends ActionBarActivity {
     public void startClient(View view) {
         Intent intent = new Intent(this, ClientActivity.class);
         startActivity(intent);
-    }
-
-    public void createWifiAccessPoint(View view) {
-        if (wifiManager.isWifiEnabled()) {
-            wifiManager.setWifiEnabled(false);
-        }
-        //Get all declared methods in WifiManager class
-        Method[] wmMethods = wifiManager.getClass().getDeclaredMethods();
-        boolean methodFound = false;
-
-        for (Method method: wmMethods){
-            if (method.getName().equals("setWifiApEnabled")){
-                methodFound = true;
-                WifiConfiguration netConfig = new WifiConfiguration();
-                netConfig.SSID = "\"CrowdMusicAccessPoint\"";
-                netConfig.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
-
-                try {
-                    // Indicator for success - accesspoint status
-                    boolean apstatus = (Boolean) method.invoke(wifiManager, netConfig,true);
-                    for (Method isWifiApEnabledmethod: wmMethods)
-                    {
-                        if (isWifiApEnabledmethod.getName().equals("isWifiApEnabled")){
-                            while (!(Boolean)isWifiApEnabledmethod.invoke(wifiManager)){
-                                // Keep it running until ...
-                            };
-                            for (Method method1: wmMethods){
-                                if(method1.getName().equals("getWifiApState")){
-                                    method1.invoke(wifiManager);
-                                }
-                            }
-                        }
-                    }
-
-//                    if(apstatus)
-//                    {
-//                        System.out.println("WLAN AP SUCCESS");
-//                    }
-//                    else
-//                    {
-//                        System.out.println("WLAN AP FAILED");
-//                    }
-                }
-                catch (IllegalArgumentException e) {
-                    e.printStackTrace();
-                }
-                catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-                catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-//        if (!methodFound){
-//            //statusView.setText("Your phone's API does not contain setWifiApEnabled method to configure an access point");
-//        }
     }
 
     /**

@@ -7,4 +7,12 @@
     <string name="title_activity_server">ServerActivity</string>
     <string name="title_activity_client">ClientActivity</string>
 
+    <string name="server_activity_created_server">Server was created.</string>
+
+    <string name="dialog_create_wlan">You\'re connected to an Access Point. Do you want to open your own instead?</string>
+    <string name="dialog_create_wlan_no_ap_created">No Access Point is being created.</string>
+    <string name="dialog_create_wlan_ap_created">Access Point was created.</string>
+    <string name="dialog_create_wlan_no_wifi_enabled_or_active">Your WIFI is currently disabled or no WIFI connection is active. Do you want to enable it and/or connect to an existing Access Point?</string>
+    <string name="dialog_title_create_wlan">Configure Access Point</string>
+
 </resources>

@@ -24,8 +24,5 @@
             android:text="Start Client"
             android:onClick="startClient"
         />
-        <Button android:layout_height="@dimen/abc_action_bar_default_height" android:layout_width="fill_parent"
-                android:text="Open WLAN" android:id="@+id/button"
-                android:layout_gravity="center_horizontal" android:onClick="createWifiAccessPoint"/>
     </LinearLayout>
 </RelativeLayout>
