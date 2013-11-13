@@ -19,12 +19,15 @@ android {
     buildToolsVersion "18.1.1"
 
     defaultConfig {
+
         minSdkVersion 13
         targetSdkVersion 18
     }
 }
 
 dependencies {
-	compile 'com.android.support:appcompat-v7:+'
-	compile 'com.android.support:support-v4:18.0.0'
+    compile 'com.android.support:appcompat-v7:+'
+    compile 'com.android.support:support-v4:18.0.0'
+    compile group: 'org.teleal.cling', name: 'cling-core', version: '1.0.5'
+    compile group: 'org.teleal.cling', name: 'cling-support', version: '1.0.5'
 }

@@ -4,22 +4,53 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.app.Fragment;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Bundle;
-import android.widget.Toast;
+
 
 
 import com.hdm.crowdmusic.R;
+import com.hdm.crowdmusic.core.CrowdMusicServer;
 import com.hdm.crowdmusic.gui.fragments.ServerAdminUsersFragment;
 import com.hdm.crowdmusic.gui.fragments.ServerPlaylistFragment;
+
+import org.teleal.cling.android.AndroidUpnpService;
+import org.teleal.cling.android.AndroidUpnpServiceImpl;
+import org.teleal.cling.registry.RegistrationException;
 
 import static com.hdm.crowdmusic.R.*;
 
 public class CreateServerActivity extends Activity {
+
+    private CrowdMusicServer crowdMusicServer = new CrowdMusicServer();
+    private AndroidUpnpService upnpService;
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            upnpService = (AndroidUpnpService) service;
+
+            try {
+                upnpService.getRegistry().addDevice(crowdMusicServer.getLocalDevice());
+            } catch (RegistrationException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            upnpService = null;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +63,16 @@ public class CreateServerActivity extends Activity {
                     .commit();
         }
 
-      final ActionBar bar = getActionBar();
-      bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-      bar.setDisplayOptions(1, ActionBar.DISPLAY_SHOW_TITLE);
+        getApplicationContext().bindService(
+                new Intent(this, AndroidUpnpServiceImpl.class),
+                serviceConnection,
+                Context.BIND_AUTO_CREATE
+        );
+
+
+        final ActionBar bar = getActionBar();
+        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        bar.setDisplayOptions(1, ActionBar.DISPLAY_SHOW_TITLE);
 
         bar.addTab(bar.newTab()
                 .setText("Playlist")
@@ -68,9 +106,6 @@ public class CreateServerActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
     public static class PlaceholderFragment extends Fragment {
 
         public PlaceholderFragment() {
@@ -84,7 +119,7 @@ public class CreateServerActivity extends Activity {
         }
     }
 
-    public static class TabListener<T extends Fragment> implements ActionBar.TabListener {
+    public class TabListener<T extends Fragment> implements ActionBar.TabListener {
         private final Activity mActivity;
         private final String mTag;
         private final Class<T> mClass;
@@ -101,9 +136,6 @@ public class CreateServerActivity extends Activity {
             mClass = clz;
             mArgs = args;
 
-            // Check to see if we already have a fragment for this tab, probably
-            // from a previously saved state.  If so, deactivate it, because our
-            // initial state is that a tab isn't shown.
             mFragment = mActivity.getFragmentManager().findFragmentByTag(mTag);
             if (mFragment != null && !mFragment.isDetached()) {
                 FragmentTransaction ft = mActivity.getFragmentManager().beginTransaction();
@@ -128,7 +160,7 @@ public class CreateServerActivity extends Activity {
         }
 
         public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-            Toast.makeText(mActivity, "Reselected!", Toast.LENGTH_SHORT).show();
+
         }
     }
 }

@@ -8,10 +8,10 @@ import android.os.Bundle;
 
 
 import android.view.*;
-import android.widget.Button;
 
 
 import com.hdm.crowdmusic.R;
+
 
 import java.io.File;
 
@@ -31,27 +31,20 @@ public class MainActivity extends Activity {
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new Fragment())
+                    .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
 
-        Button createButton = (Button) findViewById(R.id.create_button);
-        Button connectButton = (Button) findViewById(R.id.connect_button);
-
-        createButton.setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(getBaseContext(), CreateServerActivity.class);
-                startActivity(intent);
-                System.out.println("onClick called");
-            }
-        });
-        connectButton.setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-//                Intent intent = new Intent(this, ConnectServerActivity.class);
-            }
-        });
     }
 
+    public void startServer(View view) {
+        Intent intent = new Intent(this, CreateServerActivity.class);
+        startActivity(intent);
+    }
+    public void startClient(View view) {
+        Intent intent = new Intent(this, ClientActivity.class);
+        startActivity(intent);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -73,9 +66,6 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
     public static class PlaceholderFragment extends Fragment {
 
         public PlaceholderFragment() {
@@ -87,10 +77,6 @@ public class MainActivity extends Activity {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             return rootView;
         }
-    }
-
-    public void switchToCreateServer() {
-
     }
 
 }

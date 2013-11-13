@@ -1,0 +1,40 @@
+# First, declare language
+language:
+  - java
+# I'm using openjdk6, because Android Java code has 1.6 compatibility
+jdk:
+  - openjdk6
+# just to map the environment, and see the tool versions
+before_install:
+  # environment info
+  - gradle -v
+  - uname -a
+  # required libs for android build tools
+  - if [ `uname -m` = x86_64 ]; then sudo apt-get update; fi
+  - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch; fi
+  # for gradle output style
+  # only needed for Travis, not for standard xterm
+  - export TERM=dumb
+  # newer version of gradle
+  - wget http://services.gradle.org/distributions/gradle-1.8-bin.zip
+  - unzip -qq gradle-1.8-bin.zip
+  # Having GRADLE_HOME property will make Travis CI use it for build
+  - export GRADLE_HOME=$PWD/gradle-1.8
+  - export PATH=$GRADLE_HOME/bin:$PATH
+  # newest android SDK 22.0.5
+  - wget http://dl.google.com/android/android-sdk_r22.0.5-linux.tgz
+  - tar -zxf android-sdk_r22.0.5-linux.tgz
+  - export ANDROID_HOME=`pwd`/android-sdk-linux
+  - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
+  # manually set sdk.dir variable, according to local paths
+  - echo "sdk.dir=$ANDROID_HOME" > local.properties
+  # "echo yes |" part is to accept license from android sdk manager tool
+  - echo yes | android update sdk  -a -t build-tools-18.1,tools,platform-tools,extra-android-support,extra-android-m2repository,android-18 --force --no-ui
+  # build tools cannot be installed through "android update sdk" as of now
+  - wget http://dl.google.com/android/repository/build-tools_r18.1.1-linux.zip
+  - mkdir -p $ANDROID_HOME/build-tools
+  - unzip -qq build-tools_r18.1.1-linux.zip -d $ANDROID_HOME/build-tools/
+  - mv $ANDROID_HOME/build-tools/android-4.3.1 $ANDROID_HOME/build-tools/18.1.1
+  # verify files exist in right paths
+  - find $ANDROID_HOME/build-tools
+  - file $ANDROID_HOME/build-tools/18.1.1/aapt
