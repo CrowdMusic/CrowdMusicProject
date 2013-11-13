@@ -1,13 +1,28 @@
-package com.hdm.crowdmusic.activities;
+package com.hdm.crowdmusic.gui.activities;
 
+import android.app.Activity;
+import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
+
+
+
 import android.view.*;
+
+
 import com.hdm.crowdmusic.R;
 
-public class MainActivity extends ActionBarActivity {
+
+import java.io.File;
+
+
+
+
+public class MainActivity extends Activity {
+
+    File imgFile = new File("R.drawable.crowdmusic");
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,10 +31,20 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
+            getFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+
+    }
+
+    public void startServer(View view) {
+        Intent intent = new Intent(this, CreateServerActivity.class);
+        startActivity(intent);
+    }
+    public void startClient(View view) {
+        Intent intent = new Intent(this, ClientActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -42,18 +67,6 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void startServer(View view) {
-        Intent intent = new Intent(this, ServerActivity.class);
-        startActivity(intent);
-    }
-    public void startClient(View view) {
-        Intent intent = new Intent(this, ClientActivity.class);
-        startActivity(intent);
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
     public static class PlaceholderFragment extends Fragment {
 
         public PlaceholderFragment() {
