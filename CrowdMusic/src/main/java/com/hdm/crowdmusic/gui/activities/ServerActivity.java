@@ -39,7 +39,7 @@ import java.lang.reflect.Method;
 
 import static com.hdm.crowdmusic.R.*;
 
-public class CreateServerActivity extends Activity {
+public class ServerActivity extends Activity {
 
     public static int REQUESTCODE_WLAN_ACTIVATED = 1;
 

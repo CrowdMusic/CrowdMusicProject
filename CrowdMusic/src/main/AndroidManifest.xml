@@ -30,13 +30,8 @@
         </activity>
 
         <activity
-            android:name=".gui.activities.CreateServerActivity"
-            android:label="@string/title_activity_create_server"/>
-
-
-        <activity
-            android:name="com.hdm.crowdmusic.activities.ServerActivity"
-            android:label="@string/title_activity_server" />
+            android:name=".gui.activities.ServerActivity"
+            android:label="@string/title_activity_server"/>
 
         <activity
             android:name=".gui.activities.ClientActivity"

@@ -2,9 +2,6 @@ package com.hdm.crowdmusic.core;
 
 import android.graphics.Bitmap;
 
-/**
- * Created by jules on 12/11/13.
- */
 public class CrowdMusicTrack {
 
     private String artist;
