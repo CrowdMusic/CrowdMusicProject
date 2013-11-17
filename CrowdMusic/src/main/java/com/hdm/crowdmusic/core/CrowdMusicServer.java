@@ -47,8 +47,8 @@ public class CrowdMusicServer {
                         )
                 );
 
-        LocalService<CrowdMusicService> crowdMusicService = new AnnotationLocalServiceBinder().read(CrowdMusicService.class);
-        crowdMusicService.setManager(new DefaultServiceManager(crowdMusicService, CrowdMusicService.class));
+        LocalService<CrowdMusicUPnPService> crowdMusicService = new AnnotationLocalServiceBinder().read(CrowdMusicUPnPService.class);
+        crowdMusicService.setManager(new DefaultServiceManager(crowdMusicService, CrowdMusicUPnPService.class));
 
         return new LocalDevice(identity, type, details, crowdMusicService);
     }
