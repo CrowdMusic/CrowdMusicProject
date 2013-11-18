@@ -20,35 +20,50 @@ import com.hdm.crowdmusic.core.CrowdMusicClient;
 import com.hdm.crowdmusic.core.devicelistener.AllDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
+import com.hdm.crowdmusic.core.streaming.HTTPServerService;
+import com.hdm.crowdmusic.core.streaming.IHttpServerService;
+
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.registry.RegistryListener;
 
 public class ClientActivity extends ListActivity {
 
-    private AndroidUpnpService clientService;
+    private AndroidUpnpService upnpService;
+    private IHttpServerService httpService;
     private RegistryListener registryListener;
     private CrowdMusicClient crowdMusicClient;
     ArrayAdapter listAdapter;
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
+    private ServiceConnection upnpServiceConntection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
 
-            clientService = (AndroidUpnpService) service;
+            upnpService = (AndroidUpnpService) service;
 
             // Refresh the list with all known devices
-            ((AllDevicesBrowser) registryListener).refresh(clientService);
+            ((AllDevicesBrowser) registryListener).refresh(upnpService);
 
             // Getting ready for future device advertisements
-            clientService.getRegistry().addListener(registryListener);
+            upnpService.getRegistry().addListener(registryListener);
 
             // Search asynchronously for all devices
-            clientService.getControlPoint().search();
+            upnpService.getControlPoint().search();
         }
 
         public void onServiceDisconnected(ComponentName className) {
-            clientService = null;
+            upnpService = null;
+        }
+    };
+
+    private ServiceConnection httpServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            httpService = (IHttpServerService) service;
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            httpService = null;
         }
     };
 
@@ -65,7 +80,13 @@ public class ClientActivity extends ListActivity {
 
         getApplicationContext().bindService(
                 new Intent(this, AndroidUpnpServiceImpl.class),
-                serviceConnection,
+                upnpServiceConntection,
+                Context.BIND_AUTO_CREATE
+        );
+
+        getApplicationContext().bindService(
+                new Intent(this, HTTPServerService.class),
+                httpServiceConnection,
                 Context.BIND_AUTO_CREATE
         );
     }

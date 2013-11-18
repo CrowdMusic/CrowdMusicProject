@@ -8,10 +8,6 @@ import android.view.ViewGroup;
 
 import com.hdm.crowdmusic.R;
 
-
-/**
- * Created by jules on 04/11/13.
- */
 public class ServerAdminUsersFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {

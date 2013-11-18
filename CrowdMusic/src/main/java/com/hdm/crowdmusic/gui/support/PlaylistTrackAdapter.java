@@ -12,9 +12,6 @@ import com.hdm.crowdmusic.R;
 
 import java.util.List;
 
-/**
- * Created by jules on 12/11/13.
- */
 public class PlaylistTrackAdapter extends ArrayAdapter<CrowdMusicTrack> {
 
     private List<CrowdMusicTrack> objects;

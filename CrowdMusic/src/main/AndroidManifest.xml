@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -30,13 +31,8 @@
         </activity>
 
         <activity
-            android:name=".gui.activities.CreateServerActivity"
-            android:label="@string/title_activity_create_server"/>
-
-
-        <activity
-            android:name="com.hdm.crowdmusic.activities.ServerActivity"
-            android:label="@string/title_activity_server" />
+            android:name=".gui.activities.ServerActivity"
+            android:label="@string/title_activity_server"/>
 
         <activity
             android:name=".gui.activities.ClientActivity"
@@ -44,7 +40,8 @@
         </activity>
 
         <service android:name="org.teleal.cling.android.AndroidUpnpServiceImpl" />
-
+        <service android:name=".core.streaming.HTTPServerService" />
+        <service android:name=".core.streaming.MediaPlayerService" />
     </application>
 
 </manifest>

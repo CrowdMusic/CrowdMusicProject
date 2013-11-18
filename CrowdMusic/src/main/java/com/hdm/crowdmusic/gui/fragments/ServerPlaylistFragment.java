@@ -10,10 +10,6 @@ import com.hdm.crowdmusic.gui.support.PlaylistTrackAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**
- * Created by jules on 04/11/13.
- */
 public class ServerPlaylistFragment extends ListFragment {
 
 
