@@ -20,24 +20,23 @@ import org.apache.http.protocol.ResponseDate;
 import org.apache.http.protocol.ResponseServer;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class HTTPServer {
 
     private int port;
+    private InetAddress inetAddress;
 
     private HttpParams httpParams;
     private HttpRequestHandlerRegistry handlerRegistry;
 
     private HTTPServerThread httpServerThread;
 
-    public HTTPServer() {
-        this(8080);
-    }
-
-    public HTTPServer(int port) {
+    public HTTPServer(int port, InetAddress inetAddress) {
         this.port = port;
+        this.inetAddress = inetAddress;
 
         httpParams = new BasicHttpParams();
         handlerRegistry = new HttpRequestHandlerRegistry();
@@ -47,8 +46,8 @@ public class HTTPServer {
         Log.d(Utility.LOG_TAG_HTTP, "Starting HTTP-Server...");
 
         try {
-            httpServerThread = new HTTPServerThread(port, httpParams, handlerRegistry);
-            httpServerThread.start();
+            httpServerThread = new HTTPServerThread(port, inetAddress, httpParams, handlerRegistry);
+            httpServerThread.startServerThread();
         } catch (IOException e) {
             Log.e(Utility.LOG_TAG_HTTP, "Server could not be started: " + e.getMessage());
         }
@@ -70,10 +69,10 @@ public class HTTPServer {
         final HttpParams params;
         final ServerSocket serverSocket;
 
-        HTTPServerThread(int port, HttpParams params, HttpRequestHandlerRegistry handlerRegistry) throws IOException {
+        HTTPServerThread(int port, InetAddress ip, HttpParams params, HttpRequestHandlerRegistry handlerRegistry) throws IOException {
             Log.d(Utility.LOG_TAG_HTTP, "Initialize HTTP-Server...");
             this.params = params;
-            serverSocket = new ServerSocket(port); //TODO: Open port on WLAN InetAdress
+            serverSocket = new ServerSocket(port, 0, ip);
 
             if(serverSocket.isBound())
                 Log.d(Utility.LOG_TAG_HTTP, "Socket bound to port: " + serverSocket.getLocalPort() + " and InetAdress: " + serverSocket.getInetAddress());
@@ -98,10 +97,10 @@ public class HTTPServer {
         public void run() {
             while (isRunning) {
                 try {
+                    Log.d(Utility.LOG_TAG_HTTP, "Listening for incoming connections...");
                     final Socket socket = serverSocket.accept();
-                    connection = new DefaultHttpServerConnection();
-
                     Log.d(Utility.LOG_TAG_HTTP, "Incoming connection with IP: " + socket.getInetAddress());
+                    connection = new DefaultHttpServerConnection();
 
                     connection.bind(socket, params);
                     httpService.handleRequest(connection, httpContext);
@@ -117,6 +116,11 @@ public class HTTPServer {
                     }
                 }
             }
+        }
+
+        public void startServerThread() {
+            isRunning = true;
+            this.start();
         }
 
         public void stopServerThread() {

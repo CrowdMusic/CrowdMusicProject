@@ -1,9 +1,15 @@
 package com.hdm.crowdmusic.core.streaming;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.IBinder;
+
+import com.hdm.crowdmusic.util.Utility;
+
+import java.net.InetAddress;
 
 public class HTTPServerService extends Service {
     private HTTPServer server;
@@ -13,7 +19,10 @@ public class HTTPServerService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        server = new HTTPServer();
+        final WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        InetAddress ip = Utility.getWifiInetAddress(wifiManager);
+
+        server = new HTTPServer(8080, ip);
         server.startServer();
     }
 
