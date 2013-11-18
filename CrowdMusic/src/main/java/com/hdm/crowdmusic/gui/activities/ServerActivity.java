@@ -27,6 +27,8 @@ import android.widget.Toast;
 
 import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.CrowdMusicServer;
+import com.hdm.crowdmusic.core.streaming.IMediaPlayerService;
+import com.hdm.crowdmusic.core.streaming.MediaPlayerService;
 import com.hdm.crowdmusic.gui.fragments.ServerAdminUsersFragment;
 import com.hdm.crowdmusic.gui.fragments.ServerPlaylistFragment;
 
@@ -45,8 +47,9 @@ public class ServerActivity extends Activity {
 
     private CrowdMusicServer crowdMusicServer = new CrowdMusicServer();
     private AndroidUpnpService upnpService;
+    private IMediaPlayerService mediaService;
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
+    private ServiceConnection upnpServiceConntection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             upnpService = (AndroidUpnpService) service;
@@ -64,6 +67,18 @@ public class ServerActivity extends Activity {
         }
     };
 
+    private ServiceConnection mediaServiceConntection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mediaService = (IMediaPlayerService) service;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mediaService = null;
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,9 +92,16 @@ public class ServerActivity extends Activity {
 
         getApplicationContext().bindService(
                 new Intent(this, AndroidUpnpServiceImpl.class),
-                serviceConnection,
+                upnpServiceConntection,
                 Context.BIND_AUTO_CREATE
         );
+
+        getApplicationContext().bindService(
+                new Intent(this, MediaPlayerService.class),
+                mediaServiceConntection,
+                Context.BIND_AUTO_CREATE
+        );
+
         handleAPModalDialog();
         Toast.makeText(getApplicationContext(), R.string.server_activity_created_server, 2).show();
 
