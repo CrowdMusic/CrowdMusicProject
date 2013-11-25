@@ -4,30 +4,27 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.FragmentTransaction;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.os.Bundle;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
-import com.google.zxing.qrcode.QRCodeWriter;
-
 
 import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.CrowdMusicQrCode;
@@ -42,7 +39,8 @@ import org.teleal.cling.registry.RegistrationException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import static com.hdm.crowdmusic.R.*;
+import static com.hdm.crowdmusic.R.id;
+import static com.hdm.crowdmusic.R.layout;
 
 public class ServerActivity extends Activity {
 
@@ -50,6 +48,7 @@ public class ServerActivity extends Activity {
 
     private CrowdMusicServer crowdMusicServer = new CrowdMusicServer();
     private AndroidUpnpService upnpService;
+    private Bitmap wifiQrCode;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -164,8 +163,8 @@ public class ServerActivity extends Activity {
         Method[] wmMethods = wifiManager.getClass().getDeclaredMethods();
         boolean methodFound = false;
 
-        for (Method method: wmMethods){
-            if (method.getName().equals("setWifiApEnabled")){
+        for (Method method : wmMethods) {
+            if (method.getName().equals("setWifiApEnabled")) {
                 methodFound = true;
                 WifiConfiguration netConfig = new WifiConfiguration();
                 netConfig.SSID = "\"CrowdMusicAccessPoint\"";
@@ -173,15 +172,15 @@ public class ServerActivity extends Activity {
 
                 try {
                     // Indicator for success - accesspoint status
-                    boolean apstatus = (Boolean) method.invoke(wifiManager, netConfig,true);
-                    for (Method isWifiApEnabledmethod: wmMethods)
-                    {
-                        if (isWifiApEnabledmethod.getName().equals("isWifiApEnabled")){
-                            while (!(Boolean)isWifiApEnabledmethod.invoke(wifiManager)){
+                    boolean apstatus = (Boolean) method.invoke(wifiManager, netConfig, true);
+                    for (Method isWifiApEnabledmethod : wmMethods) {
+                        if (isWifiApEnabledmethod.getName().equals("isWifiApEnabled")) {
+                            while (!(Boolean) isWifiApEnabledmethod.invoke(wifiManager)) {
                                 // Keep it running until ...
-                            };
-                            for (Method method1: wmMethods){
-                                if(method1.getName().equals("getWifiApState")){
+                            }
+                            ;
+                            for (Method method1 : wmMethods) {
+                                if (method1.getName().equals("getWifiApState")) {
                                     method1.invoke(wifiManager);
                                 }
                             }
@@ -196,14 +195,11 @@ public class ServerActivity extends Activity {
 //                    {
 //                        System.out.println("WLAN AP FAILED");
 //                    }
-                }
-                catch (IllegalArgumentException e) {
+                } catch (IllegalArgumentException e) {
                     e.printStackTrace();
-                }
-                catch (IllegalAccessException e) {
+                } catch (IllegalAccessException e) {
                     e.printStackTrace();
-                }
-                catch (InvocationTargetException e) {
+                } catch (InvocationTargetException e) {
                     e.printStackTrace();
                 }
             }
@@ -252,7 +248,7 @@ public class ServerActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
+
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.create_server, menu);
         return true;
@@ -275,24 +271,26 @@ public class ServerActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void createQRCodeView()
-    {
+    private void createQRCodeView() {
         AlertDialog.Builder imageDialog = new AlertDialog.Builder(this);
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
 
-        View layout = inflater.inflate(R.layout.dialog_fullimage,null, true);
+        View layout = inflater.inflate(R.layout.dialog_fullimage, null, true);
 
         ImageView image = (ImageView) layout.findViewById(R.id.dialog_full_image);
-        image.setImageBitmap(CrowdMusicQrCode.getNetworkQr());
+
+        if (wifiQrCode == null) {
+            wifiQrCode = CrowdMusicQrCode.getNetworkQr();
+        }
+        image.setImageBitmap(wifiQrCode);
         imageDialog.setView(layout);
-        imageDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener(){
+        imageDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
 
         });
-
 
         imageDialog.create();
         imageDialog.show();
@@ -305,21 +303,8 @@ public class ServerActivity extends Activity {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
+                                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(layout.fragment_createserver, container, false);
-
-            //ImageView img = (ImageView) rootView.findViewById(id.qr_code);
-            //img.setImageBitmap(CrowdMusicQrCode.getNetworkQr());
-           /* img.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ImageView qrMaximized = (ImageView) view.findViewById(R.id.qr_code_maximized);
-                    ImageView qrSmall = (ImageView) view.findViewById(id.qr_code);
-                    qrMaximized.setImageMatrix(qrSmall.getImageMatrix());
-                    qrMaximized.setVisibility(1);
-                }
-            }); */
-            //jjimg.setClickable(true);
             return rootView;
         }
     }
