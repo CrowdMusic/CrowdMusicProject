@@ -22,10 +22,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Bundle;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
+import com.google.zxing.qrcode.QRCodeWriter;
 
 
 import com.hdm.crowdmusic.R;
+import com.hdm.crowdmusic.core.CrowdMusicQrCode;
 import com.hdm.crowdmusic.core.CrowdMusicServer;
 import com.hdm.crowdmusic.gui.fragments.ServerAdminUsersFragment;
 import com.hdm.crowdmusic.gui.fragments.ServerPlaylistFragment;
@@ -261,8 +266,36 @@ public class ServerActivity extends Activity {
         switch (item.getItemId()) {
             case id.action_settings:
                 return true;
+
+            case id.action_show_qrcode:
+                createQRCodeView();
+                return true;
+
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void createQRCodeView()
+    {
+        AlertDialog.Builder imageDialog = new AlertDialog.Builder(this);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        View layout = inflater.inflate(R.layout.dialog_fullimage,null, true);
+
+        ImageView image = (ImageView) layout.findViewById(R.id.dialog_full_image);
+        image.setImageBitmap(CrowdMusicQrCode.getNetworkQr());
+        imageDialog.setView(layout);
+        imageDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener(){
+
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+
+        });
+
+
+        imageDialog.create();
+        imageDialog.show();
     }
 
     public static class PlaceholderFragment extends Fragment {
@@ -274,6 +307,19 @@ public class ServerActivity extends Activity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(layout.fragment_createserver, container, false);
+
+            //ImageView img = (ImageView) rootView.findViewById(id.qr_code);
+            //img.setImageBitmap(CrowdMusicQrCode.getNetworkQr());
+           /* img.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ImageView qrMaximized = (ImageView) view.findViewById(R.id.qr_code_maximized);
+                    ImageView qrSmall = (ImageView) view.findViewById(id.qr_code);
+                    qrMaximized.setImageMatrix(qrSmall.getImageMatrix());
+                    qrMaximized.setVisibility(1);
+                }
+            }); */
+            //jjimg.setClickable(true);
             return rootView;
         }
     }

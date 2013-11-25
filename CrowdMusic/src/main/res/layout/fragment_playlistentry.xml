@@ -36,6 +36,6 @@
         android:layout_toRightOf="@id/icon"
 
         android:text="Artist"
-        android:textSize="16sp" />
-    <!-- android:gravity="center_vertical" -->
+        android:textSize="16sp"
+        android:gravity="center_vertical"/>
 </RelativeLayout> 
