@@ -11,31 +11,36 @@
         android:layout_alignParentTop="true"
         android:layout_marginRight="6dip"
         android:contentDescription="TODO"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/ic_launcher"
+        android:layout_centerVertical="true"
+        />
 
     <TextView
+        android:id="@+id/playlist_item_artist"
+        android:layout_width="wrap_content"
+        android:layout_height="32dip"
+
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_toRightOf="@id/icon"
+        android:gravity="bottom"
+        android:text="Artist"
+        android:textSize="20sp"
+       />
+    <!--  android:layout_above="@id/playlist_item_track" -->
+        <TextView
         android:id="@+id/playlist_item_track"
+        android:layout_below="@+id/playlist_item_artist"
         android:layout_width="fill_parent"
-        android:layout_height="26dip"
+        android:layout_height="23dip"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_toRightOf="@id/icon"
         android:ellipsize="marquee"
         android:singleLine="true"
         android:text="Track Name"
-        android:textSize="12sp" />
+       />
 
-    <TextView
-        android:id="@+id/playlist_item_artist"
-        android:layout_width="fill_parent"
-        android:layout_height="32dip"
-        android:layout_above="@id/playlist_item_track"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignWithParentIfMissing="true"
-        android:layout_toRightOf="@id/icon"
 
-        android:text="Artist"
-        android:textSize="16sp" />
-    <!-- android:gravity="center_vertical" -->
 </RelativeLayout> 

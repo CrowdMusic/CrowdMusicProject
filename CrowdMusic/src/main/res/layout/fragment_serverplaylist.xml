@@ -8,20 +8,22 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <ImageView
-        android:id="@+id/serverplaylist_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_launcher" />
 
-    <ListView android:id="@id/android:list"
+
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#00FF00"
-        android:layout_weight="1"
-        android:layout_below="@+id/serverplaylist_icon"
-        android:drawSelectorOnTop="false"/>
+        android:layout_height="fill_parent">
+
+
+        <ListView android:id="@id/android:list"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_below="@+id/serverplaylist_icon"
+            android:drawSelectorOnTop="false"/>
+
+
+    </LinearLayout>
 
 </RelativeLayout>
