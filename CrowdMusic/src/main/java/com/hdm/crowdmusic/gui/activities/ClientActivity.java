@@ -5,9 +5,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -22,10 +25,13 @@ import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
 import com.hdm.crowdmusic.core.streaming.HTTPServerService;
 import com.hdm.crowdmusic.core.streaming.IHttpServerService;
+import com.hdm.crowdmusic.util.Utility;
 
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.registry.RegistryListener;
+
+import java.io.IOException;
 
 public class ClientActivity extends ListActivity {
 
@@ -34,6 +40,8 @@ public class ClientActivity extends ListActivity {
     private RegistryListener registryListener;
     private CrowdMusicClient crowdMusicClient;
     ArrayAdapter listAdapter;
+
+    MediaPlayer mediaPlayer;
 
     private ServiceConnection upnpServiceConntection = new ServiceConnection() {
         @Override
@@ -71,7 +79,8 @@ public class ClientActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        crowdMusicClient = new CrowdMusicClient();
+        crowdMusicClient = new CrowdMusicClient(getApplicationContext());
+        crowdMusicClient.init();
 
         listAdapter =  new ArrayAdapter(this, R.layout.fragment_client_serverbrowser);
         setListAdapter(listAdapter);
@@ -89,6 +98,28 @@ public class ClientActivity extends ListActivity {
                 httpServiceConnection,
                 Context.BIND_AUTO_CREATE
         );
+
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mp.release();
+            }
+        });
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.start();
+            }
+        });
+
+        try {
+            mediaPlayer.setDataSource(getApplicationContext(), crowdMusicClient.getTrackList().get(6).getUri());
+            mediaPlayer.prepareAsync();
+        } catch (IOException e) {
+            Log.e(Utility.LOG_TAG_MEDIA, e.getMessage());
+        }
     }
 
 
