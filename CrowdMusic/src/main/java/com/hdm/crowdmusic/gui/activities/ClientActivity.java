@@ -41,8 +41,6 @@ public class ClientActivity extends ListActivity {
     private CrowdMusicClient crowdMusicClient;
     ArrayAdapter listAdapter;
 
-    MediaPlayer mediaPlayer;
-
     private ServiceConnection upnpServiceConntection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
