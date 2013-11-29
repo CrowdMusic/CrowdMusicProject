@@ -75,7 +75,7 @@ public class MainActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        crowdMusicClient = new CrowdMusicClient();
+        //crowdMusicClient = new CrowdMusicClient();
 
         listAdapter =  new ArrayAdapter(this, R.layout.fragment_client_serverbrowser);
         setListAdapter(listAdapter);

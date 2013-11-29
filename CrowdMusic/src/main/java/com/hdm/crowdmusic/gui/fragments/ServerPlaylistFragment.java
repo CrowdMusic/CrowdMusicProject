@@ -21,13 +21,6 @@ public class ServerPlaylistFragment extends ListFragment {
         super.onActivityCreated(savedInstanceState);
 
         List<CrowdMusicTrack> objects = new ArrayList<CrowdMusicTrack>();
-
-        CrowdMusicTrack testTrack = new CrowdMusicTrack();
-        testTrack.setArtist("Ragnarök");
-        testTrack.setTrackname("Path");
-
-        objects.add(testTrack);
-
         PlaylistTrackAdapter adapter = new PlaylistTrackAdapter(getActivity(),
                 R.layout.fragment_serverplaylist, objects);
 

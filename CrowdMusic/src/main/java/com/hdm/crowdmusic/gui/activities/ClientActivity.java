@@ -5,9 +5,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -22,10 +25,13 @@ import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
 import com.hdm.crowdmusic.core.streaming.HTTPServerService;
 import com.hdm.crowdmusic.core.streaming.IHttpServerService;
+import com.hdm.crowdmusic.util.Utility;
 
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.registry.RegistryListener;
+
+import java.io.IOException;
 
 public class ClientActivity extends ListActivity {
 
@@ -71,11 +77,11 @@ public class ClientActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        crowdMusicClient = new CrowdMusicClient();
+        crowdMusicClient = new CrowdMusicClient(getApplicationContext());
 
         listAdapter =  new ArrayAdapter(this, R.layout.fragment_client_serverbrowser);
         setListAdapter(listAdapter);
-        //registryListener = new AllDevicesBrowser(this, listAdapter);
+
         registryListener = new CrowdDevicesBrowser(this, listAdapter);
 
         getApplicationContext().bindService(
@@ -91,6 +97,12 @@ public class ClientActivity extends ListActivity {
         );
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        crowdMusicClient.init();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
