@@ -27,7 +27,7 @@ public class CrowdMusicClient {
     public void init() {
         Uri exMedia = MediaStore.Audio.Media.getContentUri("external");
 
-        Log.d(Utility.LOG_TAG_MEDIA, "Init audio search...");
+        Log.i(Utility.LOG_TAG_MEDIA, "Init audio search...");
 
         String[] projection = new String[] {
                 MediaStore.Audio.Media._ID,
@@ -43,7 +43,7 @@ public class CrowdMusicClient {
             MediaStore.Audio.Media.TITLE + " ASC"
         );
 
-        Log.d(Utility.LOG_TAG_MEDIA, "Init audio search complete.");
+        Log.i(Utility.LOG_TAG_MEDIA, "Init audio search complete.");
 
 
         if(exCursor.moveToFirst()) {

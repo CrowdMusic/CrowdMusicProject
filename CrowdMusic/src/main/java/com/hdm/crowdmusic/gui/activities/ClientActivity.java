@@ -80,11 +80,10 @@ public class ClientActivity extends ListActivity {
         super.onCreate(savedInstanceState);
 
         crowdMusicClient = new CrowdMusicClient(getApplicationContext());
-        crowdMusicClient.init();
 
         listAdapter =  new ArrayAdapter(this, R.layout.fragment_client_serverbrowser);
         setListAdapter(listAdapter);
-        //registryListener = new AllDevicesBrowser(this, listAdapter);
+
         registryListener = new CrowdDevicesBrowser(this, listAdapter);
 
         getApplicationContext().bindService(
@@ -98,30 +97,14 @@ public class ClientActivity extends ListActivity {
                 httpServiceConnection,
                 Context.BIND_AUTO_CREATE
         );
-
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                mp.release();
-            }
-        });
-        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                mp.start();
-            }
-        });
-
-        try {
-            mediaPlayer.setDataSource(getApplicationContext(), crowdMusicClient.getTrackList().get(6).getUri());
-            mediaPlayer.prepareAsync();
-        } catch (IOException e) {
-            Log.e(Utility.LOG_TAG_MEDIA, e.getMessage());
-        }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        crowdMusicClient.init();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

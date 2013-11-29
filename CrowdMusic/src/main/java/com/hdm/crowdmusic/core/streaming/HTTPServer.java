@@ -43,7 +43,7 @@ public class HTTPServer {
     }
 
     synchronized public void startServer() {
-        Log.d(Utility.LOG_TAG_HTTP, "Starting HTTP-Server...");
+        Log.i(Utility.LOG_TAG_HTTP, "Starting HTTP-Server...");
 
         try {
             httpServerThread = new HTTPServerThread(port, inetAddress, httpParams, handlerRegistry);
@@ -55,7 +55,7 @@ public class HTTPServer {
 
     synchronized public void stopServer() {
         if(httpServerThread != null) {
-            Log.d(Utility.LOG_TAG_HTTP, "Stopping HTTP-Server...");
+            Log.i(Utility.LOG_TAG_HTTP, "Stopping HTTP-Server...");
             httpServerThread.stopServerThread();
         }
     }
@@ -70,14 +70,14 @@ public class HTTPServer {
         final ServerSocket serverSocket;
 
         HTTPServerThread(int port, InetAddress ip, HttpParams params, HttpRequestHandlerRegistry handlerRegistry) throws IOException {
-            Log.d(Utility.LOG_TAG_HTTP, "Initialize HTTP-Server...");
+            Log.i(Utility.LOG_TAG_HTTP, "Initialize HTTP-Server...");
             this.params = params;
             serverSocket = new ServerSocket(port, 0, ip);
 
             if(serverSocket.isBound())
-                Log.d(Utility.LOG_TAG_HTTP, "Socket bound to port: " + serverSocket.getLocalPort() + " and InetAdress: " + serverSocket.getInetAddress());
+                Log.i(Utility.LOG_TAG_HTTP, "Socket bound to port: " + serverSocket.getLocalPort() + " and InetAdress: " + serverSocket.getInetAddress());
             else
-                Log.d(Utility.LOG_TAG_HTTP, "Socket not bound!");
+                Log.i(Utility.LOG_TAG_HTTP, "Socket not bound!");
 
             BasicHttpProcessor httpProcessor = new BasicHttpProcessor();
             httpContext = new BasicHttpContext();
@@ -90,7 +90,7 @@ public class HTTPServer {
             httpService = new HttpService(httpProcessor, new DefaultConnectionReuseStrategy(), new DefaultHttpResponseFactory());
             httpService.setParams(params);
             httpService.setHandlerResolver(handlerRegistry);
-            Log.d(Utility.LOG_TAG_HTTP, "HTTP-Server initialized.");
+            Log.i(Utility.LOG_TAG_HTTP, "HTTP-Server initialized.");
         }
 
         @Override
@@ -112,7 +112,7 @@ public class HTTPServer {
                     try {
                         connection.shutdown();
                     } catch (IOException e) {
-                        Log.d(Utility.LOG_TAG_HTTP, "Closing connection failed: " + e.getMessage());
+                        Log.e(Utility.LOG_TAG_HTTP, "Closing connection failed: " + e.getMessage());
                     }
                 }
             }
@@ -127,7 +127,7 @@ public class HTTPServer {
             try {
                 isRunning = false;
                 if (!serverSocket.isClosed()) {
-                    Log.d(Utility.LOG_TAG_HTTP, "Closing Server Socket.");
+                    Log.i(Utility.LOG_TAG_HTTP, "Closing Server Socket.");
                     serverSocket.close();
                 }
             } catch (IOException e) {

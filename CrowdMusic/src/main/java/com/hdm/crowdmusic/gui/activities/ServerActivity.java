@@ -13,9 +13,11 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,11 +28,13 @@ import android.widget.Toast;
 
 
 import com.hdm.crowdmusic.R;
+import com.hdm.crowdmusic.core.CrowdMusicClient;
 import com.hdm.crowdmusic.core.CrowdMusicServer;
 import com.hdm.crowdmusic.core.streaming.IMediaPlayerService;
 import com.hdm.crowdmusic.core.streaming.MediaPlayerService;
 import com.hdm.crowdmusic.gui.fragments.ServerAdminUsersFragment;
 import com.hdm.crowdmusic.gui.fragments.ServerPlaylistFragment;
+import com.hdm.crowdmusic.util.Utility;
 
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
@@ -45,7 +49,8 @@ public class ServerActivity extends Activity {
 
     public static int REQUESTCODE_WLAN_ACTIVATED = 1;
 
-    private CrowdMusicServer crowdMusicServer = new CrowdMusicServer();
+    private CrowdMusicServer crowdMusicServer;
+
     private AndroidUpnpService upnpService;
     private IMediaPlayerService mediaService;
 
@@ -70,11 +75,13 @@ public class ServerActivity extends Activity {
     private ServiceConnection mediaServiceConntection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.i(Utility.LOG_TAG_MEDIA, "MediaPlayerService connected.");
             mediaService = (IMediaPlayerService) service;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
+            Log.i(Utility.LOG_TAG_MEDIA, "MediaPlayerService disconnected.");
             mediaService = null;
         }
     };
@@ -82,6 +89,7 @@ public class ServerActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(layout.activity_createserver);
 
         if (savedInstanceState == null) {
@@ -89,6 +97,8 @@ public class ServerActivity extends Activity {
                     .add(id.container, new PlaceholderFragment())
                     .commit();
         }
+
+        crowdMusicServer = new CrowdMusicServer();
 
         getApplicationContext().bindService(
                 new Intent(this, AndroidUpnpServiceImpl.class),
@@ -118,6 +128,11 @@ public class ServerActivity extends Activity {
                 .setText("Users")
                 .setTabListener(new TabListener<ServerAdminUsersFragment>(
                         this, "admin", ServerAdminUsersFragment.class)));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     public void handleAPModalDialog() {
