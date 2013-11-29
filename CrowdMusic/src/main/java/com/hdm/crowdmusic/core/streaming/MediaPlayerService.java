@@ -27,6 +27,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         Log.i(Utility.LOG_TAG_MEDIA, "Init media player...");
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mediaPlayer.setOnPreparedListener(this);
         mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
         Log.i(Utility.LOG_TAG_MEDIA, "Init media player completed.");
     }
