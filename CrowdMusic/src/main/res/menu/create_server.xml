@@ -19,7 +19,7 @@
         android:showAsAction="always"/>
     <item android:id="@+id/action_show_qrcode"
         android:title="Show Network QR"
-        android:icon="@drawable/qr_code_logo"
+        android:icon="@drawable/share_wifi"
         android:showAsAction="always"/>
 
 </menu>
