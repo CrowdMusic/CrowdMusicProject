@@ -42,8 +42,7 @@ public final class AccessPoint {
     }
 
     public void enable() {
-        //createWifiAccessPoint(DEFAULT_AP_NAME_PREFIX + Build.MODEL, "");
-        enable(DEFAULT_AP_NAME_PREFIX + Build.MODEL, "testtest");
+        enable(DEFAULT_AP_NAME_PREFIX + Build.MODEL, "");
     }
 
     public void enable(String ssid, String key) {
