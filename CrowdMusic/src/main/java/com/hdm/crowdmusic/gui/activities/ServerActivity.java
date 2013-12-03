@@ -84,7 +84,8 @@ public class ServerActivity extends Activity {
         }
 
         crowdMusicServer = new CrowdMusicServer();
-        accessPoint = new AccessPoint(this);
+        accessPoint =  AccessPoint.getInstance();
+        accessPoint.init(this);
 
         getApplicationContext().bindService(
                 new Intent(this, AndroidUpnpServiceImpl.class),

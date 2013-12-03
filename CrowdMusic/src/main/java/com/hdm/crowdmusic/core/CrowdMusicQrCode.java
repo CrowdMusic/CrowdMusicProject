@@ -3,11 +3,11 @@ package com.hdm.crowdmusic.core;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
-
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.hdm.crowdmusic.core.network.AccessPoint;
 
 public class CrowdMusicQrCode {
 
@@ -17,19 +17,22 @@ public class CrowdMusicQrCode {
     public static Bitmap getNetworkQr() {
         QRCodeWriter writer = new QRCodeWriter();
         try {
-            BitMatrix matrix = writer.encode(
-                    "foobar bar baz foo bar baz", BarcodeFormat.QR_CODE, 400, 400
+
+            BitMatrix matrix = writer.encode(AccessPoint.getInstance().getConfigJSON().toString(), BarcodeFormat.QR_CODE, 400, 400
             );
             return toBitmap(matrix);
 
         } catch (WriterException e) {
             e.printStackTrace();
             return null;
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return null;
         }
 
     }
 
-    private static Bitmap toBitmap(BitMatrix matrix) {
+    public static Bitmap toBitmap(BitMatrix matrix) {
         int height = matrix.getHeight();
         int width = matrix.getWidth();
         Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);

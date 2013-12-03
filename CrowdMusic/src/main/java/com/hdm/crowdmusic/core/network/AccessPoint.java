@@ -22,6 +22,45 @@ public final class AccessPoint {
     public static final String JSON_KEY_SSID = "ssid";
     public static final String JSON_KEY_KEY = "key";
 
+    private static AccessPoint instance;
+    private boolean initialized = false;
+
+    public static AccessPoint getInstance() {
+        if (instance == null) {
+            instance = new AccessPoint();
+        }
+        return instance;
+    }
+
+    public void init(Activity activity) {
+        if (initialized) {
+            return;
+        }
+        activity = activity;
+        wifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
+        connManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        initialized = true;
+    }
+
+    private AccessPoint() {
+
+    }
+
+
+    // Test purposes
+    public static JSONObject defaultJsonObject;
+    static {
+        defaultJsonObject = new JSONObject();
+        try {
+            defaultJsonObject.put(JSON_KEY_KEY, "testtest");
+            defaultJsonObject.put(JSON_KEY_SSID, "test");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     private WifiManager wifiManager;
     private ConnectivityManager connManager;
     private NetworkInfo mWifi;
@@ -31,7 +70,7 @@ public final class AccessPoint {
     private String key = "";
     private String ssid = "";
 
-    public AccessPoint(Activity activity) {
+    private AccessPoint(Activity activity) {
         activity = activity;
         wifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
         connManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -40,6 +79,12 @@ public final class AccessPoint {
 
     public void enable() {
         enable(DEFAULT_AP_NAME_PREFIX + Build.MODEL, "");
+
+        //try {
+        //    enable((String) defaultJsonObject.get(JSON_KEY_SSID), (String) defaultJsonObject.get(JSON_KEY_SSID));
+        //} catch (JSONException e) {
+        //    e.printStackTrace();
+        //}
     }
 
     public void enable(String ssid, String key) {
@@ -80,6 +125,9 @@ public final class AccessPoint {
     public JSONObject getConfigJSON() {
         JSONObject object = new JSONObject();
 
+        // debug purposes
+        // object = defaultJsonObject;
+
         if (enabled) {
             try {
                 object.put(JSON_KEY_SSID, ssid);
@@ -106,7 +154,7 @@ public final class AccessPoint {
                 WifiConfiguration netConfig = new WifiConfiguration();
                 netConfig.SSID = "\"" + ssid + "\"";
                 if (key != "") {
-                    netConfig.preSharedKey = key;
+                    netConfig.preSharedKey = "\"" + key+ "\"";
                     netConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
                     netConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
                     netConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
