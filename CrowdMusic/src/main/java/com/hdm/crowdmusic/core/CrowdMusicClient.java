@@ -27,8 +27,6 @@ public class CrowdMusicClient {
     }
 
     public void init() {
-        Uri exMedia = MediaStore.Audio.Media.getContentUri("external");
-
         final WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         InetAddress ip = Utility.getWifiInetAddress(wifiManager);
 
@@ -58,7 +56,6 @@ public class CrowdMusicClient {
             int id;
             String title;
             String artist;
-            Uri audioUri;
 
             int idIndex = exCursor.getColumnIndex(MediaStore.Audio.Media._ID);
             int titleIndex = exCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
@@ -69,10 +66,10 @@ public class CrowdMusicClient {
                 title = exCursor.getString(titleIndex);
                 artist = exCursor.getString(artistIndex);
 
-                audioUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
+                //ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
 
-                trackList.add(new CrowdMusicTrack(id, audioUri, ip, artist, title));
-                Log.d(Utility.LOG_TAG_MEDIA, title + ", " + artist + "| URI: " + audioUri + " | IP: " + ip);
+                trackList.add(new CrowdMusicTrack(id, ip, artist, title));
+                Log.d(Utility.LOG_TAG_MEDIA, id + ", " + title + ", " + artist);
             } while (exCursor.moveToNext());
 
             exCursor.close();

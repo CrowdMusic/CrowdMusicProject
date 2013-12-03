@@ -35,32 +35,10 @@ import java.io.IOException;
 
 public class ClientActivity extends ListActivity {
 
-    private AndroidUpnpService upnpService;
     private IHttpServerService httpService;
     private RegistryListener registryListener;
     private CrowdMusicClient crowdMusicClient;
     ArrayAdapter listAdapter;
-
-    private ServiceConnection upnpServiceConntection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-
-            upnpService = (AndroidUpnpService) service;
-
-            // Refresh the list with all known devices
-            ((AllDevicesBrowser) registryListener).refresh(upnpService);
-
-            // Getting ready for future device advertisements
-            upnpService.getRegistry().addListener(registryListener);
-
-            // Search asynchronously for all devices
-            upnpService.getControlPoint().search();
-        }
-
-        public void onServiceDisconnected(ComponentName className) {
-            upnpService = null;
-        }
-    };
 
     private ServiceConnection httpServiceConnection = new ServiceConnection() {
         @Override
@@ -84,14 +62,17 @@ public class ClientActivity extends ListActivity {
 
         registryListener = new CrowdDevicesBrowser(this, listAdapter);
 
-        getApplicationContext().bindService(
-                new Intent(this, AndroidUpnpServiceImpl.class),
-                upnpServiceConntection,
-                Context.BIND_AUTO_CREATE
-        );
+
+        Intent lastIntent = getIntent();
+        String ip = lastIntent.getStringExtra("ip");
+        int port = 8080;
+
+        Intent httpIntent = new Intent(this, HTTPServerService.class);
+        httpIntent.putExtra("ip", ip);
+        httpIntent.putExtra("port", port);
 
         getApplicationContext().bindService(
-                new Intent(this, HTTPServerService.class),
+                httpIntent,
                 httpServiceConnection,
                 Context.BIND_AUTO_CREATE
         );

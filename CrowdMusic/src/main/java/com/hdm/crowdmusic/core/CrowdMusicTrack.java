@@ -8,7 +8,6 @@ import java.net.InetAddress;
 public class CrowdMusicTrack {
 
     private int id;
-    private Uri uri;
     private InetAddress inetAddress;
 
     private String artist;
@@ -16,19 +15,14 @@ public class CrowdMusicTrack {
     private long duration;
     private Bitmap cover;
 
-    public CrowdMusicTrack(int id, Uri uri, InetAddress inetAddress, String artist, String trackName) {
+    public CrowdMusicTrack(int id, InetAddress inetAddress, String artist, String trackName) {
         this.id = id;
-        this.uri = uri;
         this.inetAddress = inetAddress;
         this.artist = artist;
         this.trackName = trackName;
     }
 
     public int getId() { return id; }
-
-    public Uri getUri() {
-        return uri;
-    }
 
     public InetAddress getInetAddress() { return inetAddress; }
 

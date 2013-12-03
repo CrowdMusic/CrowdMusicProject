@@ -3,6 +3,7 @@ package com.hdm.crowdmusic.gui.activities;
 import android.app.*;
 import android.content.*;
 import android.graphics.Bitmap;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -21,6 +22,8 @@ import com.hdm.crowdmusic.util.Utility;
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.registry.RegistrationException;
+
+import java.net.InetAddress;
 
 import static com.hdm.crowdmusic.R.id;
 import static com.hdm.crowdmusic.R.layout;
@@ -83,7 +86,10 @@ public class ServerActivity extends Activity {
                     .commit();
         }
 
-        crowdMusicServer = new CrowdMusicServer();
+        final WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        InetAddress ip = Utility.getWifiInetAddress(wifiManager);
+
+        crowdMusicServer = new CrowdMusicServer(ip.getHostAddress());
         accessPoint = new AccessPoint(getApplicationContext());
 
         getApplicationContext().bindService(

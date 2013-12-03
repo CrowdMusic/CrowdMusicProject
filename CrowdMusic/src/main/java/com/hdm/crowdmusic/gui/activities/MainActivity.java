@@ -41,6 +41,8 @@ public class MainActivity extends ListActivity {
     private RegistryListener registryListener;
     ArrayAdapter listAdapter;
 
+    CrowdMusicClient crowdMusicClient;
+
     private ServiceConnection upnpServiceConntection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -68,7 +70,7 @@ public class MainActivity extends ListActivity {
 
         listAdapter =  new ArrayAdapter(this, R.layout.fragment_client_serverbrowser);
         setListAdapter(listAdapter);
-        //registryListener = new AllDevicesBrowser(this, listAdapter);
+
         registryListener = new CrowdDevicesBrowser(this, listAdapter);
 
         getApplicationContext().bindService(
@@ -92,7 +94,12 @@ public class MainActivity extends ListActivity {
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
+        DeviceDisplay selectedDeviceDisplay = (DeviceDisplay) listAdapter.getItem(position);
+        final String deviceDetails = selectedDeviceDisplay.getDevice().getDetails().getModelDetails().getModelNumber();
 
+        Intent clientIntent = new Intent(this, ClientActivity.class);
+        clientIntent.putExtra("ip", deviceDetails);
+        startActivity(clientIntent);
     }
 
     @Override
