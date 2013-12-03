@@ -15,9 +15,6 @@ import org.json.JSONObject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-/**
- * Created by Hanno on 02.12.13.
- */
 public final class AccessPoint {
 
     public static final String DEFAULT_AP_NAME_PREFIX = "CrowdMusicAccessPoint@";
