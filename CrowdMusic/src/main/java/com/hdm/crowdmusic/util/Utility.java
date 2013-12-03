@@ -11,6 +11,7 @@ public class Utility {
     public static final String LOG_TAG = "CM";
     public static final String LOG_TAG_HTTP = "CM HTTP";
     public static final String LOG_TAG_MEDIA = "CM MEDIA";
+    public static final String LOG_TAG_AP = "CM AP";
 
     public static InetAddress getWifiInetAddress(WifiManager manager) {
 
