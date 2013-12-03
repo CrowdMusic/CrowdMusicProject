@@ -6,12 +6,14 @@ import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.provider.MediaStore;
 import android.util.Log;
 
 import com.hdm.crowdmusic.util.Utility;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.ArrayList;
 
 public class CrowdMusicClient {
@@ -26,6 +28,9 @@ public class CrowdMusicClient {
 
     public void init() {
         Uri exMedia = MediaStore.Audio.Media.getContentUri("external");
+
+        final WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        InetAddress ip = Utility.getWifiInetAddress(wifiManager);
 
         Log.i(Utility.LOG_TAG_MEDIA, "Init audio search...");
 
@@ -66,8 +71,8 @@ public class CrowdMusicClient {
 
                 audioUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
 
-                trackList.add(new CrowdMusicTrack(id, audioUri, artist, title));
-                Log.d(Utility.LOG_TAG_MEDIA, title + ", " + artist + "| URI: " + audioUri);
+                trackList.add(new CrowdMusicTrack(id, audioUri, ip, artist, title));
+                Log.d(Utility.LOG_TAG_MEDIA, title + ", " + artist + "| URI: " + audioUri + " | IP: " + ip);
             } while (exCursor.moveToNext());
 
             exCursor.close();

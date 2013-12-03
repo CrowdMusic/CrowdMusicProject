@@ -1,6 +1,5 @@
 package com.hdm.crowdmusic.core.network;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -25,16 +24,16 @@ public final class AccessPoint {
     private WifiManager wifiManager;
     private ConnectivityManager connManager;
     private NetworkInfo mWifi;
-    private Activity activity;
+    private Context context;
 
     private boolean enabled = false;
     private String key = "";
     private String ssid = "";
 
-    public AccessPoint(Activity activity) {
-        activity = activity;
-        wifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
-        connManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+    public AccessPoint(Context context) {
+        this.context = context;
+        wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
     }
 
