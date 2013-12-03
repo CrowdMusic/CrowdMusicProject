@@ -13,5 +13,10 @@
     <string name="dialog_create_wlan_ap_created">Access Point was created.</string>
     <string name="dialog_create_wlan_no_wifi_enabled_or_active">Your WIFI is currently disabled or no WIFI connection is active. Do you want to enable it and/or connect to an existing Access Point?</string>
     <string name="dialog_title_create_wlan">Configure Access Point</string>
+    <string name="title_activity_make_photo">Take photo for auto config</string>
+    <string name="toast_no_qr_found">No QR code detected</string>
+    <string name="toast_configuring_with_qr">Configuring with detected QR code</string>
+    <string name="toast_please_enable_wlan">Wifi disabled - Please enable first!</string>
+    <string name="toast_trying_to_connect_wlan">Trying to connect to Wifi...</string>
 
 </resources>

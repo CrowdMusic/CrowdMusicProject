@@ -26,7 +26,7 @@
 
 
     <activity
-            android:name=".gui.activities.MakePhotoActivity"
+            android:name=".gui.activities.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,8 +39,13 @@
             android:label="@string/title_activity_server"/>
 
         <activity
-            android:name=".gui.activities.ClientActivity"
-            android:label="@string/title_activity_client" >
+                android:name=".gui.activities.ClientActivity"
+                android:label="@string/title_activity_client" >
+        </activity>
+
+        <activity
+                android:name=".gui.activities.MakePhotoActivity"
+                android:label="@string/title_activity_make_photo" >
         </activity>
 
         <service android:name="org.teleal.cling.android.AndroidUpnpServiceImpl" />

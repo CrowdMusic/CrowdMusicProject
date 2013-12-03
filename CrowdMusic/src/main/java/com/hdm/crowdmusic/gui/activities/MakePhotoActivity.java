@@ -2,7 +2,6 @@ package com.hdm.crowdmusic.gui.activities;
 
 import android.app.Activity;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.os.Bundle;
@@ -53,7 +52,7 @@ public class MakePhotoActivity extends Activity {
 
         LinearLayout preview = (LinearLayout) findViewById(R.id.activity_make_photo);
         preview.addView(fragment.getPreview().getSurfaceView());
-        camera.startPreview();
+        //camera.startPreview();
 
     }
 
@@ -62,21 +61,11 @@ public class MakePhotoActivity extends Activity {
     }
 
     public void onClick(View view) {
-        PhotoHandler photoHandler = new PhotoHandler(getApplicationContext());
+        PhotoHandler photoHandler = new PhotoHandler(getApplicationContext(), this);
+        QRCodeHolder.getInstance().busy = true;
         camera.takePicture(null, null, photoHandler);
-        // TODO: Do whatever you want with the saved QRCode
 
 
-        if (QRCodeHolder.getInstance().getQrCode() != null) {
-            Toast toast = Toast.makeText(this, "success with " + QRCodeHolder.getInstance().getQrCode().toString(), 4 );
-            toast.show();
-            // TODO: CONNECT WLAN
-            Intent intent = new Intent(this, ClientActivity.class);
-        } else {
-            Toast toast = Toast.makeText(this, "fail", 4);
-            toast.show();
-            Intent intent = new Intent(this, MainActivity.class);
-        }
 
     }
 

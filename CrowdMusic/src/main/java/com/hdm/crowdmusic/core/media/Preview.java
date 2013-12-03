@@ -31,7 +31,7 @@ public class Preview extends ViewGroup implements SurfaceHolder.Callback {
 
     public void setPreviewDisplay() {
         try {
-            camera.open();
+            //camera.open();
             camera.setPreviewDisplay(holder);
             camera.startPreview();
         } catch (Exception e) {

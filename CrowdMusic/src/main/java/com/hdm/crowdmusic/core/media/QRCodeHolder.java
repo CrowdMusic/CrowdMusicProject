@@ -9,6 +9,8 @@ public class QRCodeHolder {
 
     private static QRCodeHolder instance;
 
+    public volatile boolean busy = false;
+
     private JSONObject qrCode;
 
     public static QRCodeHolder getInstance() {

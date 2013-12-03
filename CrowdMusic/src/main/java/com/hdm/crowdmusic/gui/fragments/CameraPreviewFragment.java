@@ -22,7 +22,7 @@ public class CameraPreviewFragment extends Fragment {
         preview = new Preview(activity.getApplicationContext(), camera, activity);
     }
 
-    public CameraPreviewFragment() {}
+    //public CameraPreviewFragment() {}
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
