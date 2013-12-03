@@ -34,7 +34,7 @@ public class HTTPServerService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.i(Utility.LOG_TAG_HTTP, "onStartCommand received");
+        Log.i(Utility.LOG_TAG_HTTP, "onBind received");
         this.ip = intent.getStringExtra("ip");
         this.port = intent.getIntExtra("port", 8080);
         Log.i(Utility.LOG_TAG_HTTP, "Following parameters were transfered: " + ip + ":" + port);

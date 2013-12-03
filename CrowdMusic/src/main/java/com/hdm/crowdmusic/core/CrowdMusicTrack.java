@@ -1,30 +1,27 @@
 package com.hdm.crowdmusic.core;
 
 import android.graphics.Bitmap;
-import android.net.Uri;
-
-import java.net.InetAddress;
 
 public class CrowdMusicTrack {
 
     private int id;
-    private InetAddress inetAddress;
+    private String ip;
 
     private String artist;
     private String trackName;
     private long duration;
     private Bitmap cover;
 
-    public CrowdMusicTrack(int id, InetAddress inetAddress, String artist, String trackName) {
+    public CrowdMusicTrack(int id, String ip, String artist, String trackName) {
         this.id = id;
-        this.inetAddress = inetAddress;
+        this.ip = ip;
         this.artist = artist;
         this.trackName = trackName;
     }
 
     public int getId() { return id; }
 
-    public InetAddress getInetAddress() { return inetAddress; }
+    public String getIp() { return ip; }
 
     public String getArtist(){
 

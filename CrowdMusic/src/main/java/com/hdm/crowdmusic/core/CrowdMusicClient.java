@@ -21,15 +21,15 @@ public class CrowdMusicClient {
     private Context context;
     private ArrayList<CrowdMusicTrack> trackList;
 
-    public CrowdMusicClient(Context context) {
+    private String ip;
+
+    public CrowdMusicClient(Context context, String ip) {
         this.context = context;
+        this.ip = ip;
         trackList = new ArrayList<CrowdMusicTrack>();
     }
 
     public void init() {
-        final WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        InetAddress ip = Utility.getWifiInetAddress(wifiManager);
-
         Log.i(Utility.LOG_TAG_MEDIA, "Init audio search...");
 
         String[] projection = new String[] {

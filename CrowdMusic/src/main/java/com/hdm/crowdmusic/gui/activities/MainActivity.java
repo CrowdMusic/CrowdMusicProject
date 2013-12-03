@@ -41,8 +41,6 @@ public class MainActivity extends ListActivity {
     private RegistryListener registryListener;
     ArrayAdapter listAdapter;
 
-    CrowdMusicClient crowdMusicClient;
-
     private ServiceConnection upnpServiceConntection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {

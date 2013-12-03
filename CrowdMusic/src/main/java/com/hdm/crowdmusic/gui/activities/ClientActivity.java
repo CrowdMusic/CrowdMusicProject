@@ -55,8 +55,6 @@ public class ClientActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        crowdMusicClient = new CrowdMusicClient(getApplicationContext());
-
         listAdapter =  new ArrayAdapter(this, R.layout.fragment_client_serverbrowser);
         setListAdapter(listAdapter);
 
@@ -66,6 +64,8 @@ public class ClientActivity extends ListActivity {
         Intent lastIntent = getIntent();
         String ip = lastIntent.getStringExtra("ip");
         int port = 8080;
+
+        crowdMusicClient = new CrowdMusicClient(getApplicationContext(), ip);
 
         Intent httpIntent = new Intent(this, HTTPServerService.class);
         httpIntent.putExtra("ip", ip);
