@@ -7,6 +7,7 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.hdm.crowdmusic.core.network.AccessPoint;
 
 public class CrowdMusicQrCode {
 
@@ -17,12 +18,14 @@ public class CrowdMusicQrCode {
         QRCodeWriter writer = new QRCodeWriter();
         try {
 
-            BitMatrix matrix = writer.encode(
-                    "test", BarcodeFormat.QR_CODE, 400, 400
+            BitMatrix matrix = writer.encode(AccessPoint.getInstance().getConfigJSON().toString(), BarcodeFormat.QR_CODE, 400, 400
             );
             return toBitmap(matrix);
 
         } catch (WriterException e) {
+            e.printStackTrace();
+            return null;
+        } catch (NullPointerException e) {
             e.printStackTrace();
             return null;
         }

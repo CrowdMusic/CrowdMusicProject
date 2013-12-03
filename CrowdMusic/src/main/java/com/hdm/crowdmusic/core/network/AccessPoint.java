@@ -25,6 +25,32 @@ public final class AccessPoint {
     public static final String JSON_KEY_SSID = "ssid";
     public static final String JSON_KEY_KEY = "key";
 
+    private static AccessPoint instance;
+    private boolean initialized = false;
+
+    public static AccessPoint getInstance() {
+        if (instance == null) {
+            instance = new AccessPoint();
+        }
+        return instance;
+    }
+
+    public void init(Activity activity) {
+        if (initialized) {
+            return;
+        }
+        activity = activity;
+        wifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
+        connManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        initialized = true;
+    }
+
+    private AccessPoint() {
+
+    }
+
+
     // Test purposes
     public static JSONObject defaultJsonObject;
     static {
@@ -47,7 +73,7 @@ public final class AccessPoint {
     private String key = "";
     private String ssid = "";
 
-    public AccessPoint(Activity activity) {
+    private AccessPoint(Activity activity) {
         activity = activity;
         wifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
         connManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
