@@ -1,0 +1,14 @@
+<RelativeLayout
+    android:id="@+id/fragment_camera_preview"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <FrameLayout
+            android:id="@+id/camera_preview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" >
+
+    </FrameLayout>
+
+</RelativeLayout>

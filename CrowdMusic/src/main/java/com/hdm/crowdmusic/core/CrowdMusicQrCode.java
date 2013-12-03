@@ -29,7 +29,7 @@ public class CrowdMusicQrCode {
 
     }
 
-    private static Bitmap toBitmap(BitMatrix matrix) {
+    public static Bitmap toBitmap(BitMatrix matrix) {
         int height = matrix.getHeight();
         int width = matrix.getWidth();
         Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
