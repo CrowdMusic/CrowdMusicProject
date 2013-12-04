@@ -1,7 +1,5 @@
 package com.hdm.crowdmusic.core;
 
-import java.io.Serializable;
-
 public class CrowdMusicTrack {
 
     private int id;

@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.*;
 import android.widget.ImageView;
 import android.widget.Toast;
+
 import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.CrowdMusicQrCode;
 import com.hdm.crowdmusic.core.CrowdMusicServer;
@@ -20,10 +21,6 @@ import com.hdm.crowdmusic.gui.fragments.ServerAdminUsersFragment;
 import com.hdm.crowdmusic.gui.fragments.ServerPlaylistFragment;
 import com.hdm.crowdmusic.util.Utility;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.registry.RegistrationException;
