@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
@@ -22,7 +23,11 @@ import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
 import com.hdm.crowdmusic.core.streaming.AudioRequestHandler;
 import com.hdm.crowdmusic.core.streaming.HTTPServerService;
 import com.hdm.crowdmusic.core.streaming.IHttpServerService;
+import com.hdm.crowdmusic.util.Utility;
+
 import org.teleal.cling.registry.RegistryListener;
+
+import java.net.InetAddress;
 
 public class ClientActivity extends ListActivity {
 
@@ -30,6 +35,8 @@ public class ClientActivity extends ListActivity {
     private RegistryListener registryListener;
     private CrowdMusicClient crowdMusicClient;
     ArrayAdapter listAdapter;
+
+    String serverIP;
 
     private ServiceConnection httpServiceConnection = new ServiceConnection() {
         @Override
@@ -55,7 +62,10 @@ public class ClientActivity extends ListActivity {
 
 
         Intent lastIntent = getIntent();
-        String ip = lastIntent.getStringExtra("ip");
+        serverIP = lastIntent.getStringExtra("ip");
+
+        final WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        String ip = Utility.getWifiInetAddress(wifiManager).getHostAddress();
         int port = 8080;
 
         crowdMusicClient = new CrowdMusicClient(getApplicationContext(), ip);
