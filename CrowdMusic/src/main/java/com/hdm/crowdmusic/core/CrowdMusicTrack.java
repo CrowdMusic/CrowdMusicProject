@@ -1,10 +1,8 @@
 package com.hdm.crowdmusic.core;
 
-import android.graphics.Bitmap;
-
 import java.io.Serializable;
 
-public class CrowdMusicTrack implements Serializable {
+public class CrowdMusicTrack {
 
     private int id;
     private String ip;

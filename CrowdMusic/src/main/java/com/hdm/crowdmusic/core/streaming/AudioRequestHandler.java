@@ -12,10 +12,13 @@ import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
+import org.teleal.common.util.MimeType;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
@@ -52,6 +55,26 @@ public class AudioRequestHandler implements HttpRequestHandler {
         Uri audioUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
         Log.i(Utility.LOG_TAG_HTTP, "URI: " + audioUri);
 
+        InputStream in = openInputStrem(audioUri);
+        if (in == null) {
+            httpResponse.setStatusCode(HttpStatus.SC_NOT_FOUND);
+            return;
+        }
+
+        long sizeInBytes = in.available();
+        InputStreamEntity entity = new InputStreamEntity(in, sizeInBytes);
+        httpResponse.setEntity(entity);
         httpResponse.setStatusCode(HttpStatus.SC_OK);
+        Log.i(Utility.LOG_TAG_HTTP, "Streaming bytes: " + sizeInBytes);
+    }
+
+    private InputStream openInputStrem(Uri uri) {
+        try {
+            return context.getContentResolver().openInputStream(uri);
+        } catch (FileNotFoundException e) {
+            Log.e(Utility.LOG_TAG_HTTP, "Requested file was not found!");
+        }
+
+        return null;
     }
 }

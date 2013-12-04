@@ -19,6 +19,11 @@ import com.hdm.crowdmusic.core.streaming.MediaPlayerService;
 import com.hdm.crowdmusic.gui.fragments.ServerAdminUsersFragment;
 import com.hdm.crowdmusic.gui.fragments.ServerPlaylistFragment;
 import com.hdm.crowdmusic.util.Utility;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.registry.RegistrationException;
@@ -201,6 +206,12 @@ public class ServerActivity extends Activity {
         switch (item.getItemId()) {
             case id.action_settings:
                 return true;
+
+//            Streaming Test, throw in your own data to test!
+//            case id.action_play_pause:
+//                Log.i(Utility.LOG_TAG_HTTP, "Trying to stream audio...");
+//                mediaService.play("http://192.168.178.35:8080/audio/407");
+//                return true;
 
             case id.action_show_qrcode:
                 createQRCodeView();

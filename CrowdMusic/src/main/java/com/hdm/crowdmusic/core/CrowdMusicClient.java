@@ -1,19 +1,10 @@
 package com.hdm.crowdmusic.core;
 
-import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.net.wifi.WifiManager;
 import android.provider.MediaStore;
 import android.util.Log;
-
 import com.hdm.crowdmusic.util.Utility;
-
-import java.io.IOException;
-import java.net.InetAddress;
 import java.util.ArrayList;
 
 public class CrowdMusicClient {
@@ -65,8 +56,6 @@ public class CrowdMusicClient {
                 id = exCursor.getInt(idIndex);
                 title = exCursor.getString(titleIndex);
                 artist = exCursor.getString(artistIndex);
-
-                //ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
 
                 trackList.add(new CrowdMusicTrack(id, ip, artist, title));
                 Log.d(Utility.LOG_TAG_MEDIA, id + ", " + title + ", " + artist);

@@ -5,12 +5,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -20,19 +17,12 @@ import android.widget.ListView;
 import android.widget.Toast;
 import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.CrowdMusicClient;
-import com.hdm.crowdmusic.core.devicelistener.AllDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
 import com.hdm.crowdmusic.core.streaming.AudioRequestHandler;
 import com.hdm.crowdmusic.core.streaming.HTTPServerService;
 import com.hdm.crowdmusic.core.streaming.IHttpServerService;
-import com.hdm.crowdmusic.util.Utility;
-
-import org.teleal.cling.android.AndroidUpnpService;
-import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.registry.RegistryListener;
-
-import java.io.IOException;
 
 public class ClientActivity extends ListActivity {
 
