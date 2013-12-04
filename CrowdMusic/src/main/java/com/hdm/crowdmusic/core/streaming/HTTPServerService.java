@@ -8,6 +8,8 @@ import android.util.Log;
 
 import com.hdm.crowdmusic.util.Utility;
 
+import org.apache.http.protocol.HttpRequestHandler;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -21,8 +23,6 @@ public class HTTPServerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
-
     }
 
     @Override
@@ -37,7 +37,7 @@ public class HTTPServerService extends Service {
         Log.i(Utility.LOG_TAG_HTTP, "onBind received");
         this.ip = intent.getStringExtra("ip");
         this.port = intent.getIntExtra("port", 8080);
-        Log.i(Utility.LOG_TAG_HTTP, "Following parameters were transfered: " + ip + ":" + port);
+        Log.i(Utility.LOG_TAG_HTTP, "Following parameters were transferred: " + ip + ":" + port);
 
         if (server == null) {
             try {
@@ -51,5 +51,15 @@ public class HTTPServerService extends Service {
         return binder;
     }
 
-    private class HTTPBinder extends Binder implements IHttpServerService {}
+    private class HTTPBinder extends Binder implements IHttpServerService {
+        @Override
+        public void registerHandler(String pattern, HttpRequestHandler handler) {
+            server.getHandlerRegistry().register(pattern, handler);
+        }
+
+        @Override
+        public void unregisterHandler(String pattern) {
+            server.getHandlerRegistry().unregister(pattern);
+        }
+    }
 }

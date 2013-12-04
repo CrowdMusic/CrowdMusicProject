@@ -23,6 +23,7 @@ import com.hdm.crowdmusic.core.CrowdMusicClient;
 import com.hdm.crowdmusic.core.devicelistener.AllDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
+import com.hdm.crowdmusic.core.streaming.AudioRequestHandler;
 import com.hdm.crowdmusic.core.streaming.HTTPServerService;
 import com.hdm.crowdmusic.core.streaming.IHttpServerService;
 import com.hdm.crowdmusic.util.Utility;
@@ -44,6 +45,8 @@ public class ClientActivity extends ListActivity {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             httpService = (IHttpServerService) service;
+
+            httpService.registerHandler("/audio/*", new AudioRequestHandler(getApplicationContext()));
         }
 
         public void onServiceDisconnected(ComponentName className) {

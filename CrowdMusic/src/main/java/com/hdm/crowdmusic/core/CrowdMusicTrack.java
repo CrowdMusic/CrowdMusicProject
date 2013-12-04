@@ -2,15 +2,15 @@ package com.hdm.crowdmusic.core;
 
 import android.graphics.Bitmap;
 
-public class CrowdMusicTrack {
+import java.io.Serializable;
+
+public class CrowdMusicTrack implements Serializable {
 
     private int id;
     private String ip;
 
     private String artist;
     private String trackName;
-    private long duration;
-    private Bitmap cover;
 
     public CrowdMusicTrack(int id, String ip, String artist, String trackName) {
         this.id = id;
@@ -32,14 +32,4 @@ public class CrowdMusicTrack {
 
         return trackName;
     }
-
-    public long getDuration(){
-
-       return duration;
-   }
-
-    public Bitmap getCover(){
-
-       return cover;
-   }
 }

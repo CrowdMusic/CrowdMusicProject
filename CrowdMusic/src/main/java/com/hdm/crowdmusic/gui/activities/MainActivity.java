@@ -31,10 +31,6 @@ import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.registry.RegistryListener;
 
-
-
-
-
 public class MainActivity extends ListActivity {
 
     private AndroidUpnpService upnpService;
