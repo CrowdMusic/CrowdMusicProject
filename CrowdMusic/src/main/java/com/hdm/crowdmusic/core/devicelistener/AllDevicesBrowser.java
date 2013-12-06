@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
+
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.model.meta.Device;
 import org.teleal.cling.model.meta.LocalDevice;
@@ -42,7 +43,7 @@ public class AllDevicesBrowser extends DefaultRegistryListener {
             public void run() {
                 Toast.makeText(
                         hostActivity.getApplication(), "Discovery failed of '" + device.getDisplayString() + "': " +
-                                (ex != null ? ex.toString() : "Couldn't retrieve device/service descriptors"),
+                        (ex != null ? ex.toString() : "Couldn't retrieve device/service descriptors"),
                         Toast.LENGTH_LONG
                 ).show();
             }
@@ -74,13 +75,15 @@ public class AllDevicesBrowser extends DefaultRegistryListener {
         hostActivity.runOnUiThread(new Runnable() {
             public void run() {
                 DeviceDisplay d = new DeviceDisplay(device);
-                int position = listAdapter.getPosition(d);
-                if (position >= 0) {
-                    // Device already in the list, re-set new value at same position
-                    listAdapter.remove(d);
-                    listAdapter.insert(d, position);
-                } else {
-                    listAdapter.add(d);
+                if (d.toString().contains("CrowdMusic")) {
+                    int position = listAdapter.getPosition(d);
+                    if (position >= 0) {
+                        // Device already in the list, re-set new value at same position
+                        listAdapter.remove(d);
+                        listAdapter.insert(d, position);
+                    } else {
+                        listAdapter.add(d);
+                    }
                 }
             }
         });
