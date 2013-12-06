@@ -53,8 +53,6 @@
             android:text="New CrowdMusic Session"
             android:id="@+id/button"
             android:onClick="startServer" />
-        <Button android:layout_width="fill_parent" android:layout_height="wrap_content"
-                android:text="Configure with QR" android:id="@+id/button2" android:onClick="transitToMakePhotoActivity"/>
 
 
     </LinearLayout>
