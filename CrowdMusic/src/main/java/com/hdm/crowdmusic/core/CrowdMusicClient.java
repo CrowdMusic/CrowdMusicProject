@@ -1,17 +1,10 @@
 package com.hdm.crowdmusic.core;
 
-import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
-
 import com.hdm.crowdmusic.util.Utility;
-
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class CrowdMusicClient {
@@ -19,14 +12,15 @@ public class CrowdMusicClient {
     private Context context;
     private ArrayList<CrowdMusicTrack> trackList;
 
-    public CrowdMusicClient(Context context) {
+    private String ip;
+
+    public CrowdMusicClient(Context context, String ip) {
         this.context = context;
+        this.ip = ip;
         trackList = new ArrayList<CrowdMusicTrack>();
     }
 
     public void init() {
-        Uri exMedia = MediaStore.Audio.Media.getContentUri("external");
-
         Log.i(Utility.LOG_TAG_MEDIA, "Init audio search...");
 
         String[] projection = new String[] {
@@ -53,7 +47,6 @@ public class CrowdMusicClient {
             int id;
             String title;
             String artist;
-            Uri audioUri;
 
             int idIndex = exCursor.getColumnIndex(MediaStore.Audio.Media._ID);
             int titleIndex = exCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
@@ -64,10 +57,8 @@ public class CrowdMusicClient {
                 title = exCursor.getString(titleIndex);
                 artist = exCursor.getString(artistIndex);
 
-                audioUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
-
-                trackList.add(new CrowdMusicTrack(id, audioUri, artist, title));
-                Log.d(Utility.LOG_TAG_MEDIA, title + ", " + artist + "| URI: " + audioUri);
+                trackList.add(new CrowdMusicTrack(id, ip, artist, title));
+                Log.d(Utility.LOG_TAG_MEDIA, id + ", " + title + ", " + artist);
             } while (exCursor.moveToNext());
 
             exCursor.close();

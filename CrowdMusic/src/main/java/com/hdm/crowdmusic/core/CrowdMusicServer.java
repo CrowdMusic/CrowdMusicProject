@@ -16,11 +16,15 @@ public class CrowdMusicServer {
     public static DeviceIdentity CROWD_MUSIC_SERVER_IDENTITY = new DeviceIdentity(UDN.uniqueSystemIdentifier("CrowdMusicServer"));
     private LocalDevice localDevice;
 
+    private String ip;
+
     public LocalDevice getLocalDevice() {
         return localDevice;
     }
 
-    public CrowdMusicServer() {
+    public CrowdMusicServer(String ip) {
+        this.ip = ip;
+
         try {
             this.localDevice = createDevice();
         } catch (ValidationException e) {
@@ -43,7 +47,7 @@ public class CrowdMusicServer {
                         new ModelDetails(
                                 "CrowdMusic",
                                 "Playlist for a crowd.",
-                                "v1"
+                                ip
                         )
                 );
 

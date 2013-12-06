@@ -3,12 +3,14 @@ package com.hdm.crowdmusic.gui.activities;
 import android.app.*;
 import android.content.*;
 import android.graphics.Bitmap;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.*;
 import android.widget.ImageView;
 import android.widget.Toast;
+
 import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.CrowdMusicQrCode;
 import com.hdm.crowdmusic.core.CrowdMusicServer;
@@ -18,9 +20,12 @@ import com.hdm.crowdmusic.core.streaming.MediaPlayerService;
 import com.hdm.crowdmusic.gui.fragments.ServerAdminUsersFragment;
 import com.hdm.crowdmusic.gui.fragments.ServerPlaylistFragment;
 import com.hdm.crowdmusic.util.Utility;
+
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.registry.RegistrationException;
+
+import java.net.InetAddress;
 
 import static com.hdm.crowdmusic.R.id;
 import static com.hdm.crowdmusic.R.layout;
@@ -83,9 +88,13 @@ public class ServerActivity extends Activity {
                     .commit();
         }
 
-        crowdMusicServer = new CrowdMusicServer();
-        accessPoint =  AccessPoint.getInstance();
-        accessPoint.init(this);
+
+        final WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        InetAddress ip = Utility.getWifiInetAddress(wifiManager);
+
+        crowdMusicServer = new CrowdMusicServer(ip.getHostAddress());
+        accessPoint = new AccessPoint(getApplicationContext());
+
 
         getApplicationContext().bindService(
                 new Intent(this, AndroidUpnpServiceImpl.class),
@@ -196,6 +205,12 @@ public class ServerActivity extends Activity {
         switch (item.getItemId()) {
             case id.action_settings:
                 return true;
+
+//            Streaming Test, throw in your own data to test!
+//            case id.action_play_pause:
+//                Log.i(Utility.LOG_TAG_HTTP, "Trying to stream audio...");
+//                mediaService.play("http://192.168.178.35:8080/audio/407");
+//                return true;
 
             case id.action_show_qrcode:
                 createQRCodeView();

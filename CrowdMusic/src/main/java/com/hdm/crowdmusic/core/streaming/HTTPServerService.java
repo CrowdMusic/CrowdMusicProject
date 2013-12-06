@@ -1,29 +1,28 @@
 package com.hdm.crowdmusic.core.streaming;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.hdm.crowdmusic.util.Utility;
 
+import org.apache.http.protocol.HttpRequestHandler;
+
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class HTTPServerService extends Service {
     private HTTPServer server;
     private HTTPBinder binder = new HTTPBinder();
 
+    private String ip;
+    private int port;
+
     @Override
     public void onCreate() {
         super.onCreate();
-
-        final WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        InetAddress ip = Utility.getWifiInetAddress(wifiManager);
-
-        server = new HTTPServer(8080, ip);
-        server.startServer();
     }
 
     @Override
@@ -34,9 +33,33 @@ public class HTTPServerService extends Service {
     }
 
     @Override
-    public IBinder onBind(Intent intent) { //TODO: Return binder to control http server configuration
+    public IBinder onBind(Intent intent) {
+        Log.i(Utility.LOG_TAG_HTTP, "onBind received");
+        this.ip = intent.getStringExtra("ip");
+        this.port = intent.getIntExtra("port", 8080);
+        Log.i(Utility.LOG_TAG_HTTP, "Following parameters were transferred: " + ip + ":" + port);
+
+        if (server == null) {
+            try {
+                server = new HTTPServer(port, InetAddress.getByName(ip));
+                server.startServer();
+            } catch (UnknownHostException e) {
+                Log.e(Utility.LOG_TAG_HTTP, e.getMessage());
+            }
+        }
+
         return binder;
     }
 
-    private class HTTPBinder extends Binder implements IHttpServerService {}
+    private class HTTPBinder extends Binder implements IHttpServerService {
+        @Override
+        public void registerHandler(String pattern, HttpRequestHandler handler) {
+            server.getHandlerRegistry().register(pattern, handler);
+        }
+
+        @Override
+        public void unregisterHandler(String pattern) {
+            server.getHandlerRegistry().unregister(pattern);
+        }
+    }
 }

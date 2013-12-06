@@ -7,31 +7,29 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+
 import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+
+import android.widget.ListView;
+
+
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.core.CrowdMusicClient;
 import com.hdm.crowdmusic.core.devicelistener.AllDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
-import com.hdm.crowdmusic.core.streaming.HTTPServerService;
-import com.hdm.crowdmusic.core.streaming.IHttpServerService;
+import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
+
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.registry.RegistryListener;
 
-
-
-
-
 public class MainActivity extends ListActivity {
 
     private AndroidUpnpService upnpService;
-    private IHttpServerService httpService;
     private RegistryListener registryListener;
-    private CrowdMusicClient crowdMusicClient;
     ArrayAdapter listAdapter;
 
     private ServiceConnection upnpServiceConntection = new ServiceConnection() {
@@ -55,26 +53,13 @@ public class MainActivity extends ListActivity {
         }
     };
 
-    private ServiceConnection httpServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            httpService = (IHttpServerService) service;
-        }
-
-        public void onServiceDisconnected(ComponentName className) {
-            httpService = null;
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //crowdMusicClient = new CrowdMusicClient();
-
         listAdapter =  new ArrayAdapter(this, R.layout.fragment_client_serverbrowser);
         setListAdapter(listAdapter);
-        //registryListener = new AllDevicesBrowser(this, listAdapter);
+
         registryListener = new CrowdDevicesBrowser(this, listAdapter);
 
         getApplicationContext().bindService(
@@ -83,20 +68,14 @@ public class MainActivity extends ListActivity {
                 Context.BIND_AUTO_CREATE
         );
 
-        getApplicationContext().bindService(
-                new Intent(this, HTTPServerService.class),
-                httpServiceConnection,
-                Context.BIND_AUTO_CREATE
-        );
-
         setContentView(R.layout.activity_main);
-
     }
 
     public void startServer(View view) {
         Intent intent = new Intent(this, ServerActivity.class);
         startActivity(intent);
     }
+
     public void startClient(View view) {
         Intent intent = new Intent(this, ClientActivity.class);
         startActivity(intent);
@@ -106,6 +85,16 @@ public class MainActivity extends ListActivity {
         Intent intent = new Intent(this, MakePhotoActivity.class);
         startActivity(intent);
     }
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        DeviceDisplay selectedDeviceDisplay = (DeviceDisplay) listAdapter.getItem(position);
+        final String deviceDetails = selectedDeviceDisplay.getDevice().getDetails().getModelDetails().getModelNumber();
+
+        Intent clientIntent = new Intent(this, ClientActivity.class);
+        clientIntent.putExtra("ip", deviceDetails);
+        startActivity(clientIntent);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         
@@ -124,8 +113,5 @@ public class MainActivity extends ListActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-
-
     }
-
 }

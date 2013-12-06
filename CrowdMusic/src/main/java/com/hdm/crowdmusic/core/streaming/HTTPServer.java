@@ -42,6 +42,10 @@ public class HTTPServer {
         handlerRegistry = new HttpRequestHandlerRegistry();
     }
 
+    public HttpRequestHandlerRegistry getHandlerRegistry() {
+        return handlerRegistry;
+    }
+
     synchronized public void startServer() {
         Log.i(Utility.LOG_TAG_HTTP, "Starting HTTP-Server...");
 

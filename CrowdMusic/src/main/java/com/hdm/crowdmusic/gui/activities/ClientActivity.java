@@ -5,12 +5,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -20,52 +18,32 @@ import android.widget.ListView;
 import android.widget.Toast;
 import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.CrowdMusicClient;
-import com.hdm.crowdmusic.core.devicelistener.AllDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
+import com.hdm.crowdmusic.core.streaming.AudioRequestHandler;
 import com.hdm.crowdmusic.core.streaming.HTTPServerService;
 import com.hdm.crowdmusic.core.streaming.IHttpServerService;
 import com.hdm.crowdmusic.util.Utility;
 
-import org.teleal.cling.android.AndroidUpnpService;
-import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.registry.RegistryListener;
 
-import java.io.IOException;
+import java.net.InetAddress;
 
 public class ClientActivity extends ListActivity {
 
-    private AndroidUpnpService upnpService;
     private IHttpServerService httpService;
     private RegistryListener registryListener;
     private CrowdMusicClient crowdMusicClient;
     ArrayAdapter listAdapter;
 
-    private ServiceConnection upnpServiceConntection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-
-            upnpService = (AndroidUpnpService) service;
-
-            // Refresh the list with all known devices
-            ((AllDevicesBrowser) registryListener).refresh(upnpService);
-
-            // Getting ready for future device advertisements
-            upnpService.getRegistry().addListener(registryListener);
-
-            // Search asynchronously for all devices
-            upnpService.getControlPoint().search();
-        }
-
-        public void onServiceDisconnected(ComponentName className) {
-            upnpService = null;
-        }
-    };
+    String serverIP;
 
     private ServiceConnection httpServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             httpService = (IHttpServerService) service;
+
+            httpService.registerHandler("/audio/*", new AudioRequestHandler(getApplicationContext()));
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -77,21 +55,27 @@ public class ClientActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        crowdMusicClient = new CrowdMusicClient(getApplicationContext());
-
         listAdapter =  new ArrayAdapter(this, R.layout.fragment_client_serverbrowser);
         setListAdapter(listAdapter);
 
         registryListener = new CrowdDevicesBrowser(this, listAdapter);
 
-        getApplicationContext().bindService(
-                new Intent(this, AndroidUpnpServiceImpl.class),
-                upnpServiceConntection,
-                Context.BIND_AUTO_CREATE
-        );
+
+        Intent lastIntent = getIntent();
+        serverIP = lastIntent.getStringExtra("ip");
+
+        final WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        String ip = Utility.getWifiInetAddress(wifiManager).getHostAddress();
+        int port = 8080;
+
+        crowdMusicClient = new CrowdMusicClient(getApplicationContext(), ip);
+
+        Intent httpIntent = new Intent(this, HTTPServerService.class);
+        httpIntent.putExtra("ip", ip);
+        httpIntent.putExtra("port", port);
 
         getApplicationContext().bindService(
-                new Intent(this, HTTPServerService.class),
+                httpIntent,
                 httpServiceConnection,
                 Context.BIND_AUTO_CREATE
         );

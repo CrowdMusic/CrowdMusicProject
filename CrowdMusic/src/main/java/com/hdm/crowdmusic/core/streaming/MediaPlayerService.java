@@ -48,6 +48,15 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         }
     }
 
+    public void playMusic(String url) {
+        try {
+            mediaPlayer.setDataSource(url);
+            mediaPlayer.prepareAsync();
+        } catch (IOException e) {
+            Log.e(Utility.LOG_TAG_MEDIA, e.getMessage());
+        }
+    }
+
     public void pauseMusic() {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
@@ -78,6 +87,11 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         @Override
         public void play(Uri uri) {
             playMusic(uri);
+        }
+
+        @Override
+        public void play(String url) {
+            playMusic(url);
         }
 
         @Override
