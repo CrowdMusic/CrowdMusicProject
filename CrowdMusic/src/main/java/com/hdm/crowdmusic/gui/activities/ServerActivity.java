@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.core.CrowdMusicQrCode;
 import com.hdm.crowdmusic.core.CrowdMusicServer;
 import com.hdm.crowdmusic.core.network.AccessPoint;
 import com.hdm.crowdmusic.core.streaming.IMediaPlayerService;
@@ -212,38 +211,10 @@ public class ServerActivity extends Activity {
 //                mediaService.play("http://192.168.178.35:8080/audio/407");
 //                return true;
 
-            case id.action_show_qrcode:
-                createQRCodeView();
-                return true;
-
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void createQRCodeView() {
-        AlertDialog.Builder imageDialog = new AlertDialog.Builder(this);
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
-
-        View layout = inflater.inflate(R.layout.dialog_fullimage, null, true);
-
-        ImageView image = (ImageView) layout.findViewById(R.id.dialog_full_image);
-
-        if (wifiQrCode == null) {
-            wifiQrCode = CrowdMusicQrCode.getNetworkQr();
-        }
-        image.setImageBitmap(wifiQrCode);
-        imageDialog.setView(layout);
-        imageDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-
-        });
-
-        imageDialog.create();
-        imageDialog.show();
-    }
 
     public static class PlaceholderFragment extends Fragment {
 

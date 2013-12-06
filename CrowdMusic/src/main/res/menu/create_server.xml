@@ -17,9 +17,5 @@
         android:title="next Track"
         android:icon="@drawable/farm_fresh_control_end"
         android:showAsAction="always"/>
-    <item android:id="@+id/action_show_qrcode"
-        android:title="Show Network QR"
-        android:icon="@drawable/share_wifi"
-        android:showAsAction="always"/>
 
 </menu>

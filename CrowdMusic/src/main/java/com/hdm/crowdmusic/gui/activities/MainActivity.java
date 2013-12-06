@@ -81,10 +81,6 @@ public class MainActivity extends ListActivity {
         startActivity(intent);
     }
 
-    public void transitToMakePhotoActivity(View view) {
-        Intent intent = new Intent(this, MakePhotoActivity.class);
-        startActivity(intent);
-    }
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         DeviceDisplay selectedDeviceDisplay = (DeviceDisplay) listAdapter.getItem(position);
