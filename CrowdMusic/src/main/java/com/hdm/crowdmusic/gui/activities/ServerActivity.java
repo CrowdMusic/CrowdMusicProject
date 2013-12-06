@@ -89,10 +89,11 @@ public class ServerActivity extends Activity {
 
 
         final WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        InetAddress ip = Utility.getWifiInetAddress(wifiManager);
-
-        crowdMusicServer = new CrowdMusicServer(ip.getHostAddress());
         accessPoint = new AccessPoint(getApplicationContext());
+        handleAPModalDialog();
+        InetAddress ip = Utility.getWifiInetAddress(wifiManager);
+        crowdMusicServer = new CrowdMusicServer(ip.getHostAddress());
+
 
 
         getApplicationContext().bindService(
@@ -107,7 +108,8 @@ public class ServerActivity extends Activity {
                 Context.BIND_AUTO_CREATE
         );
 
-        handleAPModalDialog();
+
+
         Toast.makeText(getApplicationContext(), R.string.server_activity_created_server, 2).show();
 
         final ActionBar bar = getActionBar();
