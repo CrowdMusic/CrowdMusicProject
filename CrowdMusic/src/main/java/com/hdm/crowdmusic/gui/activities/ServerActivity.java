@@ -41,7 +41,6 @@ public class ServerActivity extends Activity {
 
     private AccessPoint accessPoint;
 
-
     private ServiceConnection upnpServiceConntection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -108,9 +107,7 @@ public class ServerActivity extends Activity {
                 Context.BIND_AUTO_CREATE
         );
 
-
-
-        Toast.makeText(getApplicationContext(), R.string.server_activity_created_server, 2).show();
+        handleAPModalDialog();
 
         final ActionBar bar = getActionBar();
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -133,6 +130,12 @@ public class ServerActivity extends Activity {
     }
 
     public void handleAPModalDialog() {
+
+        // If the dialog was alread shown, do nothing. This is for example the case
+        // when switching from landscape to portrait. See Issue 23.
+        if (AccessPoint.isApDialogShown()) return;
+        AccessPoint.setApDialogShown(true);
+
         final Activity currentActivity = this;
 
         if (accessPoint.isWifiConnected()) {
@@ -140,7 +143,7 @@ public class ServerActivity extends Activity {
             DialogInterface.OnClickListener ok = new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     accessPoint.enable();
-                    Toast toast = Toast.makeText(currentActivity.getApplicationContext(), R.string.dialog_create_wlan_ap_created, 2);
+                    Toast toast = Toast.makeText(currentActivity.getApplicationContext(), R.string.dialog_create_wlan_ap_created + "\n" + R.string.server_activity_created_server, 2);
                     toast.show();
                 }
             };

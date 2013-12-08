@@ -21,7 +21,7 @@ import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.devicelistener.AllDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
-
+import com.hdm.crowdmusic.core.network.AccessPoint;
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.registry.RegistryListener;
@@ -72,6 +72,7 @@ public class MainActivity extends ListActivity {
     }
 
     public void startServer(View view) {
+        AccessPoint.setApDialogShown(false);
         Intent intent = new Intent(this, ServerActivity.class);
         startActivity(intent);
     }

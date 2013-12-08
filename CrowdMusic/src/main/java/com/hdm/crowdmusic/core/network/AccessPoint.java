@@ -21,6 +21,8 @@ public final class AccessPoint {
     public static final String JSON_KEY_SSID = "ssid";
     public static final String JSON_KEY_KEY = "key";
 
+    private static boolean apDialogShown = false;
+
     private static AccessPoint instance;
     private boolean initialized = false;
 
@@ -192,4 +194,13 @@ public final class AccessPoint {
 //            //statusView.setText("Your phone's API does not contain setWifiApEnabled method to configure an access point");
 //        }
     }
+
+    public static boolean isApDialogShown() {
+        return apDialogShown;
+    }
+
+    public static void setApDialogShown(boolean apDialogShown) {
+        AccessPoint.apDialogShown = apDialogShown;
+    }
+
 }
