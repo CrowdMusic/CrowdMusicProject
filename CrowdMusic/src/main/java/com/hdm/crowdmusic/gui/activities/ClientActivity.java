@@ -8,33 +8,28 @@ import android.content.ServiceConnection;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.CrowdMusicClient;
+import com.hdm.crowdmusic.core.CrowdMusicTrack;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
-import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
 import com.hdm.crowdmusic.core.streaming.AudioRequestHandler;
 import com.hdm.crowdmusic.core.streaming.HTTPServerService;
 import com.hdm.crowdmusic.core.streaming.IHttpServerService;
+import com.hdm.crowdmusic.gui.support.PlaylistTrackAdapter;
 import com.hdm.crowdmusic.util.Utility;
-
 import org.teleal.cling.registry.RegistryListener;
-
-import java.net.InetAddress;
 
 public class ClientActivity extends ListActivity {
 
     private IHttpServerService httpService;
     private RegistryListener registryListener;
     private CrowdMusicClient crowdMusicClient;
-    ArrayAdapter listAdapter;
+    ArrayAdapter<CrowdMusicTrack> listAdapter;
 
     String serverIP;
 
@@ -79,6 +74,11 @@ public class ClientActivity extends ListActivity {
                 httpServiceConnection,
                 Context.BIND_AUTO_CREATE
         );
+
+        listAdapter = new PlaylistTrackAdapter(this,
+                android.R.layout.simple_list_item_1, crowdMusicClient.getTrackList());
+        setListAdapter(listAdapter);
+
     }
 
     @Override
@@ -98,26 +98,12 @@ public class ClientActivity extends ListActivity {
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        DeviceDisplay selectedDeviceDisplay = (DeviceDisplay) listAdapter.getItem(position);
-        final String deviceDetails = selectedDeviceDisplay.getDevice().getDetails().getFriendlyName();
+        final CrowdMusicTrack selectedTrack = (CrowdMusicTrack) listAdapter.getItem(position);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(getApplicationContext(), deviceDetails, 2).show();
+                Toast.makeText(getApplicationContext(), selectedTrack.getTrackName(), 2).show();
             }
         });
-    }
-
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_client_serverbrowser, container, false);
-            return rootView;
-        }
     }
 }
