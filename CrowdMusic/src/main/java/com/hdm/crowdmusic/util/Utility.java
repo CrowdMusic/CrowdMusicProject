@@ -5,6 +5,8 @@ import android.content.Context;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.util.Log;
+
+import com.hdm.crowdmusic.core.CrowdMusicTrack;
 import com.hdm.crowdmusic.core.network.AccessPoint;
 import org.json.JSONObject;
 
@@ -110,5 +112,15 @@ public class Utility {
         }
 
         return true;
+    }
+
+    public static String buildURL(CrowdMusicTrack track) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("http://");
+        sb.append(track.getIp());
+        sb.append(":8080");
+        sb.append("/audio/");
+        sb.append(track.getId());
+        return sb.toString();
     }
 }

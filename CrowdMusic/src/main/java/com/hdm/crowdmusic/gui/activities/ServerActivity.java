@@ -11,10 +11,10 @@ import android.view.*;
 import android.widget.Toast;
 
 import com.hdm.crowdmusic.R;
+import com.hdm.crowdmusic.core.CrowdMusicPlaylist;
 import com.hdm.crowdmusic.core.CrowdMusicServer;
+import com.hdm.crowdmusic.core.CrowdMusicTrack;
 import com.hdm.crowdmusic.core.network.AccessPoint;
-import com.hdm.crowdmusic.core.streaming.HTTPServerService;
-import com.hdm.crowdmusic.core.streaming.IHttpServerService;
 import com.hdm.crowdmusic.core.streaming.IMediaPlayerService;
 import com.hdm.crowdmusic.core.streaming.MediaPlayerService;
 import com.hdm.crowdmusic.gui.fragments.ServerAdminUsersFragment;
@@ -208,11 +208,15 @@ public class ServerActivity extends Activity {
             case id.action_settings:
                 return true;
 
-//            Streaming Test, throw in your own data to test!
-//            case id.action_play_pause:
-//                Log.i(Utility.LOG_TAG_HTTP, "Trying to stream audio...");
-//                mediaService.play("http://192.168.178.35:8080/audio/407");
-//                return true;
+//          Streaming Test, throw in your own data to test!
+            case id.action_play_pause:
+                Log.i(Utility.LOG_TAG_HTTP, "Trying to stream audio...");
+                CrowdMusicTrack track = CrowdMusicPlaylist.getInstance().getNextTrack();
+                if (track != null) {
+                    Log.i(Utility.LOG_TAG_HTTP, "With IP: " + Utility.buildURL(track));
+                    mediaService.play(Utility.buildURL(track));
+                }
+                return true;
 
         }
         return super.onOptionsItemSelected(item);

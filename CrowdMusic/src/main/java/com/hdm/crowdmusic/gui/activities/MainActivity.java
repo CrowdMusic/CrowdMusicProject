@@ -19,6 +19,7 @@ import android.widget.ListView;
 
 
 import com.hdm.crowdmusic.R;
+import com.hdm.crowdmusic.core.CrowdMusicPlaylist;
 import com.hdm.crowdmusic.core.devicelistener.AllDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
