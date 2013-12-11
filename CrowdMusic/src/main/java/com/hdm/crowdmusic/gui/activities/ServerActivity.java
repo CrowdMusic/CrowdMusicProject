@@ -8,12 +8,13 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.*;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.CrowdMusicServer;
 import com.hdm.crowdmusic.core.network.AccessPoint;
+import com.hdm.crowdmusic.core.streaming.HTTPServerService;
+import com.hdm.crowdmusic.core.streaming.IHttpServerService;
 import com.hdm.crowdmusic.core.streaming.IMediaPlayerService;
 import com.hdm.crowdmusic.core.streaming.MediaPlayerService;
 import com.hdm.crowdmusic.gui.fragments.ServerAdminUsersFragment;
@@ -32,13 +33,10 @@ import static com.hdm.crowdmusic.R.layout;
 public class ServerActivity extends Activity {
 
     private CrowdMusicServer crowdMusicServer;
-
     private AndroidUpnpService upnpService;
-
-    private Bitmap wifiQrCode;
-
     private IMediaPlayerService mediaService;
 
+    private Bitmap wifiQrCode;
     private AccessPoint accessPoint;
 
     private ServiceConnection upnpServiceConntection = new ServiceConnection() {
