@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 
 import android.os.IBinder;
@@ -18,17 +19,28 @@ import android.widget.ListView;
 
 
 import com.hdm.crowdmusic.R;
+import com.hdm.crowdmusic.core.CrowdMusicPlaylist;
 import com.hdm.crowdmusic.core.devicelistener.AllDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
 import com.hdm.crowdmusic.core.network.AccessPoint;
+import com.hdm.crowdmusic.core.streaming.AudioRequestHandler;
+import com.hdm.crowdmusic.core.streaming.HTTPServerService;
+import com.hdm.crowdmusic.core.streaming.IHttpServerService;
+import com.hdm.crowdmusic.core.streaming.PostAudioHandler;
+import com.hdm.crowdmusic.util.Utility;
+
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.registry.RegistryListener;
 
 public class MainActivity extends ListActivity {
 
+    private final int PORT = 8080;
+    private String ip;
+
     private AndroidUpnpService upnpService;
+    private IHttpServerService httpService;
     private RegistryListener registryListener;
     ArrayAdapter listAdapter;
 
@@ -53,6 +65,20 @@ public class MainActivity extends ListActivity {
         }
     };
 
+    private ServiceConnection httpServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            httpService = (IHttpServerService) service;
+
+            httpService.registerHandler("/audio/*", new AudioRequestHandler(getApplicationContext()));
+            httpService.registerHandler("/", new PostAudioHandler(getApplicationContext()));
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            httpService = null;
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,24 +88,26 @@ public class MainActivity extends ListActivity {
 
         registryListener = new CrowdDevicesBrowser(this, listAdapter);
 
+        final WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        ip = Utility.getWifiInetAddress(wifiManager).getHostAddress();
+
         getApplicationContext().bindService(
                 new Intent(this, AndroidUpnpServiceImpl.class),
                 upnpServiceConntection,
                 Context.BIND_AUTO_CREATE
         );
 
+        Intent httpIntent = new Intent(this, HTTPServerService.class);
+        httpIntent.putExtra("ip", ip);
+        httpIntent.putExtra("port", PORT);
+
+        getApplicationContext().bindService(
+                httpIntent,
+                httpServiceConnection,
+                Context.BIND_AUTO_CREATE
+        );
+
         setContentView(R.layout.activity_main);
-    }
-
-    public void startServer(View view) {
-        AccessPoint.setApDialogShown(false);
-        Intent intent = new Intent(this, ServerActivity.class);
-        startActivity(intent);
-    }
-
-    public void startClient(View view) {
-        Intent intent = new Intent(this, ClientActivity.class);
-        startActivity(intent);
     }
 
     @Override
@@ -88,7 +116,9 @@ public class MainActivity extends ListActivity {
         final String deviceDetails = selectedDeviceDisplay.getDevice().getDetails().getModelDetails().getModelNumber();
 
         Intent clientIntent = new Intent(this, ClientActivity.class);
-        clientIntent.putExtra("ip", deviceDetails);
+        clientIntent.putExtra("clientIP", ip);                  //IP des Geräts
+        clientIntent.putExtra("serverIP", deviceDetails);       //IP des Servers
+        clientIntent.putExtra("port", PORT);
         startActivity(clientIntent);
     }
 
@@ -110,5 +140,11 @@ public class MainActivity extends ListActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void startServer(View view) {
+        AccessPoint.setApDialogShown(false);
+        Intent intent = new Intent(this, ServerActivity.class);
+        startActivity(intent);
     }
 }

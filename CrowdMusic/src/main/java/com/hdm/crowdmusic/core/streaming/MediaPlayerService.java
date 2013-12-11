@@ -41,6 +41,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
     public void playMusic(Uri uri) {
         try {
+            mediaPlayer.reset();
             mediaPlayer.setDataSource(getApplicationContext(), uri);
             mediaPlayer.prepareAsync();
         } catch (IOException e) {
@@ -50,6 +51,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
     public void playMusic(String url) {
         try {
+            mediaPlayer.reset();
             mediaPlayer.setDataSource(url);
             mediaPlayer.prepareAsync();
         } catch (IOException e) {
