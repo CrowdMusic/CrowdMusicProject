@@ -217,6 +217,7 @@ public class ServerActivity extends Activity {
                 }
                 return true;
 
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -267,8 +268,6 @@ public class ServerActivity extends Activity {
             } else {
                 ft.attach(mFragment);
             }
-
-            refresh();
         }
 
         public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
@@ -278,9 +277,10 @@ public class ServerActivity extends Activity {
         }
 
         public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-            refresh();
+
         }
 
+        // Maybe we'll need this, some time
         private void refresh() {
             if (mFragment != null && mFragment instanceof ServerPlaylistFragment) {
                 if (((ServerPlaylistFragment) mFragment).getListAdapter() == null) return;

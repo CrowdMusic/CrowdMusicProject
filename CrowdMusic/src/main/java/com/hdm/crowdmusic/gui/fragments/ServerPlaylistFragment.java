@@ -11,16 +11,18 @@ import com.hdm.crowdmusic.core.CrowdMusicPlaylist;
 import com.hdm.crowdmusic.core.CrowdMusicTrack;
 import com.hdm.crowdmusic.gui.support.PlaylistTrackAdapter;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
-public class ServerPlaylistFragment extends ListFragment {
+public class ServerPlaylistFragment extends ListFragment implements PropertyChangeListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setUpAdapter();
-    }
+        CrowdMusicPlaylist.getInstance().listener = this;
 
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -33,9 +35,26 @@ public class ServerPlaylistFragment extends ListFragment {
     public void setUpAdapter() {
 
         List<CrowdMusicTrack> objects = CrowdMusicPlaylist.getInstance().getPlaylist();
-        PlaylistTrackAdapter adapter = new PlaylistTrackAdapter(getActivity(),
-                R.layout.fragment_serverplaylist, objects);
+        setUpAdapter(objects);
+    }
 
-        setListAdapter(adapter);
+    public void setUpAdapter(final List<CrowdMusicTrack> newValue) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                PlaylistTrackAdapter adapter = new PlaylistTrackAdapter(getActivity(),
+                        R.layout.fragment_serverplaylist, newValue);
+                setListAdapter(adapter);
+            }
+        });
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+
+        Object newValue = propertyChangeEvent.getNewValue();
+        if (newValue instanceof List) {
+            this.setUpAdapter((List<CrowdMusicTrack>)newValue);
+        }
     }
 }
