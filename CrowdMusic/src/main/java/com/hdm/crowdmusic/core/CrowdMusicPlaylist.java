@@ -5,10 +5,15 @@ import com.hdm.crowdmusic.util.Utility;
 
 import java.util.*;
 
+import com.hdm.crowdmusic.util.Utility;
+
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.PriorityQueue;
+
 public class CrowdMusicPlaylist {
 
     private final int QUEUE_LENGTH = 20;
-
     private PriorityQueue<CrowdMusicTrack> playlist;
 
     private static CrowdMusicPlaylist instance;
