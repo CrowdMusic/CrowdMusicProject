@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 
 import com.hdm.crowdmusic.R;
 
-public class ServerAdminUsersFragment extends Fragment{
+public class ServerAdminUsersFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
