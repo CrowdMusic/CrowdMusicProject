@@ -1,45 +1,31 @@
 package com.hdm.crowdmusic.gui.activities;
 
 import android.app.ListActivity;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.CrowdMusicClient;
 import com.hdm.crowdmusic.core.CrowdMusicTrack;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
-import com.hdm.crowdmusic.core.streaming.AudioRequestHandler;
-import com.hdm.crowdmusic.core.streaming.HTTPServerService;
-import com.hdm.crowdmusic.core.streaming.IHttpServerService;
 import com.hdm.crowdmusic.gui.support.PlaylistTrackAdapter;
 import com.hdm.crowdmusic.util.Utility;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
 import org.teleal.cling.registry.RegistryListener;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 

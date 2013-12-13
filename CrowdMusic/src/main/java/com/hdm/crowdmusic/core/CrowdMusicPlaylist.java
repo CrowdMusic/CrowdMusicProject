@@ -1,17 +1,19 @@
 package com.hdm.crowdmusic.core;
 
 import android.util.Log;
-
 import com.hdm.crowdmusic.util.Utility;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.PriorityQueue;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.*;
 
 public class CrowdMusicPlaylist {
 
+    public PropertyChangeListener listener;
+
     private final int QUEUE_LENGTH = 20;
     private PriorityQueue<CrowdMusicTrack> playlist;
+    private List<CrowdMusicTrack> shadowList;
 
     private static CrowdMusicPlaylist instance;
     public static CrowdMusicPlaylist getInstance() {
@@ -25,6 +27,7 @@ public class CrowdMusicPlaylist {
 
     private CrowdMusicPlaylist() {
         playlist = new PriorityQueue<CrowdMusicTrack>(QUEUE_LENGTH, new ScoreComparator());
+        shadowList = new ArrayList<CrowdMusicTrack>();
     }
 
     public CrowdMusicTrack getNextTrack() {
@@ -40,6 +43,8 @@ public class CrowdMusicPlaylist {
         Log.i(Utility.LOG_TAG_MEDIA, "The following track was added to the playlist: ");
         Log.i(Utility.LOG_TAG_MEDIA, "ID: " + track.getId() + " | IP: " + track.getIp() + " | Artist: " + track.getArtist() + " | Track: " + track.getTrackName());
         playlist.add(track);
+        shadowList.add(track);
+        notifyListener();
         Log.i(Utility.LOG_TAG_MEDIA, "The queue now contains the following elements: ");
         Iterator<CrowdMusicTrack> iterator = playlist.iterator();
         while (iterator.hasNext()) {
@@ -51,6 +56,8 @@ public class CrowdMusicPlaylist {
     public void removeTrack(CrowdMusicTrack track) {
         if (playlist.contains(track)) {
             playlist.remove(track);
+            shadowList.remove(track);
+            notifyListener();
         }
     }
 
@@ -68,5 +75,15 @@ public class CrowdMusicPlaylist {
             }
             return 0;
         }
+    }
+
+    public List<CrowdMusicTrack> getPlaylist() {
+        return shadowList;
+    }
+
+    // Ugly as hell, but it works
+    public void notifyListener() {
+        if (listener == null) return;
+        listener.propertyChange(new PropertyChangeEvent(this, "tracklist", null, getPlaylist()));
     }
 }

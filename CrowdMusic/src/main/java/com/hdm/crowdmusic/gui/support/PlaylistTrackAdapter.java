@@ -6,20 +6,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
-import com.hdm.crowdmusic.core.CrowdMusicTrack;
 import com.hdm.crowdmusic.R;
+import com.hdm.crowdmusic.core.CrowdMusicTrack;
 
 import java.util.List;
 
 public class PlaylistTrackAdapter extends ArrayAdapter<CrowdMusicTrack> {
 
-    private List<CrowdMusicTrack> objects;
-
-
     public PlaylistTrackAdapter(Context context, int textViewResourceId, List<CrowdMusicTrack> objects) {
         super(context, textViewResourceId, objects);
-        this.objects = objects;
     }
 
     @Override
@@ -32,7 +27,7 @@ public class PlaylistTrackAdapter extends ArrayAdapter<CrowdMusicTrack> {
 
         }
 
-        CrowdMusicTrack track = objects.get(position);
+        CrowdMusicTrack track = ((ArrayAdapter<CrowdMusicTrack>) this).getItem(position);
 
         if (track != null) {
             TextView trackName = (TextView) v.findViewById(R.id.playlist_item_track);
@@ -53,5 +48,6 @@ public class PlaylistTrackAdapter extends ArrayAdapter<CrowdMusicTrack> {
         }
         return v;
     }
+
 
 }

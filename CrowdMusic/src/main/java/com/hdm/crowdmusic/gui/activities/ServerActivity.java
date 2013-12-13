@@ -9,7 +9,6 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
-
 import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.CrowdMusicPlaylist;
 import com.hdm.crowdmusic.core.CrowdMusicServer;
@@ -20,7 +19,6 @@ import com.hdm.crowdmusic.core.streaming.MediaPlayerService;
 import com.hdm.crowdmusic.gui.fragments.ServerAdminUsersFragment;
 import com.hdm.crowdmusic.gui.fragments.ServerPlaylistFragment;
 import com.hdm.crowdmusic.util.Utility;
-
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.registry.RegistrationException;
@@ -115,6 +113,7 @@ public class ServerActivity extends Activity {
                 .setText("Playlist")
                 .setTabListener(new TabListener<ServerPlaylistFragment>(
                         this, "playlist", ServerPlaylistFragment.class)));
+
 
         bar.addTab(bar.newTab()
                 .setText("Users")
@@ -218,6 +217,7 @@ public class ServerActivity extends Activity {
                 }
                 return true;
 
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -278,6 +278,14 @@ public class ServerActivity extends Activity {
 
         public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
 
+        }
+
+        // Maybe we'll need this, some time
+        private void refresh() {
+            if (mFragment != null && mFragment instanceof ServerPlaylistFragment) {
+                if (((ServerPlaylistFragment) mFragment).getListAdapter() == null) return;
+                ((ServerPlaylistFragment) mFragment).setUpAdapter();
+            }
         }
     }
 }
