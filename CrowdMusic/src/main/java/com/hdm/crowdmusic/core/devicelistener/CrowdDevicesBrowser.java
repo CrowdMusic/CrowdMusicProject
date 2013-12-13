@@ -1,5 +1,6 @@
 package com.hdm.crowdmusic.core.devicelistener;
 
+import android.app.Activity;
 import android.app.ListActivity;
 import android.widget.ArrayAdapter;
 import com.hdm.crowdmusic.core.CrowdMusicServer;
@@ -8,7 +9,7 @@ import org.teleal.cling.model.meta.Device;
 
 public class CrowdDevicesBrowser extends AllDevicesBrowser {
 
-    public CrowdDevicesBrowser(ListActivity hostActivity, ArrayAdapter listAdapter) {
+    public CrowdDevicesBrowser(Activity hostActivity, ArrayAdapter listAdapter) {
         super(hostActivity, listAdapter);
     }
 

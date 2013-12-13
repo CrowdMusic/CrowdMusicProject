@@ -34,7 +34,6 @@ public class ServerActivity extends Activity {
     private AndroidUpnpService upnpService;
     private IMediaPlayerService mediaService;
 
-    private Bitmap wifiQrCode;
     private AccessPoint accessPoint;
 
     private ServiceConnection upnpServiceConntection = new ServiceConnection() {
