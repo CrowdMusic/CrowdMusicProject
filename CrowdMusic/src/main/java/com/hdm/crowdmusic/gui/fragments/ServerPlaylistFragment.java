@@ -1,6 +1,7 @@
 package com.hdm.crowdmusic.gui.fragments;
 
 
+import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -27,7 +28,7 @@ public class ServerPlaylistFragment extends ListFragment implements PropertyChan
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        setUpAdapter();
         View v = inflater.inflate(R.layout.fragment_serverplaylist, container, false);
         return v;
     }
@@ -39,7 +40,10 @@ public class ServerPlaylistFragment extends ListFragment implements PropertyChan
     }
 
     public void setUpAdapter(final List<CrowdMusicTrack> newValue) {
-        getActivity().runOnUiThread(new Runnable() {
+        Activity activity = getActivity();
+        if (activity == null) return;
+
+        activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 PlaylistTrackAdapter adapter = new PlaylistTrackAdapter(getActivity(),
