@@ -17,7 +17,7 @@ public class AllDevicesBrowser extends DefaultRegistryListener {
     private Activity hostActivity;
     protected ArrayAdapter<DeviceDisplay> listAdapter;
 
-    public AllDevicesBrowser(ListActivity hostActivity, ArrayAdapter listAdapter) {
+    public AllDevicesBrowser(Activity hostActivity, ArrayAdapter listAdapter) {
         this.hostActivity = hostActivity;
         this.listAdapter = listAdapter;
     }
