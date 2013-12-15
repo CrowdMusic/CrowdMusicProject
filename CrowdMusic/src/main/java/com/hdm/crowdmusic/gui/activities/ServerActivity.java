@@ -2,7 +2,6 @@ package com.hdm.crowdmusic.gui.activities;
 
 import android.app.*;
 import android.content.*;
-import android.graphics.Bitmap;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -87,7 +86,6 @@ public class ServerActivity extends Activity {
         handleAPModalDialog();
         InetAddress ip = Utility.getWifiInetAddress(wifiManager);
         crowdMusicServer = new CrowdMusicServer(ip.getHostAddress());
-
 
 
         getApplicationContext().bindService(
