@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.devicelistener.AllDevicesBrowser;
@@ -23,6 +24,8 @@ import com.hdm.crowdmusic.core.streaming.*;
 import com.hdm.crowdmusic.util.Utility;
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
+import org.teleal.cling.model.meta.LocalDevice;
+import org.teleal.cling.model.meta.RemoteDevice;
 import org.teleal.cling.registry.RegistryListener;
 
 public class MainActivity extends ListActivity {
@@ -100,6 +103,43 @@ public class MainActivity extends ListActivity {
         );
 
         setContentView(R.layout.activity_main);
+        switchServerButtons();
+    }
+
+    public void switchServerButtons() {
+        final Button createServerButton = (Button)findViewById(R.id.button_createserver);
+        final Button configureServerButton = (Button)findViewById(R.id.button_configureserver);
+
+        if (createServerButton == null || configureServerButton == null) return;
+
+        if (isServerStartetOnThisDevice()) {
+            createServerButton.setVisibility(View.GONE);
+            configureServerButton.setVisibility(View.VISIBLE);
+        } else {
+            createServerButton.setVisibility(View.VISIBLE);
+            configureServerButton.setVisibility(View.GONE);
+        }
+        this.getListView().invalidate();
+    }
+
+    private boolean isServerStartetOnThisDevice() {
+
+        for (int i = 0; i < getListAdapter().getCount(); i++){
+            DeviceDisplay deviceDisplay = (DeviceDisplay) listAdapter.getItem(i);
+            final String serverDeviceDetails = deviceDisplay.getDevice().getDetails().getModelDetails().getModelNumber();
+            for(LocalDevice localDevice: upnpService.getRegistry().getLocalDevices()) {
+                if (localDevice.getDetails().getModelDetails().getModelNumber().equals(serverDeviceDetails)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    protected void onResume() {
+        switchServerButtons();
+        super.onResume();
     }
 
     @Override
@@ -136,6 +176,10 @@ public class MainActivity extends ListActivity {
 
     public void startServer(View view) {
         AccessPoint.setApDialogShown(false);
+        transitToServerActivity(view);
+    }
+
+    public void transitToServerActivity(View view) {
         Intent intent = new Intent(this, ServerActivity.class);
         startActivity(intent);
     }

@@ -105,7 +105,6 @@ public class ServerActivity extends Activity {
         crowdMusicServer = new CrowdMusicServer(ip.getHostAddress());
 
 
-
         getApplicationContext().bindService(
                 new Intent(this, AndroidUpnpServiceImpl.class),
                 upnpServiceConntection,
