@@ -78,6 +78,14 @@ public class ClientActivity extends Activity implements ClientLocalTracksFragmen
         return port;
     }
 
+    @Override
+    public String getIp() {
+        return clientIP;
+    }
+
+    public String getServerIp() {
+        return serverIP;
+    }
 
 }
 

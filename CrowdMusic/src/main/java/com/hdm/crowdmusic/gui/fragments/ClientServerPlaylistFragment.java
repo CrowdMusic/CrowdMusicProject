@@ -13,15 +13,15 @@ import com.hdm.crowdmusic.core.CrowdMusicPlaylist;
 import com.hdm.crowdmusic.core.CrowdMusicTrack;
 import com.hdm.crowdmusic.core.CrowdMusicTrackVoting;
 import com.hdm.crowdmusic.core.streaming.PostVotingTask;
-import com.hdm.crowdmusic.gui.activities.ClientActivity;
-import com.hdm.crowdmusic.gui.activities.ServerActivity;
 import com.hdm.crowdmusic.gui.support.PlaylistTrackAdapter;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
-public class ServerPlaylistFragment extends ListFragment implements PropertyChangeListener {
+public class ClientServerPlaylistFragment extends ListFragment implements PropertyChangeListener {
+
+    private ClientLocalTracksFragment.OnClientRequestedListener activity;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,23 +70,21 @@ public class ServerPlaylistFragment extends ListFragment implements PropertyChan
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-
-        Activity activity = getActivity();
-
-        if(activity instanceof ServerActivity) {
-            ServerActivity serverActivity = (ServerActivity) activity;
-
-            final CrowdMusicTrack selectedTrack = (CrowdMusicTrack) getListAdapter().getItem(position);
-            final CrowdMusicTrackVoting voting = new CrowdMusicTrackVoting(selectedTrack, CrowdMusicTrackVoting.CATEGORY.UP, serverActivity.getCrowdMusicServer().getIp());
-            new PostVotingTask(serverActivity.getCrowdMusicServer().getIp(), serverActivity.getHTTPServerService().getPort()).execute(voting);
-        } else if(activity instanceof ClientActivity) {
-            ClientLocalTracksFragment.OnClientRequestedListener clientActivity = (ClientLocalTracksFragment.OnClientRequestedListener) activity;
-
-            final CrowdMusicTrack selectedTrack = (CrowdMusicTrack) getListAdapter().getItem(position);
-            final CrowdMusicTrackVoting voting = new CrowdMusicTrackVoting(selectedTrack, CrowdMusicTrackVoting.CATEGORY.UP, clientActivity.getIp());
-            new PostVotingTask(clientActivity.OnServerRequestedListener(),clientActivity.OnPortRequestedListener()).execute(voting);
-        }
-
+        final CrowdMusicTrack selectedTrack = (CrowdMusicTrack) getListAdapter().getItem(position);
+        final CrowdMusicTrackVoting voting = new CrowdMusicTrackVoting(selectedTrack, CrowdMusicTrackVoting.CATEGORY.UP, activity.getIp());
+        new PostVotingTask(activity.OnServerRequestedListener(),activity.OnPortRequestedListener()).execute(voting);
     }
 
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            this.activity = (ClientLocalTracksFragment.OnClientRequestedListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement ClientLocalTracksFragment.OnClientRequestedListener");
+        }
+    }
 }

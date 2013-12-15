@@ -1,5 +1,8 @@
 package com.hdm.crowdmusic.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CrowdMusicTrack {
 
     private int id;
@@ -9,6 +12,7 @@ public class CrowdMusicTrack {
     private String trackName;
 
     private int rating;
+    private List<String> votedIPs = new ArrayList<String>();
 
     public CrowdMusicTrack(int id, String ip, String artist, String trackName) {
         this.id = id;
@@ -35,11 +39,20 @@ public class CrowdMusicTrack {
 
     public int getRating() { return rating; }
 
-    public void upvote() {
-        rating =+ 1;
+    // Returns a copy, not the reference of the list
+    public List<String> getVotedIPs() {
+        ArrayList<String> copy = new ArrayList<String>();
+        copy.addAll(votedIPs);
+        return copy;
     }
 
-    public void downvote() {
+    public void upvote(String ip) {
+        votedIPs.add(ip);
+        rating += 1;
+    }
+
+    public void downvote(String ip) {
+        votedIPs.add(ip);
         rating -= 1;
     }
 }

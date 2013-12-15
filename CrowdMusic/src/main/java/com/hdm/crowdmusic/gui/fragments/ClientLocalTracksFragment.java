@@ -7,13 +7,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
 import com.hdm.crowdmusic.core.CrowdMusicClient;
 import com.hdm.crowdmusic.core.CrowdMusicTrack;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
 import com.hdm.crowdmusic.core.streaming.PostAudioTask;
-import com.hdm.crowdmusic.gui.support.PlaylistTrackAdapter;
-
+import com.hdm.crowdmusic.gui.support.LocalFilesTrackAdapter;
 import org.teleal.cling.registry.RegistryListener;
 
 public class ClientLocalTracksFragment extends ListFragment {
@@ -27,6 +25,7 @@ public class ClientLocalTracksFragment extends ListFragment {
         public CrowdMusicClient OnClientRequestedListener();
         public String OnServerRequestedListener();
         public int OnPortRequestedListener();
+        public String getIp();
     }
 
     @Override
@@ -34,7 +33,7 @@ public class ClientLocalTracksFragment extends ListFragment {
         super.onCreate(savedInstanceState);
 
         client = activity.OnClientRequestedListener();
-        listAdapter = new PlaylistTrackAdapter(getActivity().getBaseContext(),
+        listAdapter = new LocalFilesTrackAdapter(getActivity().getBaseContext(),
                 android.R.layout.simple_list_item_1, client.getTrackList());
 
         registryListener = new CrowdDevicesBrowser(getActivity(), listAdapter);
