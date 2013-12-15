@@ -5,11 +5,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
-
 import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.CrowdMusicClient;
 import com.hdm.crowdmusic.gui.fragments.ClientLocalTracksFragment;
-import com.hdm.crowdmusic.gui.fragments.ClientServerPlaylistFragment;
+import com.hdm.crowdmusic.gui.fragments.ServerPlaylistFragment;
 import com.hdm.crowdmusic.gui.support.TabListener;
 
 public class ClientActivity extends Activity implements ClientLocalTracksFragment.OnClientRequestedListener {
@@ -39,8 +38,8 @@ public class ClientActivity extends Activity implements ClientLocalTracksFragmen
 
         bar.addTab(bar.newTab()
                 .setText("Playlist")
-                .setTabListener(new TabListener<ClientServerPlaylistFragment>(
-                        this, "playlist", ClientServerPlaylistFragment.class)));
+                .setTabListener(new TabListener<ServerPlaylistFragment>(
+                        this, "playlist", ServerPlaylistFragment.class)));
 
 
         bar.addTab(bar.newTab()
