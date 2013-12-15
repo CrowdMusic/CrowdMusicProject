@@ -30,15 +30,16 @@ public class PostVotingTask extends AsyncTask<CrowdMusicTrackVoting, Void, HttpR
     public HttpResponse doInBackground(CrowdMusicTrackVoting... params) {
 
         HttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost("http://" + serverIP + ":" + port);
+        HttpPost httpPost = new HttpPost("http://" + serverIP + ":" + port + "/vote");
 
         CrowdMusicTrackVoting voting = params[0];
 
 
         try {
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(4);
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
             nameValuePairs.add(new BasicNameValuePair("id", "" + voting.getTrack().getId()));
             nameValuePairs.add(new BasicNameValuePair("category", voting.getCategory().toString()));
+            nameValuePairs.add(new BasicNameValuePair("ip", voting.getIp()));
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
         } catch (UnsupportedEncodingException e) {
             Log.e(Utility.LOG_TAG_HTTP, "Error while preparing post data: " + e.getMessage());
@@ -46,7 +47,7 @@ public class PostVotingTask extends AsyncTask<CrowdMusicTrackVoting, Void, HttpR
         }
 
         try {
-            Log.i(Utility.LOG_TAG_HTTP, "Trying to send Get-Request with URL: " + httpPost.getRequestLine());
+            Log.i(Utility.LOG_TAG_HTTP, "Trying to send Post-Request with URL: " + httpPost.getRequestLine());
             HttpResponse response = httpClient.execute(httpPost);
             return response;
         } catch (IOException e) {

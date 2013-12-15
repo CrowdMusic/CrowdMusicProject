@@ -25,7 +25,6 @@ import com.hdm.crowdmusic.util.Utility;
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.model.meta.LocalDevice;
-import org.teleal.cling.model.meta.RemoteDevice;
 import org.teleal.cling.registry.RegistryListener;
 
 public class MainActivity extends ListActivity {
@@ -66,7 +65,7 @@ public class MainActivity extends ListActivity {
 
             httpService.registerHandler("/audio/*", new AudioRequestHandler(getApplicationContext()));
             httpService.registerHandler("/", new PostAudioHandler(getApplicationContext()));
-            httpService.registerHandler("/vote/*", new PostVotingHandler(getApplicationContext()));
+            httpService.registerHandler("/vote*", new PostVotingHandler(getApplicationContext()));
         }
 
         public void onServiceDisconnected(ComponentName className) {

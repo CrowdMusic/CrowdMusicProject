@@ -26,7 +26,7 @@ public class ClientServerPlaylistFragment extends ListFragment implements Proper
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        CrowdMusicPlaylist.getInstance().listener = this;
+        CrowdMusicPlaylist.getInstance().addListener(this);
 
     }
 
@@ -71,8 +71,8 @@ public class ClientServerPlaylistFragment extends ListFragment implements Proper
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         final CrowdMusicTrack selectedTrack = (CrowdMusicTrack) getListAdapter().getItem(position);
-        final CrowdMusicTrackVoting voting = new CrowdMusicTrackVoting(selectedTrack, CrowdMusicTrackVoting.CATEGORY.UP);
-        new PostVotingTask(activity.OnServerRequestedListener(),activity.OnPortRequestedListener() ).execute(voting);
+        final CrowdMusicTrackVoting voting = new CrowdMusicTrackVoting(selectedTrack, CrowdMusicTrackVoting.CATEGORY.UP, activity.getIp());
+        new PostVotingTask(activity.OnServerRequestedListener(),activity.OnPortRequestedListener()).execute(voting);
     }
 
 

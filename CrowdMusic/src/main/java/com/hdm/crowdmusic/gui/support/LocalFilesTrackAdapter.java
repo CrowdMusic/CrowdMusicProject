@@ -11,9 +11,9 @@ import com.hdm.crowdmusic.core.CrowdMusicTrack;
 
 import java.util.List;
 
-public class PlaylistTrackAdapter extends ArrayAdapter<CrowdMusicTrack> {
+public class LocalFilesTrackAdapter extends ArrayAdapter<CrowdMusicTrack> {
 
-    public PlaylistTrackAdapter(Context context, int textViewResourceId, List<CrowdMusicTrack> objects) {
+    public LocalFilesTrackAdapter(Context context, int textViewResourceId, List<CrowdMusicTrack> objects) {
         super(context, textViewResourceId, objects);
     }
 
@@ -23,19 +23,16 @@ public class PlaylistTrackAdapter extends ArrayAdapter<CrowdMusicTrack> {
 
         if (v == null) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = inflater.inflate(R.layout.fragment_playlistentry, null);
+            v = inflater.inflate(R.layout.fragment_localfileslistentry, null);
 
         }
 
         CrowdMusicTrack track = ((ArrayAdapter<CrowdMusicTrack>) this).getItem(position);
 
         if (track != null) {
-            TextView trackName = (TextView) v.findViewById(R.id.playlist_item_track);
-            TextView artist = (TextView) v.findViewById(R.id.playlist_item_artist);
-            TextView rating = (TextView) v.findViewById(R.id.playlist_item_rating);
+            TextView trackName = (TextView) v.findViewById(R.id.localfileslist_item_track);
+            TextView artist = (TextView) v.findViewById(R.id.localfileslist_item_artist);
 
-
-            //TODO: Extend for cover and duration, maybe upvote count
 
             if (artist != null) {
                 artist.setText(track.getArtist());
@@ -44,12 +41,6 @@ public class PlaylistTrackAdapter extends ArrayAdapter<CrowdMusicTrack> {
             if (trackName != null) {
                 trackName.setText(track.getTrackName());
             }
-
-            if (rating != null) {
-                rating.setText(String.valueOf(track.getRating()));
-            }
-
-
         }
         return v;
     }

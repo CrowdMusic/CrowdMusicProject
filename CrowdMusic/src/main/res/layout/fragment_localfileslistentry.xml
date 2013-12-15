@@ -16,7 +16,7 @@
         />
 
     <TextView
-        android:id="@+id/playlist_item_artist"
+        android:id="@+id/localfileslist_item_artist"
         android:layout_width="wrap_content"
         android:layout_height="32dip"
 
@@ -29,8 +29,8 @@
             />
     <!--  android:layout_above="@id/playlist_item_track" -->
         <TextView
-        android:id="@+id/playlist_item_track"
-        android:layout_below="@+id/playlist_item_artist"
+        android:id="@+id/localfileslist_item_track"
+        android:layout_below="@+id/localfileslist_item_artist"
         android:layout_width="fill_parent"
         android:layout_height="23dip"
         android:layout_alignParentBottom="true"
@@ -39,14 +39,6 @@
         android:singleLine="true"
         android:text="Track Name"
                 />
-    <TextView android:id="@+id/playlist_item_rating"
-        android:layout_width="wrap_content"
-        android:layout_height="23dip"
-        android:ellipsize="marquee"
-        android:singleLine="true" android:text="Track Rating"
-        android:layout_alignWithParentIfMissing="false"
-        android:layout_alignTop="@+id/playlist_item_artist" android:layout_alignParentRight="true"
-        android:textColor="#ffe137"/>
 
 
 </RelativeLayout>

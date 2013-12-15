@@ -48,7 +48,7 @@ public class CrowdMusicTrack {
 
     public void upvote(String ip) {
         votedIPs.add(ip);
-        rating =+ 1;
+        rating += 1;
     }
 
     public void downvote(String ip) {

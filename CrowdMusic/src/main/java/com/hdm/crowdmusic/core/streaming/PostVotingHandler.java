@@ -1,11 +1,9 @@
 package com.hdm.crowdmusic.core.streaming;
 
-import android.content.ContentUris;
 import android.content.Context;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.util.Log;
 import com.hdm.crowdmusic.core.CrowdMusicPlaylist;
+import com.hdm.crowdmusic.core.CrowdMusicTrackVoting;
 import com.hdm.crowdmusic.util.Utility;
 import org.apache.http.*;
 import org.apache.http.protocol.HttpContext;
@@ -26,59 +24,46 @@ public class PostVotingHandler implements HttpRequestHandler {
     @Override
     public void handle(HttpRequest httpRequest, HttpResponse httpResponse, HttpContext httpContext) throws HttpException, IOException {
         String method = httpRequest.getRequestLine().getMethod().toUpperCase(Locale.ENGLISH);
-        if (!method.equals("GET")) {
-            Log.e(Utility.LOG_TAG_HTTP, "Only GET is supportet for votings data.");
+        if (method.equals("GET")) {
+            Log.e(Utility.LOG_TAG_HTTP, "Only POST is supported for votings.");
         }
 
         String uri = httpRequest.getRequestLine().getUri();
         Log.i(Utility.LOG_TAG_HTTP, "Object with URI " + uri + " was requested.");
 
-
-
-        int id = 0;
-        boolean isUpvote = isUpVote(uri);
-        try {
-            id = Integer.parseInt(uri.replaceAll("/vote/up/", ""));
-            id = Integer.parseInt(uri.replaceAll("/vote/down/", ""));
-        } catch (NumberFormatException e) {
-            Log.e(Utility.LOG_TAG_HTTP, "invalid ID");
-            httpResponse.setStatusCode(HttpStatus.SC_NOT_FOUND);
-            return;
-        }
-
-        Log.i(Utility.LOG_TAG_HTTP, "ID: " + id);
-
-        Uri audioUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
-        Log.i(Utility.LOG_TAG_HTTP, "URI: " + audioUri);
-
         CrowdMusicPlaylist playList = CrowdMusicPlaylist.getInstance();
         HttpEntity entity = ((HttpEntityEnclosingRequest) httpRequest).getEntity();
-        if (isUpvote) {
-            playList.upvote(id, getIPOfPoster(entity));
-        } else { // isDownvote
-            playList.downvote(id, getIPOfPoster(entity));
+
+        // TODO: This could be enhanced with a process method in the Voting class.
+        if (httpRequest instanceof HttpEntityEnclosingRequest) {
+            CrowdMusicTrackVoting voting = getPostData(entity);
+            if (voting.getCategory() == CrowdMusicTrackVoting.CATEGORY.DOWN) {
+                playList.downvote(voting.getTrack().getId(), voting.getTrack().getIp());
+            } else {
+                playList.upvote(voting.getTrack().getId(), voting.getTrack().getIp());
+            }
+            httpResponse.setStatusCode(HttpStatus.SC_OK);
+            return;
         }
     }
 
-    private boolean isUpVote(String uri) {
-        if (uri.contains("/vote/up/")) {
-            return true;
-        }
-        return false;
-    }
+    private CrowdMusicTrackVoting getPostData(HttpEntity entity) {
+        int id;
+        CrowdMusicTrackVoting.CATEGORY category;
+        String ip = "";
 
-    private String getIPOfPoster(HttpEntity entity) {
         try {
             String postData = EntityUtils.toString(entity);
             String[] parameters = postData.split("&");
 
-            int id = Integer.parseInt(parameters[0].replace("id=", ""));
-            String ip = parameters[1].replace("ip=", "");
+            id = Integer.parseInt(parameters[0].replace("id=", ""));
+            category = CrowdMusicTrackVoting.CATEGORY.valueOf(parameters[1].replace("category=", ""));
+            ip = parameters[2].replace("ip=", "");
 
-            return ip;
+            return new CrowdMusicTrackVoting(CrowdMusicPlaylist.getInstance().getFromPlaylistById(id), category, ip);
         } catch (IOException e) {
-            Log.e(Utility.LOG_TAG_HTTP, "Error while extracting IP address: " + e.getMessage());
-            return "";
+            Log.e(Utility.LOG_TAG_HTTP, "Error while extracting post data: " + e.getMessage());
+            return null;
         }
     }
 }

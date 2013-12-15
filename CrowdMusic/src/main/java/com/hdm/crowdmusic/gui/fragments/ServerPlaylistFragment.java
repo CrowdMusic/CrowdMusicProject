@@ -13,6 +13,7 @@ import com.hdm.crowdmusic.core.CrowdMusicPlaylist;
 import com.hdm.crowdmusic.core.CrowdMusicTrack;
 import com.hdm.crowdmusic.core.CrowdMusicTrackVoting;
 import com.hdm.crowdmusic.core.streaming.PostVotingTask;
+import com.hdm.crowdmusic.gui.activities.ClientActivity;
 import com.hdm.crowdmusic.gui.activities.ServerActivity;
 import com.hdm.crowdmusic.gui.support.PlaylistTrackAdapter;
 
@@ -25,7 +26,7 @@ public class ServerPlaylistFragment extends ListFragment implements PropertyChan
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        CrowdMusicPlaylist.getInstance().listener = this;
+        CrowdMusicPlaylist.getInstance().addListener(this);
 
     }
 
@@ -76,8 +77,14 @@ public class ServerPlaylistFragment extends ListFragment implements PropertyChan
             ServerActivity serverActivity = (ServerActivity) activity;
 
             final CrowdMusicTrack selectedTrack = (CrowdMusicTrack) getListAdapter().getItem(position);
-            final CrowdMusicTrackVoting voting = new CrowdMusicTrackVoting(selectedTrack, CrowdMusicTrackVoting.CATEGORY.UP);
+            final CrowdMusicTrackVoting voting = new CrowdMusicTrackVoting(selectedTrack, CrowdMusicTrackVoting.CATEGORY.UP, serverActivity.getCrowdMusicServer().getIp());
             new PostVotingTask(serverActivity.getCrowdMusicServer().getIp(), serverActivity.getHTTPServerService().getPort()).execute(voting);
+        } else if(activity instanceof ClientActivity) {
+            ClientLocalTracksFragment.OnClientRequestedListener clientActivity = (ClientLocalTracksFragment.OnClientRequestedListener) activity;
+
+            final CrowdMusicTrack selectedTrack = (CrowdMusicTrack) getListAdapter().getItem(position);
+            final CrowdMusicTrackVoting voting = new CrowdMusicTrackVoting(selectedTrack, CrowdMusicTrackVoting.CATEGORY.UP, clientActivity.getIp());
+            new PostVotingTask(clientActivity.OnServerRequestedListener(),clientActivity.OnPortRequestedListener()).execute(voting);
         }
 
     }

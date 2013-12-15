@@ -9,7 +9,7 @@ import java.util.*;
 
 public class CrowdMusicPlaylist {
 
-    public PropertyChangeListener listener;
+    public List<PropertyChangeListener> listeners = new ArrayList<PropertyChangeListener>();
 
     private final int QUEUE_LENGTH = 20;
     private PriorityQueue<CrowdMusicTrack> playlist;
@@ -33,6 +33,7 @@ public class CrowdMusicPlaylist {
     public CrowdMusicTrack getNextTrack() {
         if (playlist.size() > 0) {
             CrowdMusicTrack nextTrack = playlist.remove();
+            notifyListener();
             return nextTrack;
         }
         Log.i(Utility.LOG_TAG_MEDIA, "Playlist is empty!");
@@ -61,6 +62,10 @@ public class CrowdMusicPlaylist {
         }
     }
 
+    public void addListener(PropertyChangeListener listener) {
+        listeners.add(listener);
+    }
+
     class ScoreComparator implements Comparator<CrowdMusicTrack> {
         @Override
         public int compare(CrowdMusicTrack lhs, CrowdMusicTrack rhs) {
@@ -79,14 +84,20 @@ public class CrowdMusicPlaylist {
 
     public void upvote(int id, String ip) {
         CrowdMusicTrack track = getFromPlaylistById(id);
-        if (track != null) track.upvote(ip);
+        if (track != null) {
+            track.upvote(ip);
+            notifyListener();
+        }
     }
     public void downvote(int id, String ip) {
         CrowdMusicTrack track = getFromPlaylistById(id);
-        if (track != null) track.downvote(ip);
+        if (track != null) {
+            track.downvote(ip);
+            notifyListener();
+        }
     }
 
-    private CrowdMusicTrack getFromPlaylistById(int id) {
+    public CrowdMusicTrack getFromPlaylistById(int id) {
         for(CrowdMusicTrack track: playlist) {
             if (track.getId() == id) {
                 return track;
@@ -101,7 +112,9 @@ public class CrowdMusicPlaylist {
 
     // Ugly as hell, but it works
     public void notifyListener() {
-        if (listener == null) return;
-        listener.propertyChange(new PropertyChangeEvent(this, "tracklist", null, getPlaylist()));
+        for (PropertyChangeListener listener: listeners) {
+            if (listener == null) return;
+            listener.propertyChange(new PropertyChangeEvent(this, "tracklist", null, getPlaylist()));
+        }
     }
 }
