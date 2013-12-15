@@ -8,28 +8,19 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-
 import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-
 import android.widget.ListView;
-
-
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.core.CrowdMusicPlaylist;
 import com.hdm.crowdmusic.core.devicelistener.AllDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
 import com.hdm.crowdmusic.core.network.AccessPoint;
-import com.hdm.crowdmusic.core.streaming.AudioRequestHandler;
-import com.hdm.crowdmusic.core.streaming.HTTPServerService;
-import com.hdm.crowdmusic.core.streaming.IHttpServerService;
-import com.hdm.crowdmusic.core.streaming.PostAudioHandler;
+import com.hdm.crowdmusic.core.streaming.*;
 import com.hdm.crowdmusic.util.Utility;
-
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.registry.RegistryListener;
@@ -72,6 +63,7 @@ public class MainActivity extends ListActivity {
 
             httpService.registerHandler("/audio/*", new AudioRequestHandler(getApplicationContext()));
             httpService.registerHandler("/", new PostAudioHandler(getApplicationContext()));
+            httpService.registerHandler("/vote/*", new PostVotingHandler(getApplicationContext()));
         }
 
         public void onServiceDisconnected(ComponentName className) {

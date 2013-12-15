@@ -18,6 +18,7 @@ public class HTTPServerService extends Service {
     private HTTPBinder binder = new HTTPBinder();
 
     private String ip;
+
     private int port;
 
     @Override
@@ -60,6 +61,11 @@ public class HTTPServerService extends Service {
         @Override
         public void unregisterHandler(String pattern) {
             server.getHandlerRegistry().unregister(pattern);
+        }
+
+        @Override
+        public int getPort() {
+            return port;
         }
     }
 }

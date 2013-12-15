@@ -2,7 +2,6 @@ package com.hdm.crowdmusic.gui.activities;
 
 import android.app.*;
 import android.content.*;
-import android.graphics.Bitmap;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -14,6 +13,8 @@ import com.hdm.crowdmusic.core.CrowdMusicPlaylist;
 import com.hdm.crowdmusic.core.CrowdMusicServer;
 import com.hdm.crowdmusic.core.CrowdMusicTrack;
 import com.hdm.crowdmusic.core.network.AccessPoint;
+import com.hdm.crowdmusic.core.streaming.HTTPServerService;
+import com.hdm.crowdmusic.core.streaming.IHttpServerService;
 import com.hdm.crowdmusic.core.streaming.IMediaPlayerService;
 import com.hdm.crowdmusic.core.streaming.MediaPlayerService;
 import com.hdm.crowdmusic.gui.fragments.ServerAdminUsersFragment;
@@ -32,6 +33,7 @@ public class ServerActivity extends Activity {
 
     private CrowdMusicServer crowdMusicServer;
     private AndroidUpnpService upnpService;
+    private IHttpServerService httpServerService;
     private IMediaPlayerService mediaService;
 
     private AccessPoint accessPoint;
@@ -68,6 +70,20 @@ public class ServerActivity extends Activity {
             accessPoint.disable();
         }
     };
+    private ServiceConnection hTTPServerServiceConntection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.i(Utility.LOG_TAG_MEDIA, "httpServerService connected.");
+            httpServerService = (IHttpServerService) service;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.i(Utility.LOG_TAG_MEDIA, "httpServerService disconnected.");
+            httpServerService = null;
+            accessPoint.disable();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +115,12 @@ public class ServerActivity extends Activity {
         getApplicationContext().bindService(
                 new Intent(this, MediaPlayerService.class),
                 mediaServiceConntection,
+                Context.BIND_AUTO_CREATE
+        );
+
+        getApplicationContext().bindService(
+                new Intent(this, HTTPServerService.class),
+                hTTPServerServiceConntection,
                 Context.BIND_AUTO_CREATE
         );
 
@@ -219,6 +241,18 @@ public class ServerActivity extends Activity {
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public CrowdMusicServer getCrowdMusicServer() {
+        return crowdMusicServer;
+    }
+
+    public AndroidUpnpService getUPnPService() {
+        return upnpService;
+    }
+
+    public IHttpServerService getHTTPServerService() {
+        return httpServerService;
     }
 
 

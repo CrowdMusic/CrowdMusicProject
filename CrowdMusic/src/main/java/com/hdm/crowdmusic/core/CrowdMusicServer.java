@@ -56,4 +56,8 @@ public class CrowdMusicServer {
 
         return new LocalDevice(identity, type, details, crowdMusicService);
     }
+
+    public String getIp() {
+        return ip;
+    }
 }

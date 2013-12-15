@@ -77,6 +77,24 @@ public class CrowdMusicPlaylist {
         }
     }
 
+    public void upvote(int id, String ip) {
+        CrowdMusicTrack track = getFromPlaylistById(id);
+        if (track != null) track.upvote(ip);
+    }
+    public void downvote(int id, String ip) {
+        CrowdMusicTrack track = getFromPlaylistById(id);
+        if (track != null) track.downvote(ip);
+    }
+
+    private CrowdMusicTrack getFromPlaylistById(int id) {
+        for(CrowdMusicTrack track: playlist) {
+            if (track.getId() == id) {
+                return track;
+            }
+        }
+        return null;
+    }
+
     public List<CrowdMusicTrack> getPlaylist() {
         return shadowList;
     }
