@@ -66,6 +66,7 @@ public class MainActivity extends ListActivity {
             httpService.registerHandler("/audio/*", new AudioRequestHandler(getApplicationContext()));
             httpService.registerHandler("/", new PostAudioHandler(getApplicationContext()));
             httpService.registerHandler("/vote*", new PostVotingHandler(getApplicationContext()));
+            httpService.registerHandler("/postplaylist*", new PostPlaylistHandler(getApplicationContext()));
         }
 
         public void onServiceDisconnected(ComponentName className) {
