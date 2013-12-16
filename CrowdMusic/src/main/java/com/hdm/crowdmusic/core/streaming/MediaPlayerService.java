@@ -17,6 +17,7 @@ import java.io.IOException;
 public class MediaPlayerService extends Service implements MediaPlayer.OnPreparedListener{
 
     private MediaPlayerBinder binder = new MediaPlayerBinder();
+    private boolean hasTrack = false;
 
     MediaPlayer mediaPlayer;
 
@@ -88,11 +89,13 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     private class MediaPlayerBinder extends Binder implements IMediaPlayerService {
         @Override
         public void play(Uri uri) {
+            hasTrack = true;
             playMusic(uri);
         }
 
         @Override
         public void play(String url) {
+            hasTrack = true;
             playMusic(url);
         }
 
@@ -110,5 +113,30 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         public void resume() {
             resumeMusic();
         }
+        @Override
+        public boolean isPlaying() {
+            return mediaPlayer.isPlaying();
+        }
+
+        @Override
+        public boolean hasTrack() {
+            return hasTrack;
+        }
+
+        @Override
+        public void playPause() {
+
+            if (mediaPlayer.isPlaying()) {
+                pauseMusic();
+            } else {
+                resumeMusic();
+            }
+
+        }
+        @Override
+        public void restartCurrentTrack() {
+            mediaPlayer.seekTo(0);
+        }
+
     }
 }
