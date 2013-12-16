@@ -30,5 +30,5 @@ dependencies {
     compile 'com.android.support:support-v4:18.0.0'
     compile group: 'org.teleal.cling', name: 'cling-core', version: '1.0.5'
     compile group: 'org.teleal.cling', name: 'cling-support', version: '1.0.5'
-
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.2.4'
 }
