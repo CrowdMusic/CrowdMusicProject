@@ -8,4 +8,8 @@ public interface IMediaPlayerService {
     public void stop();
     public void pause();
     public void resume();
+    public boolean isPlaying();
+    public boolean hasTrack();
+    public void playPause();
+    public void restartCurrentTrack();
 }
