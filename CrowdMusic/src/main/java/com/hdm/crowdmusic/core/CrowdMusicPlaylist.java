@@ -1,6 +1,8 @@
 package com.hdm.crowdmusic.core;
 
 import android.util.Log;
+import com.hdm.crowdmusic.core.streaming.PostPlaylistTask;
+import com.hdm.crowdmusic.util.Constants;
 import com.hdm.crowdmusic.util.Utility;
 
 import java.beans.PropertyChangeEvent;
@@ -109,12 +111,26 @@ public class CrowdMusicPlaylist {
     public List<CrowdMusicTrack> getPlaylist() {
         return shadowList;
     }
-
+    public void setPlaylist(List<CrowdMusicTrack> list) {
+        shadowList = list;
+        playlist.addAll(list);
+    }
     // Ugly as hell, but it works
     public void notifyListener() {
         for (PropertyChangeListener listener: listeners) {
             if (listener == null) return;
             listener.propertyChange(new PropertyChangeEvent(this, "tracklist", null, getPlaylist()));
+        }
+
+        List<String> alreadyPostedIPs = new ArrayList<String>();
+        for (CrowdMusicTrack track: playlist) {
+            String clientIp = track.getIp();
+            if (alreadyPostedIPs.contains(clientIp)) {
+                // do nothing...
+            } else {
+                new PostPlaylistTask(clientIp, Constants.getInstance().getPort()).execute(getPlaylist());
+                alreadyPostedIPs.add(clientIp);
+            }
         }
     }
 }
