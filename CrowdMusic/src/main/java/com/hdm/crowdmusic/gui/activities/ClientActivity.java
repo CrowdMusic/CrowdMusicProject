@@ -2,21 +2,18 @@ package com.hdm.crowdmusic.gui.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.Menu;
 import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.CrowdMusicClient;
 import com.hdm.crowdmusic.gui.fragments.ClientLocalTracksFragment;
 import com.hdm.crowdmusic.gui.fragments.ServerPlaylistFragment;
-import com.hdm.crowdmusic.gui.support.OnClientRequestListener;
+import com.hdm.crowdmusic.gui.support.IOnClientRequestListener;
 import com.hdm.crowdmusic.gui.support.TabListener;
-import com.hdm.crowdmusic.util.Constants;
 import com.hdm.crowdmusic.util.Utility;
 
-public class ClientActivity extends Activity implements OnClientRequestListener {
+public class ClientActivity extends Activity implements IOnClientRequestListener {
 
     private CrowdMusicClient crowdMusicClient;
 

@@ -2,6 +2,6 @@ package com.hdm.crowdmusic.gui.support;
 
 import com.hdm.crowdmusic.core.CrowdMusicServer;
 
-public interface OnServerRequestListener {
+public interface IOnServerRequestListener {
     public CrowdMusicServer getServerData();
 }

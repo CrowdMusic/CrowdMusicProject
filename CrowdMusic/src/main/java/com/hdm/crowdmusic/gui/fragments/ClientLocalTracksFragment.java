@@ -10,14 +10,14 @@ import android.widget.ListView;
 import com.hdm.crowdmusic.core.CrowdMusicClient;
 import com.hdm.crowdmusic.core.CrowdMusicTrack;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
+import com.hdm.crowdmusic.gui.support.IOnClientRequestListener;
 import com.hdm.crowdmusic.gui.support.LocalFilesTrackAdapter;
-import com.hdm.crowdmusic.gui.support.OnClientRequestListener;
 
 import org.teleal.cling.registry.RegistryListener;
 
 public class ClientLocalTracksFragment extends ListFragment {
 
-    private OnClientRequestListener listener;
+    private IOnClientRequestListener listener;
     private CrowdMusicClient client;
     private ArrayAdapter<CrowdMusicTrack> listAdapter;
     private RegistryListener registryListener;
@@ -40,7 +40,7 @@ public class ClientLocalTracksFragment extends ListFragment {
         super.onAttach(activity);
 
         try {
-            this.listener = (OnClientRequestListener) activity;
+            this.listener = (IOnClientRequestListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnHeadlineSelectedListener");

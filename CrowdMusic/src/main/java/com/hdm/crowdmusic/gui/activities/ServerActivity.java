@@ -2,17 +2,12 @@ package com.hdm.crowdmusic.gui.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -21,35 +16,28 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.CrowdMusicPlaylist;
 import com.hdm.crowdmusic.core.CrowdMusicServer;
 import com.hdm.crowdmusic.core.CrowdMusicTrack;
-import com.hdm.crowdmusic.core.network.AccessPoint;
 import com.hdm.crowdmusic.core.streaming.HTTPServerService;
 import com.hdm.crowdmusic.core.streaming.IHttpServerService;
 import com.hdm.crowdmusic.core.streaming.IMediaPlayerService;
 import com.hdm.crowdmusic.core.streaming.MediaPlayerService;
 import com.hdm.crowdmusic.gui.fragments.ServerAdminUsersFragment;
 import com.hdm.crowdmusic.gui.fragments.ServerPlaylistFragment;
-import com.hdm.crowdmusic.gui.support.OnServerRequestListener;
+import com.hdm.crowdmusic.gui.support.IOnServerRequestListener;
 import com.hdm.crowdmusic.util.Utility;
 
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.registry.RegistrationException;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
-
 import static com.hdm.crowdmusic.R.id;
 import static com.hdm.crowdmusic.R.layout;
 
-public class ServerActivity extends Activity implements OnServerRequestListener{
+public class ServerActivity extends Activity implements IOnServerRequestListener {
 
     private CrowdMusicServer crowdMusicServer;
     private AndroidUpnpService upnpService;
