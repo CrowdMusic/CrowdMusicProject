@@ -27,9 +27,7 @@ public class ClientActivity extends Activity implements OnClientRequestListener 
         Intent lastIntent = getIntent();
         String serverIP = lastIntent.getStringExtra("serverIP");
 
-        final WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        String clientIP = Utility.getWifiInetAddress(wifiManager).getHostAddress();
-
+        String clientIP = Utility.getWifiIpAddress();
         crowdMusicClient = new CrowdMusicClient(getApplicationContext(), clientIP, serverIP);
 
         final ActionBar bar = getActionBar();

@@ -1,9 +1,13 @@
 package com.hdm.crowdmusic.gui.activities;
 
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.wifi.WifiManager;
@@ -15,6 +19,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
+
 import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.devicelistener.AllDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
@@ -31,6 +37,7 @@ import org.teleal.cling.registry.RegistryListener;
 public class MainActivity extends ListActivity {
 
     private String clientIP;
+    private AccessPoint accessPoint;
 
     private AndroidUpnpService upnpService;
     private IHttpServerService httpService;
@@ -81,8 +88,7 @@ public class MainActivity extends ListActivity {
 
         registryListener = new CrowdDevicesBrowser(this, listAdapter);
 
-        final WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        clientIP = Utility.getWifiInetAddress(wifiManager).getHostAddress();
+        clientIP = Utility.getWifiIpAddress();
 
         getApplicationContext().bindService(
                 new Intent(this, AndroidUpnpServiceImpl.class),
@@ -93,8 +99,6 @@ public class MainActivity extends ListActivity {
         Intent httpIntent = new Intent(this, HTTPServerService.class);
         httpIntent.putExtra("ip", clientIP);
         httpIntent.putExtra("port", Constants.PORT);
-
-        getApplicationContext().
 
         getApplicationContext().bindService(
                 httpIntent,
@@ -174,11 +178,73 @@ public class MainActivity extends ListActivity {
 
     public void startServer(View view) {
         AccessPoint.setApDialogShown(false);
+        accessPoint = new AccessPoint(getApplicationContext());
+        handleAPModalDialog();
         transitToServerActivity(view);
     }
 
     public void transitToServerActivity(View view) {
         Intent intent = new Intent(this, ServerActivity.class);
         startActivity(intent);
+    }
+
+    public void handleAPModalDialog() {
+
+        // If the dialog was alread shown, do nothing. This is for example the case
+        // when switching from landscape to portrait. See Issue 23.
+        if (AccessPoint.isApDialogShown()) return;
+        AccessPoint.setApDialogShown(true);
+
+        final Activity currentActivity = this;
+
+        if (accessPoint.isWifiConnected()) {
+
+            DialogInterface.OnClickListener ok = new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    accessPoint.enable();
+                    Toast toast = Toast.makeText(currentActivity.getApplicationContext(), R.string.dialog_create_wlan_ap_created + "\n" + R.string.server_activity_created_server, 2);
+                    toast.show();
+                }
+            };
+            DialogInterface.OnClickListener cancel = new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Toast toast = Toast.makeText(currentActivity.getApplicationContext(), R.string.dialog_create_wlan_no_ap_created, 2);
+                    toast.show();
+                }
+            };
+
+            Dialog dialog = getModalDialog(this, getApplicationContext().getString(R.string.dialog_create_wlan), ok, cancel);
+            dialog.show();
+        } else {
+
+            DialogInterface.OnClickListener ok = new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    accessPoint.enable();
+                    Toast.makeText(getApplicationContext(), R.string.server_activity_created_server, 2).show();
+                }
+            };
+            DialogInterface.OnClickListener cancel = new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Toast toast = Toast.makeText(currentActivity.getApplicationContext(), R.string.dialog_create_wlan_no_ap_created, 2);
+                    toast.show();
+                }
+            };
+
+            Dialog dialog = getModalDialog(this, getApplicationContext().getString(R.string.dialog_create_wlan_no_wifi_enabled_or_active), ok, cancel);
+            dialog.show();
+        }
+    }
+    AlertDialog getModalDialog(final Activity currentActivity, String dialog, DialogInterface.OnClickListener ok, DialogInterface.OnClickListener cancel) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setMessage(dialog)
+                .setTitle(R.string.dialog_title_create_wlan);
+
+
+        builder.setPositiveButton(android.R.string.yes, ok);
+        builder.setNegativeButton(android.R.string.no, cancel);
+
+        AlertDialog alertDialog = builder.create();
+        return alertDialog;
     }
 }

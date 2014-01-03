@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -41,6 +42,9 @@ import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.registry.RegistrationException;
 
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 
 import static com.hdm.crowdmusic.R.id;
 import static com.hdm.crowdmusic.R.layout;
@@ -51,8 +55,6 @@ public class ServerActivity extends Activity implements OnServerRequestListener{
     private AndroidUpnpService upnpService;
     private IHttpServerService httpServerService;
     private IMediaPlayerService mediaService;
-
-    private AccessPoint accessPoint;
 
     private ServiceConnection upnpServiceConnection = new ServiceConnection() {
         @Override
@@ -71,7 +73,6 @@ public class ServerActivity extends Activity implements OnServerRequestListener{
             upnpService = null;
         }
     };
-
     private ServiceConnection mediaServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -83,7 +84,6 @@ public class ServerActivity extends Activity implements OnServerRequestListener{
         public void onServiceDisconnected(ComponentName name) {
             Log.i(Utility.LOG_TAG_MEDIA, "MediaPlayerService disconnected.");
             mediaService = null;
-            accessPoint.disable();
         }
     };
     private ServiceConnection httpServerServiceConnection = new ServiceConnection() {
@@ -97,7 +97,6 @@ public class ServerActivity extends Activity implements OnServerRequestListener{
         public void onServiceDisconnected(ComponentName name) {
             Log.i(Utility.LOG_TAG_MEDIA, "httpServerService disconnected.");
             httpServerService = null;
-            accessPoint.disable();
         }
     };
 
@@ -128,11 +127,7 @@ public class ServerActivity extends Activity implements OnServerRequestListener{
                 .setTabListener(new TabListener<ServerAdminUsersFragment>(
                         this, "admin", ServerAdminUsersFragment.class)));
 
-        //handleAPModalDialog();
-
-        if (crowdMusicServer == null) {
-            setupCrowdMusicServer();
-        }
+        setupCrowdMusicServer();
 
         getApplicationContext().bindService(
                 new Intent(this, AndroidUpnpServiceImpl.class),
@@ -157,70 +152,6 @@ public class ServerActivity extends Activity implements OnServerRequestListener{
     protected void onStart() {
         super.onStart();
     }
-
-    public void handleAPModalDialog() {
-
-        // If the dialog was alread shown, do nothing. This is for example the case
-        // when switching from landscape to portrait. See Issue 23.
-        if (AccessPoint.isApDialogShown()) return;
-        AccessPoint.setApDialogShown(true);
-
-        final Activity currentActivity = this;
-
-        if (accessPoint.isWifiConnected()) {
-
-            DialogInterface.OnClickListener ok = new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    accessPoint.enable();
-                    Toast toast = Toast.makeText(currentActivity.getApplicationContext(), R.string.dialog_create_wlan_ap_created + "\n" + R.string.server_activity_created_server, 2);
-                    toast.show();
-                }
-            };
-            DialogInterface.OnClickListener cancel = new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Toast toast = Toast.makeText(currentActivity.getApplicationContext(), R.string.dialog_create_wlan_no_ap_created, 2);
-                    toast.show();
-                }
-            };
-
-            Dialog dialog = getModalDialog(this, getApplicationContext().getString(R.string.dialog_create_wlan), ok, cancel);
-            dialog.show();
-        } else {
-
-            DialogInterface.OnClickListener ok = new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    accessPoint.enable();
-                    setupCrowdMusicServer();
-                    Toast.makeText(getApplicationContext(), R.string.server_activity_created_server, 2).show();
-                }
-            };
-            DialogInterface.OnClickListener cancel = new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Toast toast = Toast.makeText(currentActivity.getApplicationContext(), R.string.dialog_create_wlan_no_ap_created, 2);
-                    toast.show();
-                }
-            };
-
-            Dialog dialog = getModalDialog(this, getApplicationContext().getString(R.string.dialog_create_wlan_no_wifi_enabled_or_active), ok, cancel);
-            dialog.show();
-        }
-    }
-
-
-    AlertDialog getModalDialog(final Activity currentActivity, String dialog, DialogInterface.OnClickListener ok, DialogInterface.OnClickListener cancel) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setMessage(dialog)
-                .setTitle(R.string.dialog_title_create_wlan);
-
-
-        builder.setPositiveButton(android.R.string.yes, ok);
-        builder.setNegativeButton(android.R.string.no, cancel);
-
-        AlertDialog alertDialog = builder.create();
-        return alertDialog;
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -270,11 +201,10 @@ public class ServerActivity extends Activity implements OnServerRequestListener{
     }
 
     private void setupCrowdMusicServer() {
-        final WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        accessPoint = new AccessPoint(getApplicationContext());
-
-        InetAddress ip = Utility.getWifiInetAddress(wifiManager);
-        crowdMusicServer = new CrowdMusicServer(ip.getHostAddress());
+        String ip = Utility.getWifiIpAddress();
+        if (ip != null) {
+            crowdMusicServer = new CrowdMusicServer(ip);
+        }
     }
 
     //TODO: Return copy instead of the real thing
