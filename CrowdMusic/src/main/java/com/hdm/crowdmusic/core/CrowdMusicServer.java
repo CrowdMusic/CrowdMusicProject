@@ -10,20 +10,18 @@ import org.teleal.cling.model.types.UDADeviceType;
 import org.teleal.cling.model.types.UDN;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class CrowdMusicServer {
 
     public static DeviceIdentity CROWD_MUSIC_SERVER_IDENTITY = new DeviceIdentity(UDN.uniqueSystemIdentifier("CrowdMusicServer"));
     private LocalDevice localDevice;
 
-    private String ip;
+    private String serverIP;
+    private ArrayList<String> registeredClients;
 
-    public LocalDevice getLocalDevice() {
-        return localDevice;
-    }
-
-    public CrowdMusicServer(String ip) {
-        this.ip = ip;
+    public CrowdMusicServer(String serverIP) {
+        this.serverIP = serverIP;
 
         try {
             this.localDevice = createDevice();
@@ -47,7 +45,7 @@ public class CrowdMusicServer {
                         new ModelDetails(
                                 "CrowdMusic",
                                 "Playlist for a crowd.",
-                                ip
+                                serverIP
                         )
                 );
 
@@ -57,7 +55,24 @@ public class CrowdMusicServer {
         return new LocalDevice(identity, type, details, crowdMusicService);
     }
 
-    public String getIp() {
-        return ip;
+    public String getServerIP() {
+        return serverIP;
     }
+    public ArrayList<String> getClientList() { return registeredClients; } //TODO: Return a copy, not the real one
+    public LocalDevice getLocalDevice() {
+        return localDevice;
+    }
+
+    public void registerClient(String clientIP) {
+        if (!registeredClients.contains(clientIP)) {
+            registeredClients.add(clientIP);
+        }
+    }
+    public void unregisterClient(String clientIP) {
+        if (registeredClients.contains(clientIP)) {
+            registeredClients.remove(clientIP);
+        }
+    }
+
+    public void notifyAllClients() {}
 }

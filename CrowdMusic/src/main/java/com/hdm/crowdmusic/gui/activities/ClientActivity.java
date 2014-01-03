@@ -2,35 +2,35 @@ package com.hdm.crowdmusic.gui.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.Menu;
 import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.CrowdMusicClient;
 import com.hdm.crowdmusic.gui.fragments.ClientLocalTracksFragment;
 import com.hdm.crowdmusic.gui.fragments.ServerPlaylistFragment;
+import com.hdm.crowdmusic.gui.support.OnClientRequestListener;
 import com.hdm.crowdmusic.gui.support.TabListener;
+import com.hdm.crowdmusic.util.Constants;
+import com.hdm.crowdmusic.util.Utility;
 
-public class ClientActivity extends Activity implements ClientLocalTracksFragment.OnClientRequestedListener {
-
+public class ClientActivity extends Activity implements OnClientRequestListener {
 
     private CrowdMusicClient crowdMusicClient;
-
-
-    private String serverIP;
-    private String clientIP;
-    private int port;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Intent lastIntent = getIntent();
-        clientIP = lastIntent.getStringExtra("clientIP");
-        serverIP = lastIntent.getStringExtra("serverIP");
-        port = lastIntent.getIntExtra("port", 8080);
+        String serverIP = lastIntent.getStringExtra("serverIP");
 
-        crowdMusicClient = new CrowdMusicClient(getApplicationContext(), clientIP);
+        final WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        String clientIP = Utility.getWifiInetAddress(wifiManager).getHostAddress();
+
+        crowdMusicClient = new CrowdMusicClient(getApplicationContext(), clientIP, serverIP);
 
         final ActionBar bar = getActionBar();
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -51,7 +51,6 @@ public class ClientActivity extends Activity implements ClientLocalTracksFragmen
     @Override
     protected void onStart() {
         super.onStart();
-
         crowdMusicClient.init();
     }
 
@@ -63,29 +62,10 @@ public class ClientActivity extends Activity implements ClientLocalTracksFragmen
         return true;
     }
 
+    //TODO: Just give a copy and not the real reference
     @Override
-    public CrowdMusicClient OnClientRequestedListener() {
+    public CrowdMusicClient getClientData() {
         return crowdMusicClient;
     }
-
-    @Override
-    public String OnServerRequestedListener() {
-        return serverIP;
-    }
-
-    @Override
-    public int OnPortRequestedListener() {
-        return port;
-    }
-
-    @Override
-    public String getIp() {
-        return clientIP;
-    }
-
-    public String getServerIp() {
-        return serverIP;
-    }
-
 }
 

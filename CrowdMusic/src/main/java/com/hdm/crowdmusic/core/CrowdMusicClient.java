@@ -4,6 +4,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
 import android.util.Log;
+
+import com.hdm.crowdmusic.core.streaming.PostAudioTask;
+import com.hdm.crowdmusic.util.Constants;
 import com.hdm.crowdmusic.util.Utility;
 import java.util.ArrayList;
 
@@ -12,11 +15,13 @@ public class CrowdMusicClient {
     private Context context;
     private ArrayList<CrowdMusicTrack> trackList;
 
-    private String ip;
+    private String clientIP;
+    private String serverIP;
 
-    public CrowdMusicClient(Context context, String ip) {
+    public CrowdMusicClient(Context context, String clientIP, String serverIP) {
         this.context = context;
-        this.ip = ip;
+        this.clientIP = clientIP;
+        this.serverIP = serverIP;
         trackList = new ArrayList<CrowdMusicTrack>();
     }
 
@@ -57,7 +62,7 @@ public class CrowdMusicClient {
                 title = exCursor.getString(titleIndex);
                 artist = exCursor.getString(artistIndex);
 
-                trackList.add(new CrowdMusicTrack(id, ip, artist, title));
+                trackList.add(new CrowdMusicTrack(id, clientIP, artist, title));
                 Log.d(Utility.LOG_TAG_MEDIA, id + ", " + title + ", " + artist);
             } while (exCursor.moveToNext());
 
@@ -69,6 +74,16 @@ public class CrowdMusicClient {
     }
 
     public ArrayList<CrowdMusicTrack> getTrackList() {
+
         return trackList;
     }
+    public String getClientIP() { return clientIP; }
+    public String getServerIP() { return serverIP; }
+
+    public void register() {}
+    public void postAudio(CrowdMusicTrack track) {
+        new PostAudioTask(serverIP, Constants.PORT).execute(track);
+    }
+    public void upvoteTrack() {}
+    public void downvoteTrack() {}
 }

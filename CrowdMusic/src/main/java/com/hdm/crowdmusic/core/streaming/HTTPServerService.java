@@ -6,6 +6,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.hdm.crowdmusic.util.Constants;
 import com.hdm.crowdmusic.util.Utility;
 
 import org.apache.http.protocol.HttpRequestHandler;
@@ -18,7 +19,6 @@ public class HTTPServerService extends Service {
     private HTTPBinder binder = new HTTPBinder();
 
     private String ip;
-
     private int port;
 
     @Override
@@ -31,13 +31,14 @@ public class HTTPServerService extends Service {
         super.onDestroy();
 
         server.stopServer();
+        server = null;
     }
 
     @Override
     public IBinder onBind(Intent intent) {
         Log.i(Utility.LOG_TAG_HTTP, "onBind received");
         this.ip = intent.getStringExtra("ip");
-        this.port = intent.getIntExtra("port", 8080);
+        this.port = intent.getIntExtra("port", Constants.PORT);
         Log.i(Utility.LOG_TAG_HTTP, "Following parameters were transferred: " + ip + ":" + port);
 
         if (server == null) {
@@ -52,6 +53,22 @@ public class HTTPServerService extends Service {
         return binder;
     }
 
+    private void restartServer(String ip, int port) {
+        if (server != null) {
+            this.ip = ip;
+            this.port = port;
+
+            try {
+                server = new HTTPServer(port, InetAddress.getByName(ip));
+                server.startServer();
+            } catch (UnknownHostException e) {
+                Log.e(Utility.LOG_TAG_HTTP, e.getMessage());
+            }
+        } else {
+            Log.e(Utility.LOG_TAG_HTTP, "Server isn't running, nothing to restart here...)");
+        }
+    }
+
     private class HTTPBinder extends Binder implements IHttpServerService {
         @Override
         public void registerHandler(String pattern, HttpRequestHandler handler) {
@@ -64,8 +81,8 @@ public class HTTPServerService extends Service {
         }
 
         @Override
-        public int getPort() {
-            return port;
+        public void reconfigureServer(String ip, int port) {
+            restartServer(ip, port);
         }
     }
 }

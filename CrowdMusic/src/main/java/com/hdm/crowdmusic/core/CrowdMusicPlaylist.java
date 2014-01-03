@@ -49,9 +49,7 @@ public class CrowdMusicPlaylist {
         shadowList.add(track);
         notifyListener();
         Log.i(Utility.LOG_TAG_MEDIA, "The queue now contains the following elements: ");
-        Iterator<CrowdMusicTrack> iterator = playlist.iterator();
-        while (iterator.hasNext()) {
-            CrowdMusicTrack t = iterator.next();
+        for (CrowdMusicTrack t : playlist) {
             Log.i(Utility.LOG_TAG_MEDIA, "ID: " + t.getId() + " | IP: " + t.getIp() + " | Artist: " + t.getArtist() + " | Track: " + t.getTrackName());
         }
     }
@@ -128,7 +126,7 @@ public class CrowdMusicPlaylist {
             if (alreadyPostedIPs.contains(clientIp)) {
                 // do nothing...
             } else {
-                new PostPlaylistTask(clientIp, Constants.getInstance().getPort()).execute(getPlaylist());
+                new PostPlaylistTask(clientIp, Constants.PORT).execute(getPlaylist());
                 alreadyPostedIPs.add(clientIp);
             }
         }

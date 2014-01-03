@@ -118,7 +118,7 @@ public class Utility {
         StringBuilder sb = new StringBuilder();
         sb.append("http://");
         sb.append(track.getIp());
-        sb.append(":8080");
+        sb.append(":" + Constants.PORT);
         sb.append("/audio/");
         sb.append(track.getId());
         return sb.toString();

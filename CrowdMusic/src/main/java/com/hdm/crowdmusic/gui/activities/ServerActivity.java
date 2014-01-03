@@ -33,6 +33,7 @@ import com.hdm.crowdmusic.core.streaming.IMediaPlayerService;
 import com.hdm.crowdmusic.core.streaming.MediaPlayerService;
 import com.hdm.crowdmusic.gui.fragments.ServerAdminUsersFragment;
 import com.hdm.crowdmusic.gui.fragments.ServerPlaylistFragment;
+import com.hdm.crowdmusic.gui.support.OnServerRequestListener;
 import com.hdm.crowdmusic.util.Utility;
 
 import org.teleal.cling.android.AndroidUpnpService;
@@ -44,7 +45,7 @@ import java.net.InetAddress;
 import static com.hdm.crowdmusic.R.id;
 import static com.hdm.crowdmusic.R.layout;
 
-public class ServerActivity extends Activity {
+public class ServerActivity extends Activity implements OnServerRequestListener{
 
     private CrowdMusicServer crowdMusicServer;
     private AndroidUpnpService upnpService;
@@ -53,7 +54,7 @@ public class ServerActivity extends Activity {
 
     private AccessPoint accessPoint;
 
-    private ServiceConnection upnpServiceConntection = new ServiceConnection() {
+    private ServiceConnection upnpServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             upnpService = (AndroidUpnpService) service;
@@ -71,7 +72,7 @@ public class ServerActivity extends Activity {
         }
     };
 
-    private ServiceConnection mediaServiceConntection = new ServiceConnection() {
+    private ServiceConnection mediaServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.i(Utility.LOG_TAG_MEDIA, "MediaPlayerService connected.");
@@ -85,7 +86,7 @@ public class ServerActivity extends Activity {
             accessPoint.disable();
         }
     };
-    private ServiceConnection hTTPServerServiceConntection = new ServiceConnection() {
+    private ServiceConnection httpServerServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.i(Utility.LOG_TAG_MEDIA, "httpServerService connected.");
@@ -112,34 +113,6 @@ public class ServerActivity extends Activity {
                     .commit();
         }
 
-
-        final WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        accessPoint = new AccessPoint(getApplicationContext());
-        handleAPModalDialog();
-        InetAddress ip = Utility.getWifiInetAddress(wifiManager);
-        crowdMusicServer = new CrowdMusicServer(ip.getHostAddress());
-
-
-        getApplicationContext().bindService(
-                new Intent(this, AndroidUpnpServiceImpl.class),
-                upnpServiceConntection,
-                Context.BIND_AUTO_CREATE
-        );
-
-        getApplicationContext().bindService(
-                new Intent(this, MediaPlayerService.class),
-                mediaServiceConntection,
-                Context.BIND_AUTO_CREATE
-        );
-
-        getApplicationContext().bindService(
-                new Intent(this, HTTPServerService.class),
-                hTTPServerServiceConntection,
-                Context.BIND_AUTO_CREATE
-        );
-
-        handleAPModalDialog();
-
         final ActionBar bar = getActionBar();
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         bar.setDisplayOptions(1, ActionBar.DISPLAY_SHOW_TITLE);
@@ -154,6 +127,30 @@ public class ServerActivity extends Activity {
                 .setText("Users")
                 .setTabListener(new TabListener<ServerAdminUsersFragment>(
                         this, "admin", ServerAdminUsersFragment.class)));
+
+        //handleAPModalDialog();
+
+        if (crowdMusicServer == null) {
+            setupCrowdMusicServer();
+        }
+
+        getApplicationContext().bindService(
+                new Intent(this, AndroidUpnpServiceImpl.class),
+                upnpServiceConnection,
+                Context.BIND_AUTO_CREATE
+        );
+
+        getApplicationContext().bindService(
+                new Intent(this, MediaPlayerService.class),
+                mediaServiceConnection,
+                Context.BIND_AUTO_CREATE
+        );
+
+        getApplicationContext().bindService(
+                new Intent(this, HTTPServerService.class),
+                httpServerServiceConnection,
+                Context.BIND_AUTO_CREATE
+        );
     }
 
     @Override
@@ -192,8 +189,8 @@ public class ServerActivity extends Activity {
 
             DialogInterface.OnClickListener ok = new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-
                     accessPoint.enable();
+                    setupCrowdMusicServer();
                     Toast.makeText(getApplicationContext(), R.string.server_activity_created_server, 2).show();
                 }
             };
@@ -272,19 +269,19 @@ public class ServerActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void setupCrowdMusicServer() {
+        final WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        accessPoint = new AccessPoint(getApplicationContext());
 
-    public CrowdMusicServer getCrowdMusicServer() {
+        InetAddress ip = Utility.getWifiInetAddress(wifiManager);
+        crowdMusicServer = new CrowdMusicServer(ip.getHostAddress());
+    }
+
+    //TODO: Return copy instead of the real thing
+    @Override
+    public CrowdMusicServer getServerData() {
         return crowdMusicServer;
     }
-
-    public AndroidUpnpService getUPnPService() {
-        return upnpService;
-    }
-
-    public IHttpServerService getHTTPServerService() {
-        return httpServerService;
-    }
-
 
     public static class PlaceholderFragment extends Fragment {
 
@@ -298,7 +295,6 @@ public class ServerActivity extends Activity {
             return rootView;
         }
     }
-
     public class TabListener<T extends Fragment> implements ActionBar.TabListener {
         private final Activity mActivity;
         private final String mTag;
