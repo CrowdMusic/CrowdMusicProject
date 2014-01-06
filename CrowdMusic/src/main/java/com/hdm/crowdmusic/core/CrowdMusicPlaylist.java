@@ -1,7 +1,7 @@
 package com.hdm.crowdmusic.core;
 
 import android.util.Log;
-import com.hdm.crowdmusic.core.streaming.PostPlaylistTask;
+import com.hdm.crowdmusic.core.streaming.actions.PostPlaylistTask;
 import com.hdm.crowdmusic.util.Constants;
 import com.hdm.crowdmusic.util.Utility;
 

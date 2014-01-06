@@ -5,12 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.net.wifi.WifiManager;
+import android.content.*;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.Menu;
@@ -20,13 +15,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.devicelistener.AllDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
 import com.hdm.crowdmusic.core.network.AccessPoint;
-import com.hdm.crowdmusic.core.streaming.*;
+import com.hdm.crowdmusic.core.streaming.AudioRequestHandler;
+import com.hdm.crowdmusic.core.streaming.HTTPServerService;
+import com.hdm.crowdmusic.core.streaming.IHttpServerService;
+import com.hdm.crowdmusic.core.streaming.actions.*;
 import com.hdm.crowdmusic.util.Constants;
 import com.hdm.crowdmusic.util.Utility;
 import org.teleal.cling.android.AndroidUpnpService;
@@ -72,6 +69,32 @@ public class MainActivity extends ListActivity {
             httpService.registerHandler("/audio/*", new AudioRequestHandler(getApplicationContext()));
             httpService.registerHandler("/", new PostAudioHandler(getApplicationContext()));
             httpService.registerHandler("/postplaylist*", new PostPlaylistHandler(getApplicationContext()));
+
+            // TODO: Usage example for tasks
+            /*httpService.registerHandler("/x*", new CrowdMusicHandler<String>(new Executable<String>() {
+                @Override
+                public void execute(final String postData) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), postData, 2).show();
+                        }
+                    });
+                }
+            }));
+
+            SimplePostTask<String> task = new SimplePostTask<String>("10.23.23.153", Constants.PORT);
+            task.execute(new ICrowdMusicAction<String>() {
+                @Override
+                public String getPostTarget() {
+                    return "x";
+                }
+
+                @Override
+                public String getParam() {
+                    return "teststetetetststsetet";
+                }
+            });*/
         }
 
         public void onServiceDisconnected(ComponentName className) {
