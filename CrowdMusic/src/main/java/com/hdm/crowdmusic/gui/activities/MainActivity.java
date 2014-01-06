@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.hdm.crowdmusic.R;
+import com.hdm.crowdmusic.core.CrowdMusicPlaylist;
 import com.hdm.crowdmusic.core.devicelistener.AllDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
@@ -69,32 +70,28 @@ public class MainActivity extends ListActivity {
             httpService.registerHandler("/audio/*", new AudioRequestHandler(getApplicationContext()));
             httpService.registerHandler("/", new PostAudioHandler(getApplicationContext()));
             httpService.registerHandler("/postplaylist*", new PostPlaylistHandler(getApplicationContext()));
-
-            // TODO: Usage example for tasks
-            /*httpService.registerHandler("/x*", new CrowdMusicHandler<String>(new Executable<String>() {
+            httpService.registerHandler("/vote/up", new CrowdMusicHandler<Vote>(new Executable<Vote>() {
                 @Override
-                public void execute(final String postData) {
+                public void execute(final Vote postData) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(getApplicationContext(), postData, 2).show();
+                            CrowdMusicPlaylist.getInstance().upvote(postData.getTrackId(), postData.getIp());
                         }
                     });
                 }
             }));
-
-            SimplePostTask<String> task = new SimplePostTask<String>("10.23.23.153", Constants.PORT);
-            task.execute(new ICrowdMusicAction<String>() {
+            httpService.registerHandler("/vote/down", new CrowdMusicHandler<Vote>(new Executable<Vote>() {
                 @Override
-                public String getPostTarget() {
-                    return "x";
+                public void execute(final Vote postData) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            CrowdMusicPlaylist.getInstance().downvote(postData.getTrackId(), postData.getIp());
+                        }
+                    });
                 }
-
-                @Override
-                public String getParam() {
-                    return "teststetetetststsetet";
-                }
-            });*/
+            }));
         }
 
         public void onServiceDisconnected(ComponentName className) {

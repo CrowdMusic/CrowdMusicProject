@@ -4,10 +4,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
 import android.util.Log;
-
+import com.hdm.crowdmusic.core.streaming.actions.ICrowdMusicAction;
 import com.hdm.crowdmusic.core.streaming.actions.PostAudioTask;
+import com.hdm.crowdmusic.core.streaming.actions.SimplePostTask;
+import com.hdm.crowdmusic.core.streaming.actions.Vote;
 import com.hdm.crowdmusic.util.Constants;
 import com.hdm.crowdmusic.util.Utility;
+
 import java.util.ArrayList;
 
 public class CrowdMusicClient {
@@ -84,6 +87,31 @@ public class CrowdMusicClient {
     public void postAudio(CrowdMusicTrack track) {
         new PostAudioTask(serverIP, Constants.PORT).execute(track);
     }
-    public void upvoteTrack() {}
-    public void downvoteTrack() {}
+    public void upvoteTrack(final Vote vote) {
+        SimplePostTask<Vote> task = new SimplePostTask<Vote>(getServerIP(), Constants.PORT);
+        task.execute(new ICrowdMusicAction<Vote>() {
+            @Override
+            public String getPostTarget() {
+                return "vote/up";
+            }
+
+            @Override
+            public Vote getParam() {
+                return vote;
+            }
+        });
+    }
+    public void downvoteTrack(final Vote vote) {
+        SimplePostTask<Vote> task = new SimplePostTask<Vote>(getServerIP(), Constants.PORT);
+        task.execute(new ICrowdMusicAction<Vote>() {
+            @Override
+            public String getPostTarget() {
+                return "vote/down";
+            }
+
+            @Override
+            public Vote getParam() {
+                return vote;
+            }
+        });}
 }

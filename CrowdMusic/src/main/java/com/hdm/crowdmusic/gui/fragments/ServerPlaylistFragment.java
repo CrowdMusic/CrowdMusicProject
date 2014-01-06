@@ -9,8 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import com.hdm.crowdmusic.R;
+import com.hdm.crowdmusic.core.CrowdMusicClient;
 import com.hdm.crowdmusic.core.CrowdMusicPlaylist;
 import com.hdm.crowdmusic.core.CrowdMusicTrack;
+import com.hdm.crowdmusic.core.streaming.actions.Vote;
+import com.hdm.crowdmusic.gui.support.IOnClientRequestListener;
 import com.hdm.crowdmusic.gui.support.PlaylistTrackAdapter;
 
 import java.beans.PropertyChangeEvent;
@@ -65,7 +68,12 @@ public class ServerPlaylistFragment extends ListFragment implements PropertyChan
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-
+        Activity activity = getActivity();
+        if (activity instanceof IOnClientRequestListener) {
+            CrowdMusicTrack track = (CrowdMusicTrack) getListAdapter().getItem(position);
+            CrowdMusicClient client = ((IOnClientRequestListener) activity).getClientData();
+            client.upvoteTrack(new Vote(track.getId(), client.getClientIP()));
+        }
     }
 
 }

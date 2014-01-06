@@ -47,8 +47,9 @@ public class SimplePostTask<T> extends AsyncTask<ICrowdMusicAction<T>, Void, Htt
             String json = gson.toJson(param);
 
             try {
-                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
                 nameValuePairs.add(new BasicNameValuePair("key", json));
+                nameValuePairs.add(new BasicNameValuePair("class", param.getClass().getName()));
 
                 httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             } catch (UnsupportedEncodingException e) {
