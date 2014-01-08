@@ -50,7 +50,7 @@ public class ClientLocalTracksFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         final CrowdMusicTrack selectedTrack = (CrowdMusicTrack) listAdapter.getItem(position);
-        client.postAudio(selectedTrack);;
+        client.postAudio(selectedTrack);
     }
 }
 

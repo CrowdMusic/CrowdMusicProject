@@ -9,24 +9,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.core.CrowdMusicPlaylist;
 import com.hdm.crowdmusic.core.CrowdMusicTrack;
+import com.hdm.crowdmusic.gui.activities.ClientActivity;
 import com.hdm.crowdmusic.gui.support.IOnClientRequestListener;
 import com.hdm.crowdmusic.gui.support.PlaylistTrackAdapter;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.List;
 
-public class ClientServerPlaylistFragment extends ListFragment implements PropertyChangeListener {
+public class ClientServerPlaylistFragment extends ListFragment {
 
     private IOnClientRequestListener activity;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        CrowdMusicPlaylist.getInstance().addListener(this);
-
     }
 
     @Override
@@ -39,7 +35,7 @@ public class ClientServerPlaylistFragment extends ListFragment implements Proper
 
     public void setUpAdapter() {
 
-        List<CrowdMusicTrack> objects = CrowdMusicPlaylist.getInstance().getPlaylist();
+        List<CrowdMusicTrack> objects = ((ClientActivity) getActivity()).getClientData().getPlaylist();
         setUpAdapter(objects);
     }
 
@@ -55,15 +51,6 @@ public class ClientServerPlaylistFragment extends ListFragment implements Proper
                 setListAdapter(adapter);
             }
         });
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-
-        Object newValue = propertyChangeEvent.getNewValue();
-        if (newValue instanceof List) {
-            this.setUpAdapter((List<CrowdMusicTrack>)newValue);
-        }
     }
 
 

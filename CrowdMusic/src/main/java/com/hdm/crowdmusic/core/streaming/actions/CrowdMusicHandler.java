@@ -18,7 +18,7 @@ public class CrowdMusicHandler<T> implements HttpRequestHandler {
     public CrowdMusicHandler(Executable<T> executable ) {
         this.executable = executable;
     }
-    private final Object getPostData(HttpEntity entity) {
+    private Object getPostData(HttpEntity entity) {
 
         try {
             String postData = EntityUtils.toString(entity);

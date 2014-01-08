@@ -5,18 +5,19 @@ import android.database.Cursor;
 import android.provider.MediaStore;
 import android.util.Log;
 import com.hdm.crowdmusic.core.streaming.actions.ICrowdMusicAction;
-import com.hdm.crowdmusic.core.streaming.actions.PostAudioTask;
 import com.hdm.crowdmusic.core.streaming.actions.SimplePostTask;
 import com.hdm.crowdmusic.core.streaming.actions.Vote;
 import com.hdm.crowdmusic.util.Constants;
 import com.hdm.crowdmusic.util.Utility;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CrowdMusicClient {
 
     private Context context;
-    private ArrayList<CrowdMusicTrack> trackList;
+    private List<CrowdMusicTrack> playlist;
+    private List<CrowdMusicTrack> trackList;
 
     private String clientIP;
     private String serverIP;
@@ -26,6 +27,7 @@ public class CrowdMusicClient {
         this.clientIP = clientIP;
         this.serverIP = serverIP;
         trackList = new ArrayList<CrowdMusicTrack>();
+        playlist = new ArrayList<CrowdMusicTrack>();
     }
 
     public void init() {
@@ -74,18 +76,59 @@ public class CrowdMusicClient {
         else {
             Log.d(Utility.LOG_TAG_MEDIA, "No audio files found!");
         }
+
+        register();
     }
 
-    public ArrayList<CrowdMusicTrack> getTrackList() {
+    public List<CrowdMusicTrack> getTrackList() {
 
         return trackList;
     }
     public String getClientIP() { return clientIP; }
     public String getServerIP() { return serverIP; }
 
-    public void register() {}
-    public void postAudio(CrowdMusicTrack track) {
-        new PostAudioTask(serverIP, Constants.PORT).execute(track);
+    public void register() {
+        SimplePostTask<String> task = new SimplePostTask<String>(getServerIP(), Constants.PORT);
+        task.execute(new ICrowdMusicAction<String>() {
+            @Override
+            public String getPostTarget() {
+                return "register";
+            }
+
+            @Override
+            public String getParam() {
+                return getClientIP();
+            }
+        });
+    }
+    public void unregister() {
+        SimplePostTask<String> task = new SimplePostTask<String>(getServerIP(), Constants.PORT);
+        task.execute(new ICrowdMusicAction<String>() {
+            @Override
+            public String getPostTarget() {
+                return "unregister";
+            }
+
+            @Override
+            public String getParam() {
+                return getClientIP();
+            }
+        });
+    }
+    public void postAudio(final CrowdMusicTrack track) {
+        //new PostAudioTask(serverIP, Constants.PORT).execute(track);
+        SimplePostTask<CrowdMusicTrack> task = new SimplePostTask<CrowdMusicTrack>(getServerIP(), Constants.PORT);
+        task.execute(new ICrowdMusicAction<CrowdMusicTrack>() {
+            @Override
+            public String getPostTarget() {
+                return "track/post";
+            }
+
+            @Override
+            public CrowdMusicTrack getParam() {
+                return track;
+            }
+        });
     }
     public void upvoteTrack(final Vote vote) {
         SimplePostTask<Vote> task = new SimplePostTask<Vote>(getServerIP(), Constants.PORT);
@@ -114,4 +157,13 @@ public class CrowdMusicClient {
                 return vote;
             }
         });}
+
+
+    public List<CrowdMusicTrack> getPlaylist() {
+        return playlist;
+    }
+
+    public void setPlaylist(List<CrowdMusicTrack> newList) {
+        playlist = newList;
+    }
 }

@@ -11,25 +11,21 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-
+import android.view.*;
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.core.CrowdMusicPlaylist;
 import com.hdm.crowdmusic.core.CrowdMusicServer;
 import com.hdm.crowdmusic.core.CrowdMusicTrack;
 import com.hdm.crowdmusic.core.streaming.HTTPServerService;
 import com.hdm.crowdmusic.core.streaming.IHttpServerService;
 import com.hdm.crowdmusic.core.streaming.IMediaPlayerService;
 import com.hdm.crowdmusic.core.streaming.MediaPlayerService;
+import com.hdm.crowdmusic.core.streaming.actions.CrowdMusicHandler;
+import com.hdm.crowdmusic.core.streaming.actions.Executable;
+import com.hdm.crowdmusic.core.streaming.actions.Vote;
 import com.hdm.crowdmusic.gui.fragments.ServerAdminUsersFragment;
 import com.hdm.crowdmusic.gui.fragments.ServerPlaylistFragment;
 import com.hdm.crowdmusic.gui.support.IOnServerRequestListener;
 import com.hdm.crowdmusic.util.Utility;
-
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.registry.RegistrationException;
@@ -79,6 +75,61 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.i(Utility.LOG_TAG_MEDIA, "httpServerService connected.");
             httpServerService = (IHttpServerService) service;
+
+            httpServerService.registerHandler("/track/post", new CrowdMusicHandler<CrowdMusicTrack>(new Executable<CrowdMusicTrack>() {
+                @Override
+                public void execute(CrowdMusicTrack postData) {
+                    getServerData().getPlaylist().addTrack(postData);
+                }
+            }));
+
+            httpServerService.registerHandler("/vote/up", new CrowdMusicHandler<Vote>(new Executable<Vote>() {
+                @Override
+                public void execute(final Vote postData) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getServerData().getPlaylist().upvote(postData.getTrackId(), postData.getIp());
+                        }
+                    });
+                }
+            }));
+            httpServerService.registerHandler("/vote/down", new CrowdMusicHandler<Vote>(new Executable<Vote>() {
+                @Override
+                public void execute(final Vote postData) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getServerData().getPlaylist().downvote(postData.getTrackId(), postData.getIp());
+                        }
+                    });
+                }
+            }));
+
+            httpServerService.registerHandler("/register", new CrowdMusicHandler<String>(new Executable<String>() {
+                @Override
+                public void execute(final String postData) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getServerData().registerClient(postData);
+                            // TODO: Notify only the one new client
+                            getServerData().notifyAllClients();
+                        }
+                    });
+                }
+            }));
+            httpServerService.registerHandler("/unregister", new CrowdMusicHandler<String>(new Executable<String>() {
+                @Override
+                public void execute(final String postData) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getServerData().unregisterClient(postData);
+                        }
+                    });
+                }
+            }));
         }
 
         @Override
@@ -164,7 +215,7 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
 
                 if (! mediaService.hasTrack())
                 {
-                    CrowdMusicTrack track = CrowdMusicPlaylist.getInstance().getNextTrack();
+                    CrowdMusicTrack track = getServerData().getPlaylist().getNextTrack();
                     if (track != null) {
                         mediaService.play(Utility.buildURL(track));
                     }
@@ -174,7 +225,7 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
                 }
                 return true;
             case id.action_next_track:
-                CrowdMusicTrack track = CrowdMusicPlaylist.getInstance().getNextTrack();
+                CrowdMusicTrack track = getServerData().getPlaylist().getNextTrack();
                 if (track != null) {
                     mediaService.play(Utility.buildURL(track));
                 }

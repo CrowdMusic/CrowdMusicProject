@@ -1,5 +1,8 @@
 package com.hdm.crowdmusic.core;
 
+import com.hdm.crowdmusic.core.streaming.actions.ICrowdMusicAction;
+import com.hdm.crowdmusic.core.streaming.actions.SimplePostTask;
+import com.hdm.crowdmusic.util.Constants;
 import org.teleal.cling.binding.LocalServiceBindingException;
 import org.teleal.cling.binding.annotations.AnnotationLocalServiceBinder;
 import org.teleal.cling.model.DefaultServiceManager;
@@ -17,12 +20,14 @@ public class CrowdMusicServer {
     public static DeviceIdentity CROWD_MUSIC_SERVER_IDENTITY = new DeviceIdentity(UDN.uniqueSystemIdentifier("CrowdMusicServer"));
     private LocalDevice localDevice;
 
+    private CrowdMusicPlaylist playlist;
+
     private String serverIP;
     private ArrayList<String> registeredClients;
 
     public CrowdMusicServer(String serverIP) {
         this.serverIP = serverIP;
-
+        this.playlist = new CrowdMusicPlaylist();
         try {
             this.localDevice = createDevice();
         } catch (ValidationException e) {
@@ -74,5 +79,26 @@ public class CrowdMusicServer {
         }
     }
 
-    public void notifyAllClients() {}
+    public void notifyAllClients() {
+        for (String ip: registeredClients) {
+            SimplePostTask<Void> task = new SimplePostTask<Void>(getServerIP(), Constants.PORT, null, null);
+            task.execute(new ICrowdMusicAction<Void>(){
+
+                @Override
+                public String getPostTarget() {
+                    return "";
+                }
+
+                @Override
+                public Void getParam() {
+                    return null;
+                }
+            });
+
+        }
+    }
+
+    public CrowdMusicPlaylist getPlaylist() {
+        return playlist;
+    }
 }

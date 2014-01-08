@@ -16,15 +16,11 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.core.CrowdMusicPlaylist;
 import com.hdm.crowdmusic.core.devicelistener.AllDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
 import com.hdm.crowdmusic.core.network.AccessPoint;
-import com.hdm.crowdmusic.core.streaming.AudioRequestHandler;
 import com.hdm.crowdmusic.core.streaming.HTTPServerService;
-import com.hdm.crowdmusic.core.streaming.IHttpServerService;
-import com.hdm.crowdmusic.core.streaming.actions.*;
 import com.hdm.crowdmusic.util.Constants;
 import com.hdm.crowdmusic.util.Utility;
 import org.teleal.cling.android.AndroidUpnpService;
@@ -38,7 +34,6 @@ public class MainActivity extends ListActivity {
     private AccessPoint accessPoint;
 
     private AndroidUpnpService upnpService;
-    private IHttpServerService httpService;
     private RegistryListener registryListener;
     ArrayAdapter listAdapter;
 
@@ -62,42 +57,6 @@ public class MainActivity extends ListActivity {
             upnpService = null;
         }
     };
-    private ServiceConnection httpServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            httpService = (IHttpServerService) service;
-
-            httpService.registerHandler("/audio/*", new AudioRequestHandler(getApplicationContext()));
-            httpService.registerHandler("/", new PostAudioHandler(getApplicationContext()));
-            httpService.registerHandler("/postplaylist*", new PostPlaylistHandler(getApplicationContext()));
-            httpService.registerHandler("/vote/up", new CrowdMusicHandler<Vote>(new Executable<Vote>() {
-                @Override
-                public void execute(final Vote postData) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            CrowdMusicPlaylist.getInstance().upvote(postData.getTrackId(), postData.getIp());
-                        }
-                    });
-                }
-            }));
-            httpService.registerHandler("/vote/down", new CrowdMusicHandler<Vote>(new Executable<Vote>() {
-                @Override
-                public void execute(final Vote postData) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            CrowdMusicPlaylist.getInstance().downvote(postData.getTrackId(), postData.getIp());
-                        }
-                    });
-                }
-            }));
-        }
-
-        public void onServiceDisconnected(ComponentName className) {
-            httpService = null;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,12 +78,6 @@ public class MainActivity extends ListActivity {
         Intent httpIntent = new Intent(this, HTTPServerService.class);
         httpIntent.putExtra("ip", clientIP);
         httpIntent.putExtra("port", Constants.PORT);
-
-        getApplicationContext().bindService(
-                httpIntent,
-                httpServiceConnection,
-                Context.BIND_AUTO_CREATE
-        );
 
         setContentView(R.layout.activity_main);
         switchServerButtons();
