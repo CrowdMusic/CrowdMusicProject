@@ -9,10 +9,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import com.hdm.crowdmusic.R;
+import com.hdm.crowdmusic.core.CrowdMusicClient;
 import com.hdm.crowdmusic.core.CrowdMusicTrack;
+import com.hdm.crowdmusic.core.streaming.actions.Executable;
+import com.hdm.crowdmusic.core.streaming.actions.ICrowdMusicAction;
+import com.hdm.crowdmusic.core.streaming.actions.SimplePostTask;
+import com.hdm.crowdmusic.core.streaming.actions.Vote;
 import com.hdm.crowdmusic.gui.activities.ClientActivity;
 import com.hdm.crowdmusic.gui.support.IOnClientRequestListener;
 import com.hdm.crowdmusic.gui.support.PlaylistTrackAdapter;
+import com.hdm.crowdmusic.util.Constants;
 
 import java.util.List;
 
@@ -58,6 +64,21 @@ public class ClientServerPlaylistFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
 
+        Activity activity = getActivity();
+        final CrowdMusicTrack track = (CrowdMusicTrack) getListAdapter().getItem(position);
+        final CrowdMusicClient client = ((IOnClientRequestListener) activity).getClientData();
+        SimplePostTask<Vote> task = new SimplePostTask<Vote>(client.getServerIP(), Constants.PORT);
+        task.execute(new ICrowdMusicAction<Vote>() {
+            @Override
+            public String getPostTarget() {
+                return "vote/up";
+            }
+
+            @Override
+            public Vote getParam() {
+                return  new Vote(track.getId(), client.getClientIP());
+            }
+        });
     }
 
     @Override

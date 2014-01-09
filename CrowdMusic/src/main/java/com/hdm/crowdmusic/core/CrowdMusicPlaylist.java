@@ -111,10 +111,6 @@ public class CrowdMusicPlaylist {
     }
     // Ugly as hell, but it works
     public void notifyListener() {
-        for (PropertyChangeListener listener: listeners) {
-            if (listener == null) return;
-            listener.propertyChange(new PropertyChangeEvent(this, "tracklist", null, getPlaylist()));
-        }
 
         List<String> alreadyPostedIPs = new ArrayList<String>();
         for (CrowdMusicTrack track: playlist) {
