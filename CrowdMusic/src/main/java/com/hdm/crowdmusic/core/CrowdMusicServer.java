@@ -28,6 +28,8 @@ public class CrowdMusicServer {
     public CrowdMusicServer(String serverIP) {
         this.serverIP = serverIP;
         this.playlist = new CrowdMusicPlaylist();
+        this.registeredClients = new ArrayList<String>();
+
         try {
             this.localDevice = createDevice();
         } catch (ValidationException e) {
