@@ -38,14 +38,7 @@ public class ServerPlaylistFragment extends ListFragment {
 
     public void setUpAdapter() {
         Activity activity = getActivity();
-        List<CrowdMusicTrack> objects = new ArrayList<CrowdMusicTrack>();
-        if (activity instanceof IOnClientRequestListener) {
-            objects = ((IOnClientRequestListener) getActivity()).getClientData().getPlaylist();
-        } else if (activity instanceof IOnServerRequestListener) {
-            objects = ((IOnServerRequestListener) getActivity()).getServerData().getPlaylist().getPlaylist();
-        } else {
-            Log.e(Utility.LOG_TAG_MEDIA, "setUpAdapter awaits a ClientActivity or ServerActivity.");
-        }
+        List<CrowdMusicTrack> objects = ((IOnServerRequestListener) getActivity()).getServerData().getPlaylist().getPlaylist();
         setUpAdapter(objects);
     }
 

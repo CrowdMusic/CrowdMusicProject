@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.*;
@@ -110,7 +111,10 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
             httpServerService.registerHandler("/register", new CrowdMusicHandler<String>(new Executable<String>() {
                 @Override
                 public void execute(final String postData) {
-                    runOnUiThread(new Runnable() {
+                    Handler mainHandler = new Handler(getApplicationContext().getMainLooper());
+                    mainHandler.post(
+
+                    new Runnable() {
                         @Override
                         public void run() {
                             getServerData().registerClient(postData);
@@ -315,13 +319,6 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
 
         }
 
-        // Maybe we'll need this, some time
-        private void refresh() {
-            if (mFragment != null && mFragment instanceof ServerPlaylistFragment) {
-                if (((ServerPlaylistFragment) mFragment).getListAdapter() == null) return;
-                ((ServerPlaylistFragment) mFragment).setUpAdapter();
-            }
-        }
     }
 }
 

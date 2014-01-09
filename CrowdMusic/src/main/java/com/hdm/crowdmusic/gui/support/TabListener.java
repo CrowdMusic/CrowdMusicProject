@@ -51,11 +51,5 @@ public class TabListener<T extends Fragment> implements ActionBar.TabListener {
 
     }
 
-    // Maybe we'll need this, some time
-    private void refresh() {
-        if (mFragment != null && mFragment instanceof ServerPlaylistFragment) {
-            if (((ServerPlaylistFragment) mFragment).getListAdapter() == null) return;
-            ((ServerPlaylistFragment) mFragment).setUpAdapter();
-        }
-    }
+
 }

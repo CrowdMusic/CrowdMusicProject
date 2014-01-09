@@ -1,5 +1,6 @@
 package com.hdm.crowdmusic.core;
 
+import com.hdm.crowdmusic.core.streaming.actions.CrowdMusicTracklist;
 import com.hdm.crowdmusic.core.streaming.actions.ICrowdMusicAction;
 import com.hdm.crowdmusic.core.streaming.actions.SimplePostTask;
 import com.hdm.crowdmusic.util.Constants;
@@ -83,17 +84,17 @@ public class CrowdMusicServer {
 
     public void notifyAllClients() {
         for (String ip: registeredClients) {
-            SimplePostTask<Void> task = new SimplePostTask<Void>(getServerIP(), Constants.PORT, null, null);
-            task.execute(new ICrowdMusicAction<Void>(){
+            SimplePostTask<CrowdMusicTracklist> task = new SimplePostTask<CrowdMusicTracklist>(ip, Constants.PORT, null, null);
+            task.execute(new ICrowdMusicAction<CrowdMusicTracklist>(){
 
                 @Override
                 public String getPostTarget() {
-                    return "";
+                    return "postplaylist";
                 }
 
                 @Override
-                public Void getParam() {
-                    return null;
+                public CrowdMusicTracklist getParam() {
+                    return new CrowdMusicTracklist(getPlaylist().getPlaylist());
                 }
             });
 

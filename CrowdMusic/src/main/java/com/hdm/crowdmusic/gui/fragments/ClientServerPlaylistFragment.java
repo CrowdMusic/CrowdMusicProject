@@ -41,7 +41,8 @@ public class ClientServerPlaylistFragment extends ListFragment {
 
     public void setUpAdapter(final List<CrowdMusicTrack> newValue) {
         Activity activity = getActivity();
-        if (activity == null) return;
+        if (activity == null)
+            return;
 
         activity.runOnUiThread(new Runnable() {
             @Override

@@ -1,7 +1,11 @@
 package com.hdm.crowdmusic.core;
 
 import android.util.Log;
+
+import com.hdm.crowdmusic.core.streaming.actions.CrowdMusicTracklist;
+import com.hdm.crowdmusic.core.streaming.actions.ICrowdMusicAction;
 import com.hdm.crowdmusic.core.streaming.actions.PostPlaylistTask;
+import com.hdm.crowdmusic.core.streaming.actions.SimplePostTask;
 import com.hdm.crowdmusic.util.Constants;
 import com.hdm.crowdmusic.util.Utility;
 
@@ -118,7 +122,19 @@ public class CrowdMusicPlaylist {
             if (alreadyPostedIPs.contains(clientIp)) {
                 // do nothing...
             } else {
-                new PostPlaylistTask(clientIp, Constants.PORT).execute(getPlaylist());
+
+                SimplePostTask<CrowdMusicTracklist> task = new SimplePostTask<CrowdMusicTracklist>(clientIp, Constants.PORT);
+                task.execute(new ICrowdMusicAction<CrowdMusicTracklist>() {
+                    @Override
+                    public String getPostTarget() {
+                        return "postplaylist";
+                    }
+
+                    @Override
+                    public CrowdMusicTracklist getParam() {
+                        return new CrowdMusicTracklist(getPlaylist());
+                    }
+                });
                 alreadyPostedIPs.add(clientIp);
             }
         }

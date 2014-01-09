@@ -16,6 +16,7 @@ import com.hdm.crowdmusic.core.streaming.AudioRequestHandler;
 import com.hdm.crowdmusic.core.streaming.HTTPServerService;
 import com.hdm.crowdmusic.core.streaming.IHttpServerService;
 import com.hdm.crowdmusic.core.streaming.actions.CrowdMusicHandler;
+import com.hdm.crowdmusic.core.streaming.actions.CrowdMusicTracklist;
 import com.hdm.crowdmusic.core.streaming.actions.Executable;
 import com.hdm.crowdmusic.core.streaming.actions.ICrowdMusicAction;
 import com.hdm.crowdmusic.core.streaming.actions.SimplePostTask;
@@ -56,13 +57,13 @@ public class ClientActivity extends Activity implements IOnClientRequestListener
                     });
                 }
             }));
-            httpService.registerHandler("/postplaylist*", new CrowdMusicHandler<List<CrowdMusicTrack>>(new Executable<List<CrowdMusicTrack>>() {
+            httpService.registerHandler("/postplaylist*", new CrowdMusicHandler<CrowdMusicTracklist>(new Executable<CrowdMusicTracklist>() {
                 @Override
-                public void execute(final List<CrowdMusicTrack> postData) {
+                public void execute(final CrowdMusicTracklist postData) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            getClientData().setPlaylist(postData);
+                            getClientData().setPlaylist(postData.getList());
                         }
                     });
                 }
