@@ -25,6 +25,7 @@ import com.hdm.crowdmusic.core.streaming.actions.Vote;
 import com.hdm.crowdmusic.gui.fragments.ServerAdminUsersFragment;
 import com.hdm.crowdmusic.gui.fragments.ServerPlaylistFragment;
 import com.hdm.crowdmusic.gui.support.IOnServerRequestListener;
+import com.hdm.crowdmusic.util.Constants;
 import com.hdm.crowdmusic.util.Utility;
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
@@ -70,7 +71,7 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
             mediaService = null;
         }
     };
-    private ServiceConnection httpServerServiceConnection = new ServiceConnection() {
+    private ServiceConnection httpServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.i(Utility.LOG_TAG_MEDIA, "httpServerService connected.");
@@ -180,9 +181,15 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
                 Context.BIND_AUTO_CREATE
         );
 
+        String clientIP = Utility.getWifiIpAddress();
+
+        Intent httpIntent = new Intent(this, HTTPServerService.class);
+        httpIntent.putExtra("ip", clientIP);
+        httpIntent.putExtra("port", Constants.PORT);
+
         getApplicationContext().bindService(
-                new Intent(this, HTTPServerService.class),
-                httpServerServiceConnection,
+                httpIntent,
+                httpServiceConnection,
                 Context.BIND_AUTO_CREATE
         );
     }

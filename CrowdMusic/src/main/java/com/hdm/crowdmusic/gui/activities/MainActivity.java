@@ -30,7 +30,6 @@ import org.teleal.cling.registry.RegistryListener;
 
 public class MainActivity extends ListActivity {
 
-    private String clientIP;
     private AccessPoint accessPoint;
 
     private AndroidUpnpService upnpService;
@@ -67,17 +66,11 @@ public class MainActivity extends ListActivity {
 
         registryListener = new CrowdDevicesBrowser(this, listAdapter);
 
-        clientIP = Utility.getWifiIpAddress();
-
         getApplicationContext().bindService(
                 new Intent(this, AndroidUpnpServiceImpl.class),
                 upnpServiceConnection,
                 Context.BIND_AUTO_CREATE
         );
-
-        Intent httpIntent = new Intent(this, HTTPServerService.class);
-        httpIntent.putExtra("ip", clientIP);
-        httpIntent.putExtra("port", Constants.PORT);
 
         setContentView(R.layout.activity_main);
         switchServerButtons();
