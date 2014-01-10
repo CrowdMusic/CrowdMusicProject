@@ -3,7 +3,6 @@ package com.hdm.crowdmusic.gui.activities;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -109,7 +108,8 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
                 }
             }));
 
-            httpServerService.registerHandler("/register", new CrowdMusicHandler<String>(new Executable<String>() {
+            httpServerService.registerHandler("/register", new CrowdMusicHandler<String>(
+                new Executable<String>() {
                 @Override
                 public void execute(final String postData) {
                     Handler mainHandler = new Handler(getApplicationContext().getMainLooper());
@@ -121,6 +121,8 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
                             getServerData().registerClient(postData);
                             // TODO: Notify only the one new client
                             getServerData().notifyAllClients();
+
+
                         }
                     });
                 }
@@ -153,11 +155,13 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(id.container, new PlaceholderFragment())
+                    .add(id.container, new ServerPlaylistFragment())
                     .commit();
         }
 
         final ActionBar bar = getActionBar();
+
+
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         bar.setDisplayOptions(1, ActionBar.DISPLAY_SHOW_TITLE);
 
@@ -169,8 +173,8 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
 
         bar.addTab(bar.newTab()
                 .setText("Users")
-                .setTabListener(new TabListener<ServerAdminUsersFragment>(
-                        this, "admin", ServerAdminUsersFragment.class)));
+                .setTabListener(new TabListener<ServerAdminUsersFragment>(this, "admin",
+                        ServerAdminUsersFragment.class)));
 
         setupCrowdMusicServer();
 
@@ -254,7 +258,7 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
     private void setupCrowdMusicServer() {
         String ip = Utility.getWifiIpAddress();
         if (ip != null) {
-            crowdMusicServer = new CrowdMusicServer(ip);
+            crowdMusicServer = new CrowdMusicServer(ip, this);
         }
     }
 
@@ -264,18 +268,8 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
         return crowdMusicServer;
     }
 
-    public static class PlaceholderFragment extends Fragment {
 
-        public PlaceholderFragment() {
-        }
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(layout.fragment_createserver, container, false);
-            return rootView;
-        }
-    }
 }
 
 

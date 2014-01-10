@@ -1,5 +1,9 @@
 package com.hdm.crowdmusic.core;
 
+import android.app.Activity;
+
+import com.hdm.crowdmusic.core.streaming.CrowdMusicUser;
+import com.hdm.crowdmusic.core.streaming.CrowdMusicUserList;
 import com.hdm.crowdmusic.core.streaming.actions.CrowdMusicTracklist;
 import com.hdm.crowdmusic.core.streaming.actions.ICrowdMusicAction;
 import com.hdm.crowdmusic.core.streaming.actions.SimplePostTask;
@@ -13,8 +17,11 @@ import org.teleal.cling.model.types.DeviceType;
 import org.teleal.cling.model.types.UDADeviceType;
 import org.teleal.cling.model.types.UDN;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
+
 
 public class CrowdMusicServer {
 
@@ -24,13 +31,14 @@ public class CrowdMusicServer {
     private CrowdMusicPlaylist playlist;
 
     private String serverIP;
-    private ArrayList<String> registeredClients;
+    private CrowdMusicUserList userList;
+    private final PropertyChangeSupport pcs;
 
-    public CrowdMusicServer(String serverIP) {
+    public CrowdMusicServer(String serverIP, Activity parentActivity) {
         this.serverIP = serverIP;
         this.playlist = new CrowdMusicPlaylist();
-        this.registeredClients = new ArrayList<String>();
-
+        this.pcs = new PropertyChangeSupport(this);
+        this.userList = new CrowdMusicUserList();
         try {
             this.localDevice = createDevice();
         } catch (ValidationException e) {
@@ -66,25 +74,27 @@ public class CrowdMusicServer {
     public String getServerIP() {
         return serverIP;
     }
-    public ArrayList<String> getClientList() { return registeredClients; } //TODO: Return a copy, not the real one
+    public List<CrowdMusicUser> getClientList() { return userList.getUserList(); } //TODO: Return a copy, not the real one
     public LocalDevice getLocalDevice() {
         return localDevice;
     }
 
     public void registerClient(String clientIP) {
-        if (!registeredClients.contains(clientIP)) {
-            registeredClients.add(clientIP);
-        }
+        CrowdMusicUser user = new CrowdMusicUser(clientIP);
+        userList.addUser(user); // TODO: update only when the user is new
+        pcs.firePropertyChange( "users", null, userList);
+
     }
     public void unregisterClient(String clientIP) {
-        if (registeredClients.contains(clientIP)) {
-            registeredClients.remove(clientIP);
-        }
+
     }
 
+    public void registerListener(PropertyChangeListener listener){
+        pcs.addPropertyChangeListener(listener);
+    }
     public void notifyAllClients() {
-        for (String ip: registeredClients) {
-            SimplePostTask<CrowdMusicTracklist> task = new SimplePostTask<CrowdMusicTracklist>(ip, Constants.PORT, null, null);
+        for (CrowdMusicUser user: userList.getUserList()) {
+            SimplePostTask<CrowdMusicTracklist> task = new SimplePostTask<CrowdMusicTracklist>(user.getIp(), Constants.PORT, null, null);
             task.execute(new ICrowdMusicAction<CrowdMusicTracklist>(){
 
                 @Override

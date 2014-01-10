@@ -1,5 +1,6 @@
 package com.hdm.crowdmusic.core.streaming.actions;
 
+import android.app.Activity;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.hdm.crowdmusic.util.Utility;
@@ -49,6 +50,7 @@ public class CrowdMusicHandler<T> implements HttpRequestHandler {
             return postData;
         } else return null;
     }
+
 
     @Override
     public final void handle(HttpRequest httpRequest, HttpResponse httpResponse, HttpContext httpContext) throws HttpException, IOException {
