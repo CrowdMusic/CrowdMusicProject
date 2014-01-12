@@ -22,13 +22,15 @@ import java.util.List;
 
 public class ServerAdminUsersFragment extends ListFragment implements PropertyChangeListener {
     private UserAdminAdapter adapter;
+    private Boolean registered = false;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.adapter =  new UserAdminAdapter(getActivity(),
                 R.layout.fragment_serveradminusers,new ArrayList<CrowdMusicUser>());
         setListAdapter(adapter);
-        ((ServerActivity) getActivity()).getServerData().registerListener(this);
+
+
         setupAdapter();
     }
 
@@ -36,13 +38,21 @@ public class ServerAdminUsersFragment extends ListFragment implements PropertyCh
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_serveradminusers, container, false);
+        if (!registered)
+        {
+            ((ServerActivity) getActivity()).getServerData().registerListener(this);
+            registered = true;
+        }
         setupAdapter();
         return v;
     }
 
     public void setupAdapter(){
+        if(isAdded())
+        {
         List<CrowdMusicUser> userList = ((ServerActivity) getActivity()).getServerData().getClientList();
         setupAdapter(userList);
+        }
     }
 
     public void setupAdapter(final List<CrowdMusicUser> userList){
