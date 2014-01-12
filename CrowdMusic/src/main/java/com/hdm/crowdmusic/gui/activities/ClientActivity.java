@@ -125,6 +125,12 @@ public class ClientActivity extends Activity implements IOnClientRequestListener
         return true;
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
     //TODO: Just give a copy and not the real reference
     @Override
     public CrowdMusicClient getClientData() {

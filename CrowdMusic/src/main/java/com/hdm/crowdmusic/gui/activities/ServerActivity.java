@@ -268,8 +268,16 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
         return crowdMusicServer;
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 
-
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
 }
 
 
