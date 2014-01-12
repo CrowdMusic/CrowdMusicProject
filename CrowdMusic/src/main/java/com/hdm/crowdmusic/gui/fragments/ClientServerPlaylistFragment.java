@@ -64,7 +64,7 @@ public class ClientServerPlaylistFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
 
-        Activity activity = getActivity();
+      /*  Activity activity = getActivity();
         final CrowdMusicTrack track = (CrowdMusicTrack) getListAdapter().getItem(position);
         final CrowdMusicClient client = ((IOnClientRequestListener) activity).getClientData();
         SimplePostTask<Vote> task = new SimplePostTask<Vote>(client.getServerIP(), Constants.PORT);
@@ -78,7 +78,7 @@ public class ClientServerPlaylistFragment extends ListFragment {
             public Vote getParam() {
                 return  new Vote(track.getId(), client.getClientIP());
             }
-        });
+        }); */
     }
 
     @Override
