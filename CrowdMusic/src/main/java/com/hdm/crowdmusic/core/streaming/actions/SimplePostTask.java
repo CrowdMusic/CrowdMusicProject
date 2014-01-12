@@ -11,6 +11,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -51,7 +52,7 @@ public class SimplePostTask<T> extends AsyncTask<ICrowdMusicAction<T>, Void, Htt
                 nameValuePairs.add(new BasicNameValuePair("key", json));
                 nameValuePairs.add(new BasicNameValuePair("class", param.getClass().getName()));
 
-                httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+                httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs, HTTP.UTF_8));
             } catch (UnsupportedEncodingException e) {
                 Log.e(Utility.LOG_TAG_HTTP, "Error while preparing post data: " + e.getMessage());
             }
