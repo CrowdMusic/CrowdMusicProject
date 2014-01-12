@@ -1,6 +1,6 @@
 package com.hdm.crowdmusic.core;
 
-public class CrowdMusicTrack {
+public class CrowdMusicTrack implements Comparable<CrowdMusicTrack>{
 
     private int id;
     private String ip;
@@ -41,5 +41,10 @@ public class CrowdMusicTrack {
 
     public void downvote(String ip) {
         rating -= 1;
+    }
+
+    @Override
+    public int compareTo(CrowdMusicTrack that) {
+        return  that.getRating() - this.getRating();
     }
 }

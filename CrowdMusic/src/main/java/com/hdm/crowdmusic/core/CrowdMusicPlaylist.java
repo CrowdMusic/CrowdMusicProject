@@ -12,24 +12,24 @@ import com.hdm.crowdmusic.util.Utility;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 
 public class CrowdMusicPlaylist {
 
-    public List<PropertyChangeListener> listeners = new ArrayList<PropertyChangeListener>();
-
-    private final int QUEUE_LENGTH = 20;
-    private PriorityQueue<CrowdMusicTrack> playlist;
+    private ArrayList<CrowdMusicTrack> playlist;
+    private Comparator<CrowdMusicTrack> comparator = new TrackComparator();
 
     public CrowdMusicPlaylist() {
-        playlist = new PriorityQueue<CrowdMusicTrack>(QUEUE_LENGTH, new ScoreComparator());
+        playlist = new ArrayList<CrowdMusicTrack>();
     }
 
     public CrowdMusicTrack getNextTrack() {
         if (playlist.size() > 0) {
-            CrowdMusicTrack nextTrack = playlist.remove();
+            CrowdMusicTrack nextTrack = playlist.remove(0);
+            sortPlaylist();
             notifyListener();
             return nextTrack;
         }
@@ -41,6 +41,7 @@ public class CrowdMusicPlaylist {
         Log.i(Utility.LOG_TAG_MEDIA, "The following track was added to the playlist: ");
         Log.i(Utility.LOG_TAG_MEDIA, "ID: " + track.getId() + " | IP: " + track.getIp() + " | Artist: " + track.getArtist() + " | Track: " + track.getTrackName());
         playlist.add(track);
+        sortPlaylist();
         notifyListener();
         Log.i(Utility.LOG_TAG_MEDIA, "The queue now contains the following elements: ");
         for (CrowdMusicTrack t : playlist) {
@@ -51,27 +52,8 @@ public class CrowdMusicPlaylist {
     public void removeTrack(CrowdMusicTrack track) {
         if (playlist.contains(track)) {
             playlist.remove(track);
+            sortPlaylist();
             notifyListener();
-        }
-    }
-
-    public void addListener(PropertyChangeListener listener) {
-        listeners.add(listener);
-    }
-
-    class ScoreComparator implements Comparator<CrowdMusicTrack> {
-        @Override
-        public int compare(CrowdMusicTrack lhs, CrowdMusicTrack rhs) {
-            if ((lhs == null) && (rhs != null)) {
-                return -1;
-            } else if ((rhs == null) && (lhs != null)) {
-                return 1;
-            } else if (lhs.getRating() < rhs.getRating()) {
-                return -1;
-            } else if (lhs.getRating() > rhs.getRating()) {
-                return 1;
-            }
-            return 0;
         }
     }
 
@@ -79,6 +61,7 @@ public class CrowdMusicPlaylist {
         CrowdMusicTrack track = getFromPlaylistById(id);
         if (track != null) {
             track.upvote(ip);
+            sortPlaylist();
             notifyListener();
         }
     }
@@ -86,6 +69,7 @@ public class CrowdMusicPlaylist {
         CrowdMusicTrack track = getFromPlaylistById(id);
         if (track != null) {
             track.downvote(ip);
+            sortPlaylist();
             notifyListener();
         }
     }
@@ -100,15 +84,11 @@ public class CrowdMusicPlaylist {
     }
 
     public List<CrowdMusicTrack> getPlaylist() {
-        List<CrowdMusicTrack> list = new ArrayList<CrowdMusicTrack>();
-        list.addAll(playlist);
-        return list;
+        List<CrowdMusicTrack> copy = new ArrayList<CrowdMusicTrack>();
+        copy.addAll(playlist);
+        return copy;
+    }
 
-    }
-    public void setPlaylist(List<CrowdMusicTrack> list) {
-        playlist.clear();
-        playlist.addAll(list);
-    }
     // Ugly as hell, but it works
     public void notifyListener() {
 
@@ -133,6 +113,17 @@ public class CrowdMusicPlaylist {
                 });
                 alreadyPostedIPs.add(clientIp);
             }
+        }
+    }
+
+    private void sortPlaylist() {
+        Collections.sort(playlist, comparator);
+    }
+
+    private class TrackComparator implements Comparator<CrowdMusicTrack> {
+        @Override
+        public int compare(CrowdMusicTrack lhs, CrowdMusicTrack rhs) {
+            return lhs.compareTo(rhs);
         }
     }
 }
