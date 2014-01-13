@@ -10,6 +10,8 @@ import com.hdm.crowdmusic.core.streaming.actions.Vote;
 import com.hdm.crowdmusic.util.Constants;
 import com.hdm.crowdmusic.util.Utility;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +23,8 @@ public class CrowdMusicClient {
 
     private String clientIP;
     private String serverIP;
+
+    private PropertyChangeListener clientView;
 
     public CrowdMusicClient(Context context, String clientIP, String serverIP) {
         this.context = context;
@@ -158,6 +162,12 @@ public class CrowdMusicClient {
             }
         });}
 
+    public void notifyClientview() {
+        if (this.clientView != null) {
+            PropertyChangeEvent event = new PropertyChangeEvent(this, "playlist", null, getPlaylist());
+            clientView.propertyChange(event);
+        }
+    }
 
     public List<CrowdMusicTrack> getPlaylist() {
         return playlist;
@@ -165,5 +175,10 @@ public class CrowdMusicClient {
 
     public void setPlaylist(List<CrowdMusicTrack> newList) {
         playlist = newList;
+        notifyClientview();
+    }
+
+    public void registerClientView(PropertyChangeListener clientPlaylistView) {
+        clientView = clientPlaylistView;
     }
 }

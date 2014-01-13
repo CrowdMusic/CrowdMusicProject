@@ -2,7 +2,6 @@ package com.hdm.crowdmusic.gui.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +10,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuItem;
 import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.CrowdMusicServer;
 import com.hdm.crowdmusic.core.CrowdMusicTrack;
@@ -92,6 +92,7 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
                         @Override
                         public void run() {
                             getServerData().getPlaylist().upvote(postData.getTrackId(), postData.getIp());
+                            getServerData().notifyAllClients();
                         }
                     });
                 }
@@ -103,6 +104,7 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
                         @Override
                         public void run() {
                             getServerData().getPlaylist().downvote(postData.getTrackId(), postData.getIp());
+                            getServerData().notifyAllClients();
                         }
                     });
                 }
@@ -115,16 +117,16 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
                     Handler mainHandler = new Handler(getApplicationContext().getMainLooper());
                     mainHandler.post(
 
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            getServerData().registerClient(postData);
-                            // TODO: Notify only the one new client
-                            getServerData().notifyAllClients();
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    getServerData().registerClient(postData);
+                                    // TODO: Notify only the one new client
+                                    getServerData().notifyAllClients();
 
 
-                        }
-                    });
+                                }
+                            });
                 }
             }));
             httpServerService.registerHandler("/unregister", new CrowdMusicHandler<String>(new Executable<String>() {
@@ -206,6 +208,11 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
     @Override
     protected void onStart() {
         super.onStart();
+        notifyServerview();
+    }
+
+    private void notifyServerview() {
+        getServerData().notifyServerview();
     }
 
     @Override

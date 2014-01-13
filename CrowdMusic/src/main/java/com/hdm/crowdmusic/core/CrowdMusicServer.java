@@ -1,12 +1,12 @@
 package com.hdm.crowdmusic.core;
 
 import android.app.Activity;
-
 import com.hdm.crowdmusic.core.streaming.CrowdMusicUser;
 import com.hdm.crowdmusic.core.streaming.CrowdMusicUserList;
 import com.hdm.crowdmusic.core.streaming.actions.CrowdMusicTracklist;
 import com.hdm.crowdmusic.core.streaming.actions.ICrowdMusicAction;
 import com.hdm.crowdmusic.core.streaming.actions.SimplePostTask;
+import com.hdm.crowdmusic.gui.fragments.ServerPlaylistFragment;
 import com.hdm.crowdmusic.util.Constants;
 import org.teleal.cling.binding.LocalServiceBindingException;
 import org.teleal.cling.binding.annotations.AnnotationLocalServiceBinder;
@@ -17,6 +17,7 @@ import org.teleal.cling.model.types.DeviceType;
 import org.teleal.cling.model.types.UDADeviceType;
 import org.teleal.cling.model.types.UDN;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
@@ -33,10 +34,11 @@ public class CrowdMusicServer {
     private String serverIP;
     private CrowdMusicUserList userList;
     private final PropertyChangeSupport pcs;
+    private PropertyChangeListener serverView;
 
     public CrowdMusicServer(String serverIP, Activity parentActivity) {
         this.serverIP = serverIP;
-        this.playlist = new CrowdMusicPlaylist();
+        this.playlist = new CrowdMusicPlaylist(this);
         this.pcs = new PropertyChangeSupport(this);
         this.userList = new CrowdMusicUserList();
         try {
@@ -85,6 +87,13 @@ public class CrowdMusicServer {
         pcs.firePropertyChange( "users", null, userList);
 
     }
+
+    // registers the server playlistview, because it has to be updated
+    // on client actions that change the playlist
+    public void registerServerview(PropertyChangeListener serverView) {
+        this.serverView = serverView;
+    }
+
     public void unregisterClient(String clientIP) {
 
     }
@@ -107,11 +116,20 @@ public class CrowdMusicServer {
                     return new CrowdMusicTracklist(getPlaylist().getPlaylist());
                 }
             });
+        }
+        notifyServerview();
+    }
 
+
+    public void notifyServerview() {
+        if (this.serverView != null) {
+            PropertyChangeEvent event = new PropertyChangeEvent(this, ServerPlaylistFragment.PLAYLIST_CHANGE, null, null);
+            serverView.propertyChange(event);
         }
     }
 
     public CrowdMusicPlaylist getPlaylist() {
         return playlist;
     }
+
 }

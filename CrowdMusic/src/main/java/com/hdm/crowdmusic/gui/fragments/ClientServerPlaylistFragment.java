@@ -9,20 +9,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.core.CrowdMusicClient;
 import com.hdm.crowdmusic.core.CrowdMusicTrack;
-import com.hdm.crowdmusic.core.streaming.actions.Executable;
-import com.hdm.crowdmusic.core.streaming.actions.ICrowdMusicAction;
-import com.hdm.crowdmusic.core.streaming.actions.SimplePostTask;
-import com.hdm.crowdmusic.core.streaming.actions.Vote;
 import com.hdm.crowdmusic.gui.activities.ClientActivity;
 import com.hdm.crowdmusic.gui.support.IOnClientRequestListener;
 import com.hdm.crowdmusic.gui.support.PlaylistTrackAdapter;
-import com.hdm.crowdmusic.util.Constants;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
-public class ClientServerPlaylistFragment extends ListFragment {
+public class ClientServerPlaylistFragment extends ListFragment implements PropertyChangeListener {
+    public static final String PLAYLIST_CHANGE = "playlist";
 
     private IOnClientRequestListener activity;
 
@@ -36,6 +33,7 @@ public class ClientServerPlaylistFragment extends ListFragment {
                              Bundle savedInstanceState) {
         setUpAdapter();
         View v = inflater.inflate(R.layout.fragment_serverplaylist, container, false);
+        ((ClientActivity) getActivity()).getClientData().registerClientView(this);
         return v;
     }
 
@@ -90,6 +88,15 @@ public class ClientServerPlaylistFragment extends ListFragment {
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement ClientLocalTracksFragment.OnClientRequestedListener");
+        }
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+        if  (propertyChangeEvent.getPropertyName().equals(PLAYLIST_CHANGE)) {
+            setUpAdapter();
+            //CrowdMusicPlaylist list = (CrowdMusicPlaylist) propertyChangeEvent.getNewValue();
+            //setUpAdapter(list.getPlaylist());
         }
     }
 }

@@ -15,19 +15,13 @@ import com.hdm.crowdmusic.core.CrowdMusicTrack;
 import com.hdm.crowdmusic.core.streaming.AudioRequestHandler;
 import com.hdm.crowdmusic.core.streaming.HTTPServerService;
 import com.hdm.crowdmusic.core.streaming.IHttpServerService;
-import com.hdm.crowdmusic.core.streaming.actions.CrowdMusicHandler;
-import com.hdm.crowdmusic.core.streaming.actions.CrowdMusicTracklist;
-import com.hdm.crowdmusic.core.streaming.actions.Executable;
-import com.hdm.crowdmusic.core.streaming.actions.ICrowdMusicAction;
-import com.hdm.crowdmusic.core.streaming.actions.SimplePostTask;
+import com.hdm.crowdmusic.core.streaming.actions.*;
 import com.hdm.crowdmusic.gui.fragments.ClientLocalTracksFragment;
 import com.hdm.crowdmusic.gui.fragments.ClientServerPlaylistFragment;
 import com.hdm.crowdmusic.gui.support.IOnClientRequestListener;
 import com.hdm.crowdmusic.gui.support.TabListener;
 import com.hdm.crowdmusic.util.Constants;
 import com.hdm.crowdmusic.util.Utility;
-
-import java.util.List;
 
 public class ClientActivity extends Activity implements IOnClientRequestListener {
 

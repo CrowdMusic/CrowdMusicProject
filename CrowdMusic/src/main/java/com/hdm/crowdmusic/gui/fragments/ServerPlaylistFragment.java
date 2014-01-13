@@ -4,25 +4,24 @@ package com.hdm.crowdmusic.gui.fragments;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.core.CrowdMusicClient;
 import com.hdm.crowdmusic.core.CrowdMusicServer;
 import com.hdm.crowdmusic.core.CrowdMusicTrack;
-import com.hdm.crowdmusic.core.streaming.actions.Vote;
-import com.hdm.crowdmusic.gui.support.IOnClientRequestListener;
+import com.hdm.crowdmusic.gui.activities.ServerActivity;
 import com.hdm.crowdmusic.gui.support.IOnServerRequestListener;
 import com.hdm.crowdmusic.gui.support.PlaylistTrackAdapter;
-import com.hdm.crowdmusic.util.Utility;
 
-import java.util.ArrayList;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
-public class ServerPlaylistFragment extends ListFragment {
+public class ServerPlaylistFragment extends ListFragment implements PropertyChangeListener {
+
+    public static final String PLAYLIST_CHANGE = "playlist";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,6 +33,9 @@ public class ServerPlaylistFragment extends ListFragment {
                              Bundle savedInstanceState) {
         setUpAdapter();
         View v = inflater.inflate(R.layout.fragment_serverplaylist, container, false);
+
+        ((ServerActivity) getActivity()).getServerData().registerServerview(this);
+        setUpAdapter();
         return v;
     }
 
@@ -62,5 +64,16 @@ public class ServerPlaylistFragment extends ListFragment {
         CrowdMusicTrack track = (CrowdMusicTrack) getListAdapter().getItem(position);
         CrowdMusicServer server = ((IOnServerRequestListener) activity).getServerData();
         server.getPlaylist().upvote(track.getId(), server.getServerIP());
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+        //if  (propertyChangeEvent.getNewValue() instanceof CrowdMusicPlaylist)
+        if  (propertyChangeEvent.getPropertyName().equals(ServerPlaylistFragment.PLAYLIST_CHANGE))
+        {
+            // We dont need any data here, just the event because we are the server ourselves
+            //CrowdMusicPlaylist list = (CrowdMusicPlaylist) propertyChangeEvent.getNewValue();
+            setUpAdapter();
+        }
     }
 }

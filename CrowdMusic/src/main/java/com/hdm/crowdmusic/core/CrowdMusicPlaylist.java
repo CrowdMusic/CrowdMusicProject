@@ -1,29 +1,25 @@
 package com.hdm.crowdmusic.core;
 
 import android.util.Log;
-
-import com.hdm.crowdmusic.core.streaming.actions.CrowdMusicTracklist;
-import com.hdm.crowdmusic.core.streaming.actions.ICrowdMusicAction;
-import com.hdm.crowdmusic.core.streaming.actions.PostPlaylistTask;
-import com.hdm.crowdmusic.core.streaming.actions.SimplePostTask;
-import com.hdm.crowdmusic.util.Constants;
 import com.hdm.crowdmusic.util.Utility;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.PriorityQueue;
 
 public class CrowdMusicPlaylist {
 
     private ArrayList<CrowdMusicTrack> playlist;
     private Comparator<CrowdMusicTrack> comparator = new TrackComparator();
+    private CrowdMusicServer server;
 
-    public CrowdMusicPlaylist() {
+    private CrowdMusicPlaylist() {
         playlist = new ArrayList<CrowdMusicTrack>();
+    }
+    public CrowdMusicPlaylist(CrowdMusicServer server) {
+        this();
+        this.server = server;
     }
 
     public CrowdMusicTrack getNextTrack() {
@@ -91,7 +87,7 @@ public class CrowdMusicPlaylist {
 
     // Ugly as hell, but it works
     public void notifyListener() {
-
+        /*
         List<String> alreadyPostedIPs = new ArrayList<String>();
         for (CrowdMusicTrack track: playlist) {
             String clientIp = track.getIp();
@@ -113,6 +109,9 @@ public class CrowdMusicPlaylist {
                 });
                 alreadyPostedIPs.add(clientIp);
             }
+        }*/
+        if (server != null) {
+            server.notifyAllClients();
         }
     }
 
