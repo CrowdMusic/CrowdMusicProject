@@ -40,7 +40,11 @@ public class ServerPlaylistFragment extends ListFragment implements PropertyChan
     }
 
     public void setUpAdapter() {
-        List<CrowdMusicTrack> objects = ((IOnServerRequestListener) getActivity()).getServerData().getPlaylist().getPlaylist();
+        CrowdMusicServer server = ((IOnServerRequestListener) getActivity()).getServerData();
+        List<CrowdMusicTrack> objects;
+
+        objects = server.getPlaylist().getPlaylist();
+
         setUpAdapter(objects);
     }
 

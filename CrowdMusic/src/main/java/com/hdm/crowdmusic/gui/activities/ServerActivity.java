@@ -153,6 +153,7 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setupCrowdMusicServer();
         setContentView(layout.activity_createserver);
 
         if (savedInstanceState == null) {
@@ -178,7 +179,6 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
                 .setTabListener(new TabListener<ServerAdminUsersFragment>(this, "admin",
                         ServerAdminUsersFragment.class)));
 
-        setupCrowdMusicServer();
 
         getApplicationContext().bindService(
                 new Intent(this, AndroidUpnpServiceImpl.class),

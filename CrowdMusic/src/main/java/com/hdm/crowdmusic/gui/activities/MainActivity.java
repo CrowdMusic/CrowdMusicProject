@@ -1,13 +1,12 @@
 package com.hdm.crowdmusic.gui.activities;
 
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.ListActivity;
+import android.app.*;
 import android.content.*;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,8 +19,6 @@ import com.hdm.crowdmusic.core.devicelistener.AllDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
 import com.hdm.crowdmusic.core.network.AccessPoint;
-import com.hdm.crowdmusic.core.streaming.HTTPServerService;
-import com.hdm.crowdmusic.util.Constants;
 import com.hdm.crowdmusic.util.Utility;
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
@@ -56,6 +53,7 @@ public class MainActivity extends ListActivity {
             upnpService = null;
         }
     };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,8 +143,8 @@ public class MainActivity extends ListActivity {
     public void startServer(View view) {
         AccessPoint.setApDialogShown(false);
         accessPoint = new AccessPoint(getApplicationContext());
-        handleAPModalDialog();
-        transitToServerActivity(view);
+        handleAPModalDialog(view);
+        //transitToServerActivity(view);
     }
 
     public void transitToServerActivity(View view) {
@@ -154,7 +152,7 @@ public class MainActivity extends ListActivity {
         startActivity(intent);
     }
 
-    public void handleAPModalDialog() {
+    public void handleAPModalDialog(final View view) {
 
         // If the dialog was alread shown, do nothing. This is for example the case
         // when switching from landscape to portrait. See Issue 23.
@@ -167,15 +165,28 @@ public class MainActivity extends ListActivity {
 
             DialogInterface.OnClickListener ok = new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    accessPoint.enable();
+                    //accessPoint.enable();
+                    APTask apTask = new APTask(currentActivity,view);
+                    apTask.execute();
+                    /*try {
+                        apTask.get(2000, TimeUnit.MILLISECONDS);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (TimeoutException e) {
+                        e.printStackTrace();
+                    }*/
                     Toast toast = Toast.makeText(currentActivity.getApplicationContext(), R.string.dialog_create_wlan_ap_created + "\n" + R.string.server_activity_created_server, 2);
                     toast.show();
+                    //waitForAccessPointAndTransitToServerView(view);
                 }
             };
             DialogInterface.OnClickListener cancel = new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     Toast toast = Toast.makeText(currentActivity.getApplicationContext(), R.string.dialog_create_wlan_no_ap_created, 2);
                     toast.show();
+                    transitToServerActivity(view);
                 }
             };
 
@@ -187,6 +198,9 @@ public class MainActivity extends ListActivity {
                 public void onClick(DialogInterface dialog, int id) {
                     accessPoint.enable();
                     Toast.makeText(getApplicationContext(), R.string.server_activity_created_server, 2).show();
+                    APTask apTask = new APTask(currentActivity,view);
+                    apTask.execute();
+                    //waitForAccessPointAndTransitToServerView(view);
                 }
             };
             DialogInterface.OnClickListener cancel = new DialogInterface.OnClickListener() {
@@ -212,5 +226,58 @@ public class MainActivity extends ListActivity {
 
         AlertDialog alertDialog = builder.create();
         return alertDialog;
+    }
+
+    private class APTask extends AsyncTask<String, Void, Boolean> {
+        private ProgressDialog dialog;
+        volatile String wifiAdress = null;
+        private Activity activity;
+        private View view;
+
+        public APTask(Activity activity, View view) {
+            this.activity = activity;
+            this.view = view;
+            context = activity;
+            dialog = new ProgressDialog(context);
+        }
+
+        private Context context;
+
+        protected void onPreExecute() {
+            this.dialog.setMessage("Progress start");
+            this.dialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+
+            transitToServerActivity(view);
+
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+
+            if (success) {
+                Toast.makeText(context, "OK", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(context, "Error", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        protected Boolean doInBackground(final String... args) {
+            publishProgress();
+            try{
+                accessPoint.enable();
+
+                while(Utility.getWifiIpAddress() == null) {
+                    Thread.sleep(100);
+                }
+
+                return true;
+            } catch (Exception e){
+                Log.e("tag", "error", e);
+                return false;
+            }
+        }
     }
 }

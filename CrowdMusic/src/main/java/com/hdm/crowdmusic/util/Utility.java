@@ -18,7 +18,7 @@ public class Utility {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
                  en.hasMoreElements();) {
                 NetworkInterface intf = en.nextElement();
-                if (intf.getName().contains("wlan")) {
+                if (intf.getName().contains("wlan") || intf.getName().contains("ap")) {
                     for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr
                             .hasMoreElements();) {
                         InetAddress inetAddress = enumIpAddr.nextElement();
