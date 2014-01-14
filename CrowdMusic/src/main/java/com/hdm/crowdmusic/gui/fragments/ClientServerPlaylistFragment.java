@@ -22,6 +22,7 @@ public class ClientServerPlaylistFragment extends ListFragment implements Proper
     public static final String PLAYLIST_CHANGE = "playlist";
 
     private IOnClientRequestListener activity;
+    private boolean registered =false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -31,16 +32,21 @@ public class ClientServerPlaylistFragment extends ListFragment implements Proper
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        setUpAdapter();
         View v = inflater.inflate(R.layout.fragment_serverplaylist, container, false);
+
+        if(! registered){
         ((ClientActivity) getActivity()).getClientData().registerClientView(this);
+        registered = true;
+        }
+        setUpAdapter();
         return v;
     }
 
     public void setUpAdapter() {
-
-        List<CrowdMusicTrack> objects = ((ClientActivity) getActivity()).getClientData().getPlaylist();
-        setUpAdapter(objects);
+        if (isAdded()){
+            List<CrowdMusicTrack> objects = ((ClientActivity) getActivity()).getClientData().getPlaylist();
+            setUpAdapter(objects);
+        }
     }
 
     public void setUpAdapter(final List<CrowdMusicTrack> newValue) {

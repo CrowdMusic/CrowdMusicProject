@@ -28,9 +28,10 @@ public class CrowdMusicPlaylist {
             sortPlaylist();
             notifyListener();
             return nextTrack;
+        } else {
+            Log.i(Utility.LOG_TAG_MEDIA, "Playlist is empty!");
+            return null;
         }
-        Log.i(Utility.LOG_TAG_MEDIA, "Playlist is empty!");
-        return null;
     }
 
     public void addTrack(CrowdMusicTrack track) {
