@@ -1,20 +1,14 @@
-package com.hdm.crowdmusic.core.streaming;
+package com.hdm.crowdmusic.core.streaming.actions;
 
 import android.content.Context;
 import android.util.Log;
-
-import com.hdm.crowdmusic.core.CrowdMusicPlaylist;
 import com.hdm.crowdmusic.core.CrowdMusicTrack;
 import com.hdm.crowdmusic.util.Utility;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpEntityEnclosingRequest;
-import org.apache.http.HttpException;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
+import org.apache.http.*;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
 import org.apache.http.util.EntityUtils;
+
 import java.io.IOException;
 import java.util.Locale;
 
@@ -38,7 +32,8 @@ public class PostAudioHandler implements HttpRequestHandler {
         if (httpRequest instanceof HttpEntityEnclosingRequest) {
             HttpEntity entity = ((HttpEntityEnclosingRequest) httpRequest).getEntity();
             CrowdMusicTrack track = getPostData(entity);
-            CrowdMusicPlaylist.getInstance().addTrack(track);
+            // TODO: Angucken....
+            //CrowdMusicPlaylist.getInstance().addTrack(track);
             httpResponse.setStatusCode(HttpStatus.SC_OK);
             return;
         }

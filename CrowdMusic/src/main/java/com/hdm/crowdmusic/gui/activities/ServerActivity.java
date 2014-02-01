@@ -2,58 +2,47 @@ package com.hdm.crowdmusic.gui.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.core.CrowdMusicPlaylist;
 import com.hdm.crowdmusic.core.CrowdMusicServer;
 import com.hdm.crowdmusic.core.CrowdMusicTrack;
-import com.hdm.crowdmusic.core.network.AccessPoint;
 import com.hdm.crowdmusic.core.streaming.HTTPServerService;
 import com.hdm.crowdmusic.core.streaming.IHttpServerService;
 import com.hdm.crowdmusic.core.streaming.IMediaPlayerService;
 import com.hdm.crowdmusic.core.streaming.MediaPlayerService;
+import com.hdm.crowdmusic.core.streaming.actions.CrowdMusicHandler;
+import com.hdm.crowdmusic.core.streaming.actions.Executable;
+import com.hdm.crowdmusic.core.streaming.actions.Vote;
 import com.hdm.crowdmusic.gui.fragments.ServerAdminUsersFragment;
 import com.hdm.crowdmusic.gui.fragments.ServerPlaylistFragment;
+import com.hdm.crowdmusic.gui.support.IOnServerRequestListener;
+import com.hdm.crowdmusic.gui.support.TabListener;
+import com.hdm.crowdmusic.util.Constants;
 import com.hdm.crowdmusic.util.Utility;
-
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
 import org.teleal.cling.registry.RegistrationException;
 
-import java.net.InetAddress;
-
 import static com.hdm.crowdmusic.R.id;
 import static com.hdm.crowdmusic.R.layout;
 
-public class ServerActivity extends Activity {
+public class ServerActivity extends Activity implements IOnServerRequestListener {
 
     private CrowdMusicServer crowdMusicServer;
     private AndroidUpnpService upnpService;
     private IHttpServerService httpServerService;
     private IMediaPlayerService mediaService;
 
-    private AccessPoint accessPoint;
-
-    private ServiceConnection upnpServiceConntection = new ServiceConnection() {
+    private ServiceConnection upnpServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             upnpService = (AndroidUpnpService) service;
@@ -70,8 +59,7 @@ public class ServerActivity extends Activity {
             upnpService = null;
         }
     };
-
-    private ServiceConnection mediaServiceConntection = new ServiceConnection() {
+    private ServiceConnection mediaServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.i(Utility.LOG_TAG_MEDIA, "MediaPlayerService connected.");
@@ -82,21 +70,82 @@ public class ServerActivity extends Activity {
         public void onServiceDisconnected(ComponentName name) {
             Log.i(Utility.LOG_TAG_MEDIA, "MediaPlayerService disconnected.");
             mediaService = null;
-            accessPoint.disable();
         }
     };
-    private ServiceConnection hTTPServerServiceConntection = new ServiceConnection() {
+    private ServiceConnection httpServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.i(Utility.LOG_TAG_MEDIA, "httpServerService connected.");
             httpServerService = (IHttpServerService) service;
+
+            httpServerService.registerHandler("/track/post", new CrowdMusicHandler<CrowdMusicTrack>(new Executable<CrowdMusicTrack>() {
+                @Override
+                public void execute(CrowdMusicTrack postData) {
+                    getServerData().getPlaylist().addTrack(postData);
+                }
+            }));
+
+            httpServerService.registerHandler("/vote/up", new CrowdMusicHandler<Vote>(new Executable<Vote>() {
+                @Override
+                public void execute(final Vote postData) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getServerData().getPlaylist().upvote(postData.getTrackId(), postData.getIp());
+                            getServerData().notifyAllClients();
+                        }
+                    });
+                }
+            }));
+            httpServerService.registerHandler("/vote/down", new CrowdMusicHandler<Vote>(new Executable<Vote>() {
+                @Override
+                public void execute(final Vote postData) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getServerData().getPlaylist().downvote(postData.getTrackId(), postData.getIp());
+                            getServerData().notifyAllClients();
+                        }
+                    });
+                }
+            }));
+
+            httpServerService.registerHandler("/register", new CrowdMusicHandler<String>(
+                new Executable<String>() {
+                @Override
+                public void execute(final String postData) {
+                    Handler mainHandler = new Handler(getApplicationContext().getMainLooper());
+                    mainHandler.post(
+
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    getServerData().registerClient(postData);
+                                    // TODO: Notify only the one new client
+                                    getServerData().notifyAllClients();
+
+
+                                }
+                            });
+                }
+            }));
+            httpServerService.registerHandler("/unregister", new CrowdMusicHandler<String>(new Executable<String>() {
+                @Override
+                public void execute(final String postData) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getServerData().unregisterClient(postData);
+                        }
+                    });
+                }
+            }));
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             Log.i(Utility.LOG_TAG_MEDIA, "httpServerService disconnected.");
             httpServerService = null;
-            accessPoint.disable();
         }
     };
 
@@ -104,43 +153,18 @@ public class ServerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setupCrowdMusicServer();
         setContentView(layout.activity_createserver);
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(id.container, new PlaceholderFragment())
+                    .add(id.container, new ServerPlaylistFragment())
                     .commit();
         }
 
-
-        final WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        accessPoint = new AccessPoint(getApplicationContext());
-        handleAPModalDialog();
-        InetAddress ip = Utility.getWifiInetAddress(wifiManager);
-        crowdMusicServer = new CrowdMusicServer(ip.getHostAddress());
-
-
-        getApplicationContext().bindService(
-                new Intent(this, AndroidUpnpServiceImpl.class),
-                upnpServiceConntection,
-                Context.BIND_AUTO_CREATE
-        );
-
-        getApplicationContext().bindService(
-                new Intent(this, MediaPlayerService.class),
-                mediaServiceConntection,
-                Context.BIND_AUTO_CREATE
-        );
-
-        getApplicationContext().bindService(
-                new Intent(this, HTTPServerService.class),
-                hTTPServerServiceConntection,
-                Context.BIND_AUTO_CREATE
-        );
-
-        handleAPModalDialog();
-
         final ActionBar bar = getActionBar();
+
+
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         bar.setDisplayOptions(1, ActionBar.DISPLAY_SHOW_TITLE);
 
@@ -152,78 +176,44 @@ public class ServerActivity extends Activity {
 
         bar.addTab(bar.newTab()
                 .setText("Users")
-                .setTabListener(new TabListener<ServerAdminUsersFragment>(
-                        this, "admin", ServerAdminUsersFragment.class)));
+                .setTabListener(new TabListener<ServerAdminUsersFragment>(this, "admin",
+                        ServerAdminUsersFragment.class)));
+
+
+        getApplicationContext().bindService(
+                new Intent(this, AndroidUpnpServiceImpl.class),
+                upnpServiceConnection,
+                Context.BIND_AUTO_CREATE
+        );
+
+        getApplicationContext().bindService(
+                new Intent(this, MediaPlayerService.class),
+                mediaServiceConnection,
+                Context.BIND_AUTO_CREATE
+        );
+
+        String clientIP = Utility.getWifiIpAddress();
+
+        Intent httpIntent = new Intent(this, HTTPServerService.class);
+        httpIntent.putExtra("ip", clientIP);
+        httpIntent.putExtra("port", Constants.PORT);
+
+        getApplicationContext().bindService(
+                httpIntent,
+                httpServiceConnection,
+                Context.BIND_AUTO_CREATE
+        );
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        notifyServerview();
     }
 
-    public void handleAPModalDialog() {
-
-        // If the dialog was alread shown, do nothing. This is for example the case
-        // when switching from landscape to portrait. See Issue 23.
-        if (AccessPoint.isApDialogShown()) return;
-        AccessPoint.setApDialogShown(true);
-
-        final Activity currentActivity = this;
-
-        if (accessPoint.isWifiConnected()) {
-
-            DialogInterface.OnClickListener ok = new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    accessPoint.enable();
-                    Toast toast = Toast.makeText(currentActivity.getApplicationContext(), R.string.dialog_create_wlan_ap_created + "\n" + R.string.server_activity_created_server, 2);
-                    toast.show();
-                }
-            };
-            DialogInterface.OnClickListener cancel = new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Toast toast = Toast.makeText(currentActivity.getApplicationContext(), R.string.dialog_create_wlan_no_ap_created, 2);
-                    toast.show();
-                }
-            };
-
-            Dialog dialog = getModalDialog(this, getApplicationContext().getString(R.string.dialog_create_wlan), ok, cancel);
-            dialog.show();
-        } else {
-
-            DialogInterface.OnClickListener ok = new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-
-                    accessPoint.enable();
-                    Toast.makeText(getApplicationContext(), R.string.server_activity_created_server, 2).show();
-                }
-            };
-            DialogInterface.OnClickListener cancel = new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Toast toast = Toast.makeText(currentActivity.getApplicationContext(), R.string.dialog_create_wlan_no_ap_created, 2);
-                    toast.show();
-                }
-            };
-
-            Dialog dialog = getModalDialog(this, getApplicationContext().getString(R.string.dialog_create_wlan_no_wifi_enabled_or_active), ok, cancel);
-            dialog.show();
-        }
+    private void notifyServerview() {
+        getServerData().notifyServerview();
     }
-
-
-    AlertDialog getModalDialog(final Activity currentActivity, String dialog, DialogInterface.OnClickListener ok, DialogInterface.OnClickListener cancel) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setMessage(dialog)
-                .setTitle(R.string.dialog_title_create_wlan);
-
-
-        builder.setPositiveButton(android.R.string.yes, ok);
-        builder.setNegativeButton(android.R.string.no, cancel);
-
-        AlertDialog alertDialog = builder.create();
-        return alertDialog;
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -248,7 +238,7 @@ public class ServerActivity extends Activity {
 
                 if (! mediaService.hasTrack())
                 {
-                    CrowdMusicTrack track = CrowdMusicPlaylist.getInstance().getNextTrack();
+                    CrowdMusicTrack track = getServerData().getPlaylist().getNextTrack();
                     if (track != null) {
                         mediaService.play(Utility.buildURL(track));
                     }
@@ -258,7 +248,7 @@ public class ServerActivity extends Activity {
                 }
                 return true;
             case id.action_next_track:
-                CrowdMusicTrack track = CrowdMusicPlaylist.getInstance().getNextTrack();
+                CrowdMusicTrack track = getServerData().getPlaylist().getNextTrack();
                 if (track != null) {
                     mediaService.play(Utility.buildURL(track));
                 }
@@ -272,84 +262,28 @@ public class ServerActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void setupCrowdMusicServer() {
+        String ip = Utility.getWifiIpAddress();
+        if (ip != null) {
+            crowdMusicServer = new CrowdMusicServer(ip, this);
+        }
+    }
 
-    public CrowdMusicServer getCrowdMusicServer() {
+    //TODO: Return copy instead of the real thing
+    @Override
+    public CrowdMusicServer getServerData() {
         return crowdMusicServer;
     }
 
-    public AndroidUpnpService getUPnPService() {
-        return upnpService;
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
-    public IHttpServerService getHTTPServerService() {
-        return httpServerService;
-    }
-
-
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(layout.fragment_createserver, container, false);
-            return rootView;
-        }
-    }
-
-    public class TabListener<T extends Fragment> implements ActionBar.TabListener {
-        private final Activity mActivity;
-        private final String mTag;
-        private final Class<T> mClass;
-        private final Bundle mArgs;
-        private Fragment mFragment;
-
-        public TabListener(Activity activity, String tag, Class<T> clz) {
-            this(activity, tag, clz, null);
-        }
-
-        public TabListener(Activity activity, String tag, Class<T> clz, Bundle args) {
-            mActivity = activity;
-            mTag = tag;
-            mClass = clz;
-            mArgs = args;
-
-            mFragment = mActivity.getFragmentManager().findFragmentByTag(mTag);
-            if (mFragment != null && !mFragment.isDetached()) {
-                FragmentTransaction ft = mActivity.getFragmentManager().beginTransaction();
-                ft.detach(mFragment);
-                ft.commit();
-            }
-        }
-
-        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-            if (mFragment == null) {
-                mFragment = Fragment.instantiate(mActivity, mClass.getName(), mArgs);
-                ft.add(android.R.id.content, mFragment, mTag);
-            } else {
-                ft.attach(mFragment);
-            }
-        }
-
-        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-            if (mFragment != null) {
-                ft.detach(mFragment);
-            }
-        }
-
-        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-
-        }
-
-        // Maybe we'll need this, some time
-        private void refresh() {
-            if (mFragment != null && mFragment instanceof ServerPlaylistFragment) {
-                if (((ServerPlaylistFragment) mFragment).getListAdapter() == null) return;
-                ((ServerPlaylistFragment) mFragment).setUpAdapter();
-            }
-        }
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 }
 

@@ -1,26 +1,24 @@
 package com.hdm.crowdmusic.gui.activities;
 
 
-import android.app.ListActivity;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.net.wifi.WifiManager;
+import android.app.*;
+import android.content.*;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.devicelistener.AllDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
 import com.hdm.crowdmusic.core.network.AccessPoint;
-import com.hdm.crowdmusic.core.streaming.*;
 import com.hdm.crowdmusic.util.Utility;
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
@@ -29,15 +27,13 @@ import org.teleal.cling.registry.RegistryListener;
 
 public class MainActivity extends ListActivity {
 
-    private final int PORT = 8080;
-    private String ip;
+    private AccessPoint accessPoint;
 
     private AndroidUpnpService upnpService;
-    private IHttpServerService httpService;
     private RegistryListener registryListener;
     ArrayAdapter listAdapter;
 
-    private ServiceConnection upnpServiceConntection = new ServiceConnection() {
+    private ServiceConnection upnpServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
 
@@ -58,21 +54,6 @@ public class MainActivity extends ListActivity {
         }
     };
 
-    private ServiceConnection httpServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            httpService = (IHttpServerService) service;
-
-            httpService.registerHandler("/audio/*", new AudioRequestHandler(getApplicationContext()));
-            httpService.registerHandler("/", new PostAudioHandler(getApplicationContext()));
-            httpService.registerHandler("/vote*", new PostVotingHandler(getApplicationContext()));
-            httpService.registerHandler("/postplaylist*", new PostPlaylistHandler(getApplicationContext()));
-        }
-
-        public void onServiceDisconnected(ComponentName className) {
-            httpService = null;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,22 +64,9 @@ public class MainActivity extends ListActivity {
 
         registryListener = new CrowdDevicesBrowser(this, listAdapter);
 
-        final WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        ip = Utility.getWifiInetAddress(wifiManager).getHostAddress();
-
         getApplicationContext().bindService(
                 new Intent(this, AndroidUpnpServiceImpl.class),
-                upnpServiceConntection,
-                Context.BIND_AUTO_CREATE
-        );
-
-        Intent httpIntent = new Intent(this, HTTPServerService.class);
-        httpIntent.putExtra("ip", ip);
-        httpIntent.putExtra("port", PORT);
-
-        getApplicationContext().bindService(
-                httpIntent,
-                httpServiceConnection,
+                upnpServiceConnection,
                 Context.BIND_AUTO_CREATE
         );
 
@@ -148,9 +116,7 @@ public class MainActivity extends ListActivity {
         final String deviceDetails = selectedDeviceDisplay.getDevice().getDetails().getModelDetails().getModelNumber();
 
         Intent clientIntent = new Intent(this, ClientActivity.class);
-        clientIntent.putExtra("clientIP", ip);                  //IP des Geräts
-        clientIntent.putExtra("serverIP", deviceDetails);       //IP des Servers
-        clientIntent.putExtra("port", PORT);
+        clientIntent.putExtra("serverIP", deviceDetails);
         startActivity(clientIntent);
     }
 
@@ -176,11 +142,142 @@ public class MainActivity extends ListActivity {
 
     public void startServer(View view) {
         AccessPoint.setApDialogShown(false);
-        transitToServerActivity(view);
+        accessPoint = new AccessPoint(getApplicationContext());
+        handleAPModalDialog(view);
+        //transitToServerActivity(view);
     }
 
     public void transitToServerActivity(View view) {
         Intent intent = new Intent(this, ServerActivity.class);
         startActivity(intent);
+    }
+
+    public void handleAPModalDialog(final View view) {
+
+        // If the dialog was alread shown, do nothing. This is for example the case
+        // when switching from landscape to portrait. See Issue 23.
+        if (AccessPoint.isApDialogShown()) return;
+        AccessPoint.setApDialogShown(true);
+
+        final Activity currentActivity = this;
+
+        if (accessPoint.isWifiConnected()) {
+
+            DialogInterface.OnClickListener ok = new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    //accessPoint.enable();
+                    APTask apTask = new APTask(currentActivity,view);
+                    apTask.execute();
+                    /*try {
+                        apTask.get(2000, TimeUnit.MILLISECONDS);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (TimeoutException e) {
+                        e.printStackTrace();
+                    }*/
+                    Toast toast = Toast.makeText(currentActivity.getApplicationContext(), R.string.dialog_create_wlan_ap_created + "\n" + R.string.server_activity_created_server, 2);
+                    toast.show();
+                    //waitForAccessPointAndTransitToServerView(view);
+                }
+            };
+            DialogInterface.OnClickListener cancel = new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Toast toast = Toast.makeText(currentActivity.getApplicationContext(), R.string.dialog_create_wlan_no_ap_created, 2);
+                    toast.show();
+                    transitToServerActivity(view);
+                }
+            };
+
+            Dialog dialog = getModalDialog(this, getApplicationContext().getString(R.string.dialog_create_wlan), ok, cancel);
+            dialog.show();
+        } else {
+
+            DialogInterface.OnClickListener ok = new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    accessPoint.enable();
+                    Toast.makeText(getApplicationContext(), R.string.server_activity_created_server, 2).show();
+                    APTask apTask = new APTask(currentActivity,view);
+                    apTask.execute();
+                    //waitForAccessPointAndTransitToServerView(view);
+                }
+            };
+            DialogInterface.OnClickListener cancel = new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Toast toast = Toast.makeText(currentActivity.getApplicationContext(), R.string.dialog_create_wlan_no_ap_created, 2);
+                    toast.show();
+                }
+            };
+
+            Dialog dialog = getModalDialog(this, getApplicationContext().getString(R.string.dialog_create_wlan_no_wifi_enabled_or_active), ok, cancel);
+            dialog.show();
+        }
+    }
+    AlertDialog getModalDialog(final Activity currentActivity, String dialog, DialogInterface.OnClickListener ok, DialogInterface.OnClickListener cancel) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setMessage(dialog)
+                .setTitle(R.string.dialog_title_create_wlan);
+
+
+        builder.setPositiveButton(android.R.string.yes, ok);
+        builder.setNegativeButton(android.R.string.no, cancel);
+
+        AlertDialog alertDialog = builder.create();
+        return alertDialog;
+    }
+
+    private class APTask extends AsyncTask<String, Void, Boolean> {
+        private ProgressDialog dialog;
+        volatile String wifiAdress = null;
+        private Activity activity;
+        private View view;
+
+        public APTask(Activity activity, View view) {
+            this.activity = activity;
+            this.view = view;
+            context = activity;
+            dialog = new ProgressDialog(context);
+        }
+
+        private Context context;
+
+        protected void onPreExecute() {
+            this.dialog.setMessage("Progress start");
+            this.dialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+
+            transitToServerActivity(view);
+
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+
+            if (success) {
+                Toast.makeText(context, "OK", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(context, "Error", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        protected Boolean doInBackground(final String... args) {
+            publishProgress();
+            try{
+                accessPoint.enable();
+
+                while(Utility.getWifiIpAddress() == null) {
+                    Thread.sleep(100);
+                }
+
+                return true;
+            } catch (Exception e){
+                Log.e("tag", "error", e);
+                return false;
+            }
+        }
     }
 }

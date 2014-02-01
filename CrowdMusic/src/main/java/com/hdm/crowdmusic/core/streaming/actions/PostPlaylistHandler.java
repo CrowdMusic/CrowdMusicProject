@@ -1,10 +1,9 @@
-package com.hdm.crowdmusic.core.streaming;
+package com.hdm.crowdmusic.core.streaming.actions;
 
 import android.content.Context;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.hdm.crowdmusic.core.CrowdMusicPlaylist;
 import com.hdm.crowdmusic.core.CrowdMusicTrack;
 import com.hdm.crowdmusic.util.Utility;
 import org.apache.http.*;
@@ -42,7 +41,8 @@ public class PostPlaylistHandler implements HttpRequestHandler {
         if (httpRequest instanceof HttpEntityEnclosingRequest) {
             List<CrowdMusicTrack> playList = getPostData(entity);
 
-            CrowdMusicPlaylist.getInstance().setPlaylist(playList);
+            // TODO: Angucken....
+            //CrowdMusicPlaylist.getInstance().setPlaylist(playList);
             Log.e(Utility.LOG_TAG_HTTP,"PLAYLIST POSTET AND SET: " + playList.size());
 
             httpResponse.setStatusCode(HttpStatus.SC_OK);

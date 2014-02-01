@@ -10,29 +10,23 @@ import android.widget.ListView;
 import com.hdm.crowdmusic.core.CrowdMusicClient;
 import com.hdm.crowdmusic.core.CrowdMusicTrack;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
-import com.hdm.crowdmusic.core.streaming.PostAudioTask;
+import com.hdm.crowdmusic.gui.support.IOnClientRequestListener;
 import com.hdm.crowdmusic.gui.support.LocalFilesTrackAdapter;
+
 import org.teleal.cling.registry.RegistryListener;
 
 public class ClientLocalTracksFragment extends ListFragment {
 
-    private OnClientRequestedListener activity;
+    private IOnClientRequestListener listener;
     private CrowdMusicClient client;
     private ArrayAdapter<CrowdMusicTrack> listAdapter;
     private RegistryListener registryListener;
-
-    public interface OnClientRequestedListener {
-        public CrowdMusicClient OnClientRequestedListener();
-        public String OnServerRequestedListener();
-        public int OnPortRequestedListener();
-        public String getIp();
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        client = activity.OnClientRequestedListener();
+        client = listener.getClientData();
         listAdapter = new LocalFilesTrackAdapter(getActivity().getBaseContext(),
                 android.R.layout.simple_list_item_1, client.getTrackList());
 
@@ -46,7 +40,7 @@ public class ClientLocalTracksFragment extends ListFragment {
         super.onAttach(activity);
 
         try {
-            this.activity = (OnClientRequestedListener) activity;
+            this.listener = (IOnClientRequestListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnHeadlineSelectedListener");
@@ -56,10 +50,8 @@ public class ClientLocalTracksFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         final CrowdMusicTrack selectedTrack = (CrowdMusicTrack) listAdapter.getItem(position);
-        new PostAudioTask(activity.OnServerRequestedListener(),activity.OnPortRequestedListener() ).execute(selectedTrack);
+        client.postAudio(selectedTrack);
     }
-
-
 }
 
 

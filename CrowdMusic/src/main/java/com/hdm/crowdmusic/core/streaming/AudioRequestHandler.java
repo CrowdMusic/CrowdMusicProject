@@ -53,7 +53,7 @@ public class AudioRequestHandler implements HttpRequestHandler {
         Uri audioUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
         Log.i(Utility.LOG_TAG_HTTP, "URI: " + audioUri);
 
-        InputStream in = openInputStrem(audioUri);
+        InputStream in = openInputStream(audioUri);
         if (in == null) {
             httpResponse.setStatusCode(HttpStatus.SC_NOT_FOUND);
             return;
@@ -66,7 +66,7 @@ public class AudioRequestHandler implements HttpRequestHandler {
         Log.i(Utility.LOG_TAG_HTTP, "Streaming bytes: " + sizeInBytes);
     }
 
-    private InputStream openInputStrem(Uri uri) {
+    private InputStream openInputStream(Uri uri) {
         try {
             return context.getContentResolver().openInputStream(uri);
         } catch (FileNotFoundException e) {

@@ -5,7 +5,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 
-import com.hdm.crowdmusic.gui.fragments.ServerPlaylistFragment;
+
 
 public class TabListener<T extends Fragment> implements ActionBar.TabListener {
     private final Activity mActivity;
@@ -16,6 +16,8 @@ public class TabListener<T extends Fragment> implements ActionBar.TabListener {
 
     public TabListener(Activity activity, String tag, Class<T> clz) {
         this(activity, tag, clz, null);
+
+
     }
 
     public TabListener(Activity activity, String tag, Class<T> clz, Bundle args) {
@@ -49,13 +51,12 @@ public class TabListener<T extends Fragment> implements ActionBar.TabListener {
 
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
 
+
     }
 
-    // Maybe we'll need this, some time
-    private void refresh() {
-        if (mFragment != null && mFragment instanceof ServerPlaylistFragment) {
-            if (((ServerPlaylistFragment) mFragment).getListAdapter() == null) return;
-            ((ServerPlaylistFragment) mFragment).setUpAdapter();
-        }
+    public Fragment getFragment(){
+        return mFragment;
     }
+
+
 }

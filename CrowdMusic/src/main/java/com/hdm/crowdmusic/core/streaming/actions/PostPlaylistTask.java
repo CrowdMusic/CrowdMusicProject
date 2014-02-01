@@ -1,4 +1,4 @@
-package com.hdm.crowdmusic.core.streaming;
+package com.hdm.crowdmusic.core.streaming.actions;
 
 import android.os.AsyncTask;
 import android.util.Log;
