@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -35,12 +36,13 @@ import org.teleal.cling.registry.RegistrationException;
 import static com.hdm.crowdmusic.R.id;
 import static com.hdm.crowdmusic.R.layout;
 
-public class ServerActivity extends Activity implements IOnServerRequestListener {
+public class ServerActivity extends Activity implements IOnServerRequestListener, MediaPlayer.OnCompletionListener{
 
     private CrowdMusicServer crowdMusicServer;
     private AndroidUpnpService upnpService;
     private IHttpServerService httpServerService;
     private IMediaPlayerService mediaService;
+
 
     private ServiceConnection upnpServiceConnection = new ServiceConnection() {
         @Override
@@ -59,19 +61,7 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
             upnpService = null;
         }
     };
-    private ServiceConnection mediaServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.i(Utility.LOG_TAG_MEDIA, "MediaPlayerService connected.");
-            mediaService = (IMediaPlayerService) service;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            Log.i(Utility.LOG_TAG_MEDIA, "MediaPlayerService disconnected.");
-            mediaService = null;
-        }
-    };
+    private ServiceConnection mediaServiceConnection;
     private ServiceConnection httpServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -153,6 +143,23 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        final ServerActivity temp = this;
+
+        mediaServiceConnection= new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                Log.i(Utility.LOG_TAG_MEDIA, "MediaPlayerService connected.");
+                mediaService = (IMediaPlayerService) service;
+                mediaService.setOnCompletionListener(temp);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                Log.i(Utility.LOG_TAG_MEDIA, "MediaPlayerService disconnected.");
+                mediaService = null;
+            }
+        };
+
         setupCrowdMusicServer();
         setContentView(layout.activity_createserver);
 
@@ -191,7 +198,6 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
                 mediaServiceConnection,
                 Context.BIND_AUTO_CREATE
         );
-
         String clientIP = Utility.getWifiIpAddress();
 
         Intent httpIntent = new Intent(this, HTTPServerService.class);
@@ -284,6 +290,14 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
     public void onBackPressed() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mediaPlayer) {
+        CrowdMusicTrack track = getServerData().getPlaylist().getNextTrack();
+        if (track != null) {
+            mediaService.play(Utility.buildURL(track));
+        }
     }
 }
 

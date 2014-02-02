@@ -136,6 +136,12 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         @Override
         public void restartCurrentTrack() {
             mediaPlayer.seekTo(0);
+
+        }
+
+        @Override
+        public void setOnCompletionListener(MediaPlayer.OnCompletionListener listener) {
+            mediaPlayer.setOnCompletionListener(listener);
         }
 
     }
