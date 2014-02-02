@@ -10,13 +10,13 @@ import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.core.devicelistener.AllDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
 import com.hdm.crowdmusic.core.network.AccessPoint;
 import com.hdm.crowdmusic.util.Utility;
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
+import org.teleal.cling.model.message.header.STAllHeader;
 import org.teleal.cling.model.meta.LocalDevice;
 import org.teleal.cling.registry.RegistryListener;
 
@@ -35,13 +35,15 @@ public class MainActivity extends ListActivity {
             upnpService = (AndroidUpnpService) service;
 
             // Refresh the list with all known devices
-            ((AllDevicesBrowser) registryListener).refresh(upnpService);
+            ((CrowdDevicesBrowser) registryListener).refresh(upnpService);
 
             // Getting ready for future device advertisements
             upnpService.getRegistry().addListener(registryListener);
 
             // Search asynchronously for all devices
-            upnpService.getControlPoint().search();
+            upnpService.getControlPoint().search(
+                    new STAllHeader()
+            );
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -140,6 +142,17 @@ public class MainActivity extends ListActivity {
         accessPoint = new AccessPoint(getApplicationContext());
         handleAPModalDialog(view);
         //transitToServerActivity(view);
+    }
+
+    public void refreshServerList(View view) {
+        if (registryListener instanceof CrowdDevicesBrowser) {
+
+            upnpService.getRegistry().removeAllRemoteDevices();
+            upnpService.getControlPoint().search(
+                    new STAllHeader()
+            );
+            ((CrowdDevicesBrowser)registryListener).refresh(upnpService);
+        }
     }
 
     public void transitToServerActivity(View view) {
@@ -276,7 +289,7 @@ public class MainActivity extends ListActivity {
         }
     }
 
-    private class ServerListAdapter extends ArrayAdapter {
+    public class ServerListAdapter extends ArrayAdapter {
         public ServerListAdapter(MainActivity mainActivity, int fragment_client_serverbrowser) {
             super(mainActivity, fragment_client_serverbrowser);
         }

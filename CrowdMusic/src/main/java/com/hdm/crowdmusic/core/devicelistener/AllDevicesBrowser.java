@@ -1,10 +1,8 @@
 package com.hdm.crowdmusic.core.devicelistener;
 
 import android.app.Activity;
-import android.app.ListActivity;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
-
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.model.meta.Device;
 import org.teleal.cling.model.meta.LocalDevice;
