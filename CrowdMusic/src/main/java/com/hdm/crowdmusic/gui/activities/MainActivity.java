@@ -7,21 +7,16 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.view.*;
+import android.widget.*;
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.core.devicelistener.AllDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
 import com.hdm.crowdmusic.core.network.AccessPoint;
 import com.hdm.crowdmusic.util.Utility;
 import org.teleal.cling.android.AndroidUpnpService;
 import org.teleal.cling.android.AndroidUpnpServiceImpl;
+import org.teleal.cling.model.message.header.STAllHeader;
 import org.teleal.cling.model.meta.LocalDevice;
 import org.teleal.cling.registry.RegistryListener;
 
@@ -40,13 +35,15 @@ public class MainActivity extends ListActivity {
             upnpService = (AndroidUpnpService) service;
 
             // Refresh the list with all known devices
-            ((AllDevicesBrowser) registryListener).refresh(upnpService);
+            ((CrowdDevicesBrowser) registryListener).refresh(upnpService);
 
             // Getting ready for future device advertisements
             upnpService.getRegistry().addListener(registryListener);
 
             // Search asynchronously for all devices
-            upnpService.getControlPoint().search();
+            upnpService.getControlPoint().search(
+                    new STAllHeader()
+            );
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -59,7 +56,7 @@ public class MainActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        listAdapter =  new ArrayAdapter(this, R.layout.fragment_client_serverbrowser);
+        listAdapter =  new ServerListAdapter(this, R.layout.fragment_client_serverbrowser);
         setListAdapter(listAdapter);
 
         registryListener = new CrowdDevicesBrowser(this, listAdapter);
@@ -145,6 +142,17 @@ public class MainActivity extends ListActivity {
         accessPoint = new AccessPoint(getApplicationContext());
         handleAPModalDialog(view);
         //transitToServerActivity(view);
+    }
+
+    public void refreshServerList(View view) {
+        if (registryListener instanceof CrowdDevicesBrowser) {
+
+            upnpService.getRegistry().removeAllRemoteDevices();
+            upnpService.getControlPoint().search(
+                    new STAllHeader()
+            );
+            ((CrowdDevicesBrowser)registryListener).refresh(upnpService);
+        }
     }
 
     public void transitToServerActivity(View view) {
@@ -278,6 +286,33 @@ public class MainActivity extends ListActivity {
                 Log.e("tag", "error", e);
                 return false;
             }
+        }
+    }
+
+    public class ServerListAdapter extends ArrayAdapter {
+        public ServerListAdapter(MainActivity mainActivity, int fragment_client_serverbrowser) {
+            super(mainActivity, fragment_client_serverbrowser);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View v = convertView;
+
+            if (v == null) {
+                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                v = inflater.inflate(R.layout.fragment_serverbrowserlistentry, null);
+
+            }
+
+            DeviceDisplay dd = ((ArrayAdapter<DeviceDisplay>) this).getItem(position);
+
+            if (dd != null) {
+                TextView serverIdentifier = (TextView) v.findViewById(R.id.serverbrowserlistentry_item);
+                if (serverIdentifier != null) {
+                    serverIdentifier.setText(dd.getDevice().getDisplayString());
+                }
+            }
+            return v;
         }
     }
 }

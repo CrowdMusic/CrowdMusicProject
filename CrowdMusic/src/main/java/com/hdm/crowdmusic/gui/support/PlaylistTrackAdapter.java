@@ -14,7 +14,6 @@ import com.hdm.crowdmusic.core.streaming.actions.ICrowdMusicAction;
 import com.hdm.crowdmusic.core.streaming.actions.SimplePostTask;
 import com.hdm.crowdmusic.core.streaming.actions.Vote;
 import com.hdm.crowdmusic.gui.activities.ClientActivity;
-import com.hdm.crowdmusic.gui.activities.ServerActivity;
 import com.hdm.crowdmusic.util.Constants;
 
 import java.util.List;
@@ -56,7 +55,7 @@ public class PlaylistTrackAdapter extends ArrayAdapter<CrowdMusicTrack> {
             }
 
             if (rating != null) {
-                rating.setText(String.valueOf(track.getRating()));
+                rating.setText("Votes: " + String.valueOf(track.getRating()));
             }
 
             if (voteUp != null){

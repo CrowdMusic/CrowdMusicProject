@@ -3,12 +3,10 @@ package com.hdm.crowdmusic.gui.fragments;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.streaming.CrowdMusicUser;
 import com.hdm.crowdmusic.core.streaming.CrowdMusicUserList;
@@ -87,7 +85,7 @@ public class ServerAdminUsersFragment extends ListFragment implements PropertyCh
        if  (propertyChangeEvent.getNewValue() instanceof CrowdMusicUserList)
        {
            CrowdMusicUserList list = (CrowdMusicUserList) propertyChangeEvent.getNewValue();
-            setupAdapter(list.getUserList());
+            setupAdapter(new ArrayList<CrowdMusicUser>(list.getUserList()));
        }
     }
 }
