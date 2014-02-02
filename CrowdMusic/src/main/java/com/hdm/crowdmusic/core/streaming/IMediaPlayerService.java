@@ -1,5 +1,6 @@
 package com.hdm.crowdmusic.core.streaming;
 
+import android.media.MediaPlayer;
 import android.net.Uri;
 
 public interface IMediaPlayerService {
@@ -12,4 +13,5 @@ public interface IMediaPlayerService {
     public boolean hasTrack();
     public void playPause();
     public void restartCurrentTrack();
+    public void setOnCompletionListener(MediaPlayer.OnCompletionListener listener);
 }
