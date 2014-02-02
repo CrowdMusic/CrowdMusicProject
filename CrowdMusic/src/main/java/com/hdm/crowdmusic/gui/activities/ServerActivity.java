@@ -271,7 +271,7 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
     private void setupCrowdMusicServer() {
         String ip = Utility.getWifiIpAddress();
         if (ip != null) {
-            crowdMusicServer = new CrowdMusicServer(ip, this);
+            crowdMusicServer = new CrowdMusicServer(this, ip, this);
         }
     }
 

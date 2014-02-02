@@ -1,10 +1,12 @@
 package com.hdm.crowdmusic.core;
 
 import android.app.Activity;
+import android.content.Context;
 import com.hdm.crowdmusic.core.streaming.CrowdMusicUser;
 import com.hdm.crowdmusic.core.streaming.CrowdMusicUserList;
 import com.hdm.crowdmusic.core.streaming.actions.CrowdMusicTracklist;
 import com.hdm.crowdmusic.core.streaming.actions.ICrowdMusicAction;
+import com.hdm.crowdmusic.core.streaming.actions.IOnFailureHandler;
 import com.hdm.crowdmusic.core.streaming.actions.SimplePostTask;
 import com.hdm.crowdmusic.gui.fragments.ServerPlaylistFragment;
 import com.hdm.crowdmusic.util.Constants;
@@ -36,8 +38,9 @@ public class CrowdMusicServer {
     private CrowdMusicUserList userList;
     private final PropertyChangeSupport pcs;
     private PropertyChangeListener serverView;
+    private Context context;
 
-    public CrowdMusicServer(String serverIP, Activity parentActivity) {
+    public CrowdMusicServer(Context context, String serverIP, Activity parentActivity) {
         this.serverIP = serverIP;
         this.playlist = new CrowdMusicPlaylist(this);
         this.pcs = new PropertyChangeSupport(this);
@@ -103,8 +106,19 @@ public class CrowdMusicServer {
         pcs.addPropertyChangeListener(listener);
     }
     public void notifyAllClients() {
-        for (CrowdMusicUser user: userList.getUserList()) {
-            SimplePostTask<CrowdMusicTracklist> task = new SimplePostTask<CrowdMusicTracklist>(user.getIp(), Constants.PORT, null, null);
+
+        for (final CrowdMusicUser user: userList.getUserList()) {
+
+            IOnFailureHandler noResponse = new IOnFailureHandler() {
+
+                @Override
+                public void execute() {
+                    userList.getUserList().remove(user);
+                    playlist.removeTracks(user);
+                }
+            };
+
+            SimplePostTask<CrowdMusicTracklist> task = new SimplePostTask<CrowdMusicTracklist>(user.getIp(), Constants.PORT, null, noResponse);
             task.execute(new ICrowdMusicAction<CrowdMusicTracklist>(){
 
                 @Override

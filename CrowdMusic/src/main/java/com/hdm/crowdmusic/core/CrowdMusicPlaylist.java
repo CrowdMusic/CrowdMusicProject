@@ -1,6 +1,7 @@
 package com.hdm.crowdmusic.core;
 
 import android.util.Log;
+import com.hdm.crowdmusic.core.streaming.CrowdMusicUser;
 import com.hdm.crowdmusic.util.Utility;
 
 import java.util.ArrayList;
@@ -57,17 +58,22 @@ public class CrowdMusicPlaylist {
     public void upvote(int id, String ip) {
         CrowdMusicTrack track = getFromPlaylistById(id);
         if (track != null) {
-            track.upvote(ip);
-            sortPlaylist();
-            notifyListener();
+            if (isServer(ip) || notAlreadyVoted(track, ip)) {
+                track.upvote(ip);
+                sortPlaylist();
+                notifyListener();
+            }
         }
     }
+
     public void downvote(int id, String ip) {
         CrowdMusicTrack track = getFromPlaylistById(id);
         if (track != null) {
-            track.downvote(ip);
-            sortPlaylist();
-            notifyListener();
+            if (isServer(ip) || notAlreadyVoted(track, ip)) {
+                track.downvote(ip);
+                sortPlaylist();
+                notifyListener();
+            }
         }
     }
 
@@ -118,6 +124,23 @@ public class CrowdMusicPlaylist {
 
     private void sortPlaylist() {
         Collections.sort(playlist, comparator);
+    }
+
+    public void removeTracks(CrowdMusicUser user) {
+        for (int i = 0; i < playlist.size(); i++) {
+            if (playlist.get(i).getIp().equals(user.getIp())) {
+                playlist.remove(i);
+            }
+        }
+        notifyListener();
+    }
+
+    private boolean isServer(String ip) {
+        return server.getServerIP().equals(ip);
+    }
+
+    private boolean notAlreadyVoted(CrowdMusicTrack track, String ip) {
+        return !track.alreadyVoted(ip);
     }
 
     private class TrackComparator implements Comparator<CrowdMusicTrack> {

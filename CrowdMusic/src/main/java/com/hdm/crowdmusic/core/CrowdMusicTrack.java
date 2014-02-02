@@ -1,5 +1,8 @@
 package com.hdm.crowdmusic.core;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class CrowdMusicTrack implements Comparable<CrowdMusicTrack>{
 
     private int id;
@@ -9,6 +12,8 @@ public class CrowdMusicTrack implements Comparable<CrowdMusicTrack>{
     private String trackName;
 
     private int rating;
+
+    private Set<String> iPsThatAlreadyVoted = new HashSet<String>();
 
     public CrowdMusicTrack(int id, String ip, String artist, String trackName) {
         this.id = id;
@@ -37,14 +42,20 @@ public class CrowdMusicTrack implements Comparable<CrowdMusicTrack>{
 
     public void upvote(String ip) {
         rating += 1;
+        iPsThatAlreadyVoted.add(ip);
     }
 
     public void downvote(String ip) {
         rating -= 1;
+        iPsThatAlreadyVoted.add(ip);
     }
 
     @Override
     public int compareTo(CrowdMusicTrack that) {
         return  that.getRating() - this.getRating();
+    }
+
+    public boolean alreadyVoted(String ip) {
+        return iPsThatAlreadyVoted.contains(ip);
     }
 }

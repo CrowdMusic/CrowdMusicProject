@@ -19,6 +19,7 @@ import com.hdm.crowdmusic.core.streaming.actions.*;
 import com.hdm.crowdmusic.gui.fragments.ClientLocalTracksFragment;
 import com.hdm.crowdmusic.gui.fragments.ClientServerPlaylistFragment;
 import com.hdm.crowdmusic.gui.support.IOnClientRequestListener;
+import com.hdm.crowdmusic.gui.support.NoServerResponseDialog;
 import com.hdm.crowdmusic.gui.support.TabListener;
 import com.hdm.crowdmusic.util.Constants;
 import com.hdm.crowdmusic.util.Utility;
@@ -28,56 +29,70 @@ public class ClientActivity extends Activity implements IOnClientRequestListener
     private CrowdMusicClient crowdMusicClient;
     private IHttpServerService httpService;
 
-    private ServiceConnection httpServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            httpService = (IHttpServerService) service;
+    private IOnFailureHandler noResponse;
 
-            httpService.registerHandler("/audio/*", new AudioRequestHandler(getApplicationContext()));
-            httpService.registerHandler("/track/request", new CrowdMusicHandler<CrowdMusicTrack>(new Executable<CrowdMusicTrack>() {
-                @Override
-                public void execute(final CrowdMusicTrack postData) {
-                    SimplePostTask<CrowdMusicTrack> task = new SimplePostTask<CrowdMusicTrack>(getClientData().getServerIP(), Constants.PORT);
-                    task.execute(new ICrowdMusicAction<CrowdMusicTrack>() {
-                        @Override
-                        public String getPostTarget() {
-                            return "track/response";
-                        }
-
-                        @Override
-                        public CrowdMusicTrack getParam() {
-                            return postData;
-                        }
-                    });
-                }
-            }));
-            httpService.registerHandler("/postplaylist*", new CrowdMusicHandler<CrowdMusicTracklist>(new Executable<CrowdMusicTracklist>() {
-                @Override
-                public void execute(final CrowdMusicTracklist postData) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            getClientData().setPlaylist(postData.getList());
-                        }
-                    });
-                }
-            }));
-        }
-
-        public void onServiceDisconnected(ComponentName className) {
-            httpService = null;
-        }
-    };
+    private ServiceConnection httpServiceConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        final Activity temp = this;
+        noResponse = new IOnFailureHandler() {
+
+            @Override
+            public void execute() {
+                new NoServerResponseDialog(temp).show();
+            }
+        };
+
+        httpServiceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName className, IBinder service) {
+                httpService = (IHttpServerService) service;
+
+                httpService.registerHandler("/audio/*", new AudioRequestHandler(getApplicationContext()));
+                httpService.registerHandler("/track/request", new CrowdMusicHandler<CrowdMusicTrack>(new Executable<CrowdMusicTrack>() {
+                    @Override
+                    public void execute(final CrowdMusicTrack postData) {
+                        SimplePostTask<CrowdMusicTrack> task = new SimplePostTask<CrowdMusicTrack>(getClientData().getServerIP(), Constants.PORT, null, noResponse);
+                        task.execute(new ICrowdMusicAction<CrowdMusicTrack>() {
+                            @Override
+                            public String getPostTarget() {
+                                return "track/response";
+                            }
+
+                            @Override
+                            public CrowdMusicTrack getParam() {
+                                return postData;
+                            }
+                        });
+                    }
+                }));
+                httpService.registerHandler("/postplaylist*", new CrowdMusicHandler<CrowdMusicTracklist>(new Executable<CrowdMusicTracklist>() {
+                    @Override
+                    public void execute(final CrowdMusicTracklist postData) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                getClientData().setPlaylist(postData.getList());
+                            }
+                        });
+                    }
+                }));
+            }
+
+            public void onServiceDisconnected(ComponentName className) {
+                httpService = null;
+            }
+        };
+
+
 
         Intent lastIntent = getIntent();
         String serverIP = lastIntent.getStringExtra("serverIP");
 
         String clientIP = Utility.getWifiIpAddress();
-        crowdMusicClient = new CrowdMusicClient(getApplicationContext(), clientIP, serverIP);
+        crowdMusicClient = new CrowdMusicClient(this, clientIP, serverIP);
 
         Intent httpIntent = new Intent(this, HTTPServerService.class);
         httpIntent.putExtra("ip", clientIP);

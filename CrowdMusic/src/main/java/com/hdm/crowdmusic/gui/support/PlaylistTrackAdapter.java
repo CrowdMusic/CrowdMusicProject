@@ -11,6 +11,7 @@ import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.CrowdMusicClient;
 import com.hdm.crowdmusic.core.CrowdMusicTrack;
 import com.hdm.crowdmusic.core.streaming.actions.ICrowdMusicAction;
+import com.hdm.crowdmusic.core.streaming.actions.IOnFailureHandler;
 import com.hdm.crowdmusic.core.streaming.actions.SimplePostTask;
 import com.hdm.crowdmusic.core.streaming.actions.Vote;
 import com.hdm.crowdmusic.gui.activities.ClientActivity;
@@ -19,8 +20,20 @@ import com.hdm.crowdmusic.util.Constants;
 import java.util.List;
 
 public class PlaylistTrackAdapter extends ArrayAdapter<CrowdMusicTrack> {
+
+
+    private final Context context;
+    private IOnFailureHandler noResponse = new IOnFailureHandler() {
+
+        @Override
+        public void execute() {
+            new NoServerResponseDialog(context).show();
+        }
+    };
+
     public PlaylistTrackAdapter(Context context, int textViewResourceId, List<CrowdMusicTrack> objects) {
         super(context, textViewResourceId, objects);
+        this.context = context;
     }
 
     @Override
@@ -67,7 +80,7 @@ public class PlaylistTrackAdapter extends ArrayAdapter<CrowdMusicTrack> {
                         ClientActivity activity = (ClientActivity) getContext();
 
                         final CrowdMusicClient client = ((IOnClientRequestListener) activity).getClientData();
-                        SimplePostTask<Vote> task = new SimplePostTask<Vote>(client.getServerIP(), Constants.PORT);
+                        SimplePostTask<Vote> task = new SimplePostTask<Vote>(client.getServerIP(), Constants.PORT, null, noResponse);
                         task.execute(new ICrowdMusicAction<Vote>() {
                             @Override
                             public String getPostTarget() {
@@ -95,7 +108,7 @@ public class PlaylistTrackAdapter extends ArrayAdapter<CrowdMusicTrack> {
                             ClientActivity activity = (ClientActivity) getContext();
 
                             final CrowdMusicClient client = ((IOnClientRequestListener) activity).getClientData();
-                            SimplePostTask<Vote> task = new SimplePostTask<Vote>(client.getServerIP(), Constants.PORT);
+                            SimplePostTask<Vote> task = new SimplePostTask<Vote>(client.getServerIP(), Constants.PORT, null, noResponse);
                             task.execute(new ICrowdMusicAction<Vote>() {
                                 @Override
                                 public String getPostTarget() {
