@@ -7,13 +7,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.view.*;
+import android.widget.*;
 import com.hdm.crowdmusic.R;
 import com.hdm.crowdmusic.core.devicelistener.AllDevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
@@ -59,7 +54,7 @@ public class MainActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        listAdapter =  new ArrayAdapter(this, R.layout.fragment_client_serverbrowser);
+        listAdapter =  new ServerListAdapter(this, R.layout.fragment_client_serverbrowser);
         setListAdapter(listAdapter);
 
         registryListener = new CrowdDevicesBrowser(this, listAdapter);
@@ -278,6 +273,33 @@ public class MainActivity extends ListActivity {
                 Log.e("tag", "error", e);
                 return false;
             }
+        }
+    }
+
+    private class ServerListAdapter extends ArrayAdapter {
+        public ServerListAdapter(MainActivity mainActivity, int fragment_client_serverbrowser) {
+            super(mainActivity, fragment_client_serverbrowser);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View v = convertView;
+
+            if (v == null) {
+                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                v = inflater.inflate(R.layout.fragment_serverbrowserlistentry, null);
+
+            }
+
+            DeviceDisplay dd = ((ArrayAdapter<DeviceDisplay>) this).getItem(position);
+
+            if (dd != null) {
+                TextView serverIdentifier = (TextView) v.findViewById(R.id.serverbrowserlistentry_item);
+                if (serverIdentifier != null) {
+                    serverIdentifier.setText(dd.getDevice().getDisplayString());
+                }
+            }
+            return v;
         }
     }
 }

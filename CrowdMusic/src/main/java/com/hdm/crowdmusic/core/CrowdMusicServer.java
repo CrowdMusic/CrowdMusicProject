@@ -21,6 +21,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -76,7 +77,7 @@ public class CrowdMusicServer {
     public String getServerIP() {
         return serverIP;
     }
-    public List<CrowdMusicUser> getClientList() { return userList.getUserList(); } //TODO: Return a copy, not the real one
+    public List<CrowdMusicUser> getClientList() { return new ArrayList(userList.getUserList()); } //TODO: Return a copy, not the real one
     public LocalDevice getLocalDevice() {
         return localDevice;
     }

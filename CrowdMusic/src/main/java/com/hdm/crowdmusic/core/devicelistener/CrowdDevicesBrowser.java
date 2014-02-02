@@ -1,7 +1,6 @@
 package com.hdm.crowdmusic.core.devicelistener;
 
 import android.app.Activity;
-import android.app.ListActivity;
 import android.widget.ArrayAdapter;
 import com.hdm.crowdmusic.core.CrowdMusicServer;
 import org.teleal.cling.android.AndroidUpnpService;
