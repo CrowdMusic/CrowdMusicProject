@@ -24,7 +24,7 @@
         android:contentDescription="TODO"
         android:src="@drawable/icons_downvote"
         android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"></ImageView>
+        android:layout_alignParentRight="true" android:focusableInTouchMode="true"></ImageView>
 
 
 
