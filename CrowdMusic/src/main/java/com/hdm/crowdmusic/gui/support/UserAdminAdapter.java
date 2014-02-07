@@ -10,13 +10,13 @@ import android.widget.TextView;
 
 
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.core.streaming.CrowdMusicUser;
+import com.hdm.crowdmusic.core.streaming.User;
 
 import java.util.List;
 
-public class UserAdminAdapter extends ArrayAdapter<CrowdMusicUser> {
+public class UserAdminAdapter extends ArrayAdapter<User> {
 
-    public UserAdminAdapter(Context context, int textViewResourceId, List<CrowdMusicUser> objects) {
+    public UserAdminAdapter(Context context, int textViewResourceId, List<User> objects) {
         super(context, textViewResourceId, objects);
     }
 
@@ -29,7 +29,7 @@ public class UserAdminAdapter extends ArrayAdapter<CrowdMusicUser> {
             v = inflater.inflate(R.layout.fragment_userlistentry, null);
         }
 
-        CrowdMusicUser user = ((ArrayAdapter<CrowdMusicUser>) this).getItem(position);
+        User user = ((ArrayAdapter<User>) this).getItem(position);
 
         if (user != null){
             TextView userIp = (TextView) v.findViewById(R.id.userlist_item_IP);

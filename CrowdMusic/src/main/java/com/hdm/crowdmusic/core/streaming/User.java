@@ -1,28 +1,28 @@
 package com.hdm.crowdmusic.core.streaming;
 
 
-import com.hdm.crowdmusic.core.CrowdMusicTrack;
+import com.hdm.crowdmusic.core.Track;
 import com.hdm.crowdmusic.core.streaming.actions.Vote;
 
 import java.util.ArrayList;
 
-public class CrowdMusicUser{
+public class User {
 
     private String IpAddress;
-    private ArrayList<CrowdMusicTrack> tracks;
+    private ArrayList<Track> tracks;
     private ArrayList<Vote> votes;
     private long registeredSince;
 
-    public CrowdMusicUser(String IpAddress)
+    public User(String IpAddress)
     {
         this.IpAddress = IpAddress;
         this.registeredSince = new java.util.Date().getTime(); //Might be useful sometime
 
-        this.tracks = new ArrayList<CrowdMusicTrack>();
+        this.tracks = new ArrayList<Track>();
         this.votes = new ArrayList<Vote>();
     }
 
-    public void addTrack(CrowdMusicTrack track){
+    public void addTrack(Track track){
         this.tracks.add(track);
     }
 
@@ -42,17 +42,11 @@ public class CrowdMusicUser{
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final CrowdMusicUser other = (CrowdMusicUser) obj;
+        final User other = (User) obj;
 
         if (!this.getIp().equals(other.getIp())) {
             return false;
         }
         return true;
     }
-
-    @Override
-    public int hashCode() {
-        return Integer.valueOf(getIp().replaceAll("\\.", ""));
-    }
-
 }

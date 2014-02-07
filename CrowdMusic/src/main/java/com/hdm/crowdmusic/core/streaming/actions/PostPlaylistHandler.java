@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.hdm.crowdmusic.core.CrowdMusicTrack;
+import com.hdm.crowdmusic.core.Track;
 import com.hdm.crowdmusic.util.Utility;
 import org.apache.http.*;
 import org.apache.http.protocol.HttpContext;
@@ -39,10 +39,10 @@ public class PostPlaylistHandler implements HttpRequestHandler {
 
         // TODO: This could be enhanced with a process method in the Voting class.
         if (httpRequest instanceof HttpEntityEnclosingRequest) {
-            List<CrowdMusicTrack> playList = getPostData(entity);
+            List<Track> playList = getPostData(entity);
 
             // TODO: Angucken....
-            //CrowdMusicPlaylist.getInstance().setPlaylist(playList);
+            //Playlist.getInstance().setPlaylist(playList);
             Log.e(Utility.LOG_TAG_HTTP,"PLAYLIST POSTET AND SET: " + playList.size());
 
             httpResponse.setStatusCode(HttpStatus.SC_OK);
@@ -50,9 +50,9 @@ public class PostPlaylistHandler implements HttpRequestHandler {
         }
     }
 
-    private List<CrowdMusicTrack> getPostData(HttpEntity entity) {
+    private List<Track> getPostData(HttpEntity entity) {
         String clientIP = "";
-        List<CrowdMusicTrack> playList;
+        List<Track> playList;
 
         try {
             String postData = EntityUtils.toString(entity);
@@ -64,7 +64,7 @@ public class PostPlaylistHandler implements HttpRequestHandler {
             Gson gson = new Gson();
 
             jsonString = URLDecoder.decode(jsonString, "utf-8");
-            Type type = new TypeToken<List<CrowdMusicTrack>>(){}.getType();
+            Type type = new TypeToken<List<Track>>(){}.getType();
             playList = gson.fromJson(jsonString, type);
 
             return playList;

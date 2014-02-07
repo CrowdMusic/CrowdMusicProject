@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.core.CrowdMusicTrack;
+import com.hdm.crowdmusic.core.Track;
 import com.hdm.crowdmusic.gui.activities.ClientActivity;
 import com.hdm.crowdmusic.gui.support.IOnClientRequestListener;
 import com.hdm.crowdmusic.gui.support.PlaylistTrackAdapter;
@@ -44,12 +44,12 @@ public class ClientServerPlaylistFragment extends ListFragment implements Proper
 
     public void setUpAdapter() {
         if (isAdded()){
-            List<CrowdMusicTrack> objects = ((ClientActivity) getActivity()).getClientData().getPlaylist();
+            List<Track> objects = ((ClientActivity) getActivity()).getClientData().getPlaylist();
             setUpAdapter(objects);
         }
     }
 
-    public void setUpAdapter(final List<CrowdMusicTrack> newValue) {
+    public void setUpAdapter(final List<Track> newValue) {
         Activity activity = getActivity();
         if (activity == null)
             return;
@@ -69,10 +69,10 @@ public class ClientServerPlaylistFragment extends ListFragment implements Proper
     public void onListItemClick(ListView l, View v, int position, long id) {
 
       /*  Activity activity = getActivity();
-        final CrowdMusicTrack track = (CrowdMusicTrack) getListAdapter().getItem(position);
-        final CrowdMusicClient client = ((IOnClientRequestListener) activity).getClientData();
+        final Track track = (Track) getListAdapter().getItem(position);
+        final Client client = ((IOnClientRequestListener) activity).getClientData();
         SimplePostTask<Vote> task = new SimplePostTask<Vote>(client.getServerIP(), Constants.PORT);
-        task.execute(new ICrowdMusicAction<Vote>() {
+        task.execute(new IAction<Vote>() {
             @Override
             public String getPostTarget() {
                 return "vote/up";
@@ -101,7 +101,7 @@ public class ClientServerPlaylistFragment extends ListFragment implements Proper
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
         if  (propertyChangeEvent.getPropertyName().equals(PLAYLIST_CHANGE)) {
             setUpAdapter();
-            //CrowdMusicPlaylist list = (CrowdMusicPlaylist) propertyChangeEvent.getNewValue();
+            //Playlist list = (Playlist) propertyChangeEvent.getNewValue();
             //setUpAdapter(list.getPlaylist());
         }
     }

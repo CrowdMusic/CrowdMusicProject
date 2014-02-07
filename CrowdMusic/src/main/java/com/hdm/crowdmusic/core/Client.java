@@ -4,7 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
 import android.util.Log;
-import com.hdm.crowdmusic.core.streaming.actions.ICrowdMusicAction;
+
+import com.hdm.crowdmusic.core.streaming.actions.IAction;
 import com.hdm.crowdmusic.core.streaming.actions.IOnFailureHandler;
 import com.hdm.crowdmusic.core.streaming.actions.SimplePostTask;
 import com.hdm.crowdmusic.core.streaming.actions.Vote;
@@ -17,11 +18,11 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CrowdMusicClient {
+public class Client {
 
     private final Context context;
-    private List<CrowdMusicTrack> playlist;
-    private List<CrowdMusicTrack> trackList;
+    private List<Track> playlist;
+    private List<Track> trackList;
 
     private String clientIP;
     private String serverIP;
@@ -36,12 +37,12 @@ public class CrowdMusicClient {
         }
     };
 
-    public CrowdMusicClient(Context context, String clientIP, String serverIP) {
+    public Client(Context context, String clientIP, String serverIP) {
         this.context = context;
         this.clientIP = clientIP;
         this.serverIP = serverIP;
-        trackList = new ArrayList<CrowdMusicTrack>();
-        playlist = new ArrayList<CrowdMusicTrack>();
+        trackList = new ArrayList<Track>();
+        playlist = new ArrayList<Track>();
     }
 
     public void init() {
@@ -81,7 +82,7 @@ public class CrowdMusicClient {
                 title = exCursor.getString(titleIndex);
                 artist = exCursor.getString(artistIndex);
 
-                trackList.add(new CrowdMusicTrack(id, clientIP, artist, title));
+                trackList.add(new Track(id, clientIP, artist, title));
                 Log.d(Utility.LOG_TAG_MEDIA, id + ", " + title + ", " + artist);
             } while (exCursor.moveToNext());
 
@@ -94,7 +95,7 @@ public class CrowdMusicClient {
         register();
     }
 
-    public List<CrowdMusicTrack> getTrackList() {
+    public List<Track> getTrackList() {
 
         return trackList;
     }
@@ -103,7 +104,7 @@ public class CrowdMusicClient {
 
     public void register() {
         SimplePostTask<String> task = new SimplePostTask<String>(getServerIP(), Constants.PORT, null, noResponse);
-        task.execute(new ICrowdMusicAction<String>() {
+        task.execute(new IAction<String>() {
             @Override
             public String getPostTarget() {
                 return "register";
@@ -117,7 +118,7 @@ public class CrowdMusicClient {
     }
     public void unregister() {
         SimplePostTask<String> task = new SimplePostTask<String>(getServerIP(), Constants.PORT, null, noResponse);
-        task.execute(new ICrowdMusicAction<String>() {
+        task.execute(new IAction<String>() {
             @Override
             public String getPostTarget() {
                 return "unregister";
@@ -129,24 +130,24 @@ public class CrowdMusicClient {
             }
         });
     }
-    public void postAudio(final CrowdMusicTrack track) {
+    public void postAudio(final Track track) {
         //new PostAudioTask(serverIP, Constants.PORT).execute(track);
-        SimplePostTask<CrowdMusicTrack> task = new SimplePostTask<CrowdMusicTrack>(getServerIP(), Constants.PORT, null, noResponse);
-        task.execute(new ICrowdMusicAction<CrowdMusicTrack>() {
+        SimplePostTask<Track> task = new SimplePostTask<Track>(getServerIP(), Constants.PORT, null, noResponse);
+        task.execute(new IAction<Track>() {
             @Override
             public String getPostTarget() {
                 return "track/post";
             }
 
             @Override
-            public CrowdMusicTrack getParam() {
+            public Track getParam() {
                 return track;
             }
         });
     }
     public void upvoteTrack(final Vote vote) {
         SimplePostTask<Vote> task = new SimplePostTask<Vote>(getServerIP(), Constants.PORT, null, noResponse);
-        task.execute(new ICrowdMusicAction<Vote>() {
+        task.execute(new IAction<Vote>() {
             @Override
             public String getPostTarget() {
                 return "vote/up";
@@ -160,7 +161,7 @@ public class CrowdMusicClient {
     }
     public void downvoteTrack(final Vote vote) {
         SimplePostTask<Vote> task = new SimplePostTask<Vote>(getServerIP(), Constants.PORT, null, noResponse);
-        task.execute(new ICrowdMusicAction<Vote>() {
+        task.execute(new IAction<Vote>() {
             @Override
             public String getPostTarget() {
                 return "vote/down";
@@ -179,11 +180,11 @@ public class CrowdMusicClient {
         }
     }
 
-    public List<CrowdMusicTrack> getPlaylist() {
+    public List<Track> getPlaylist() {
         return playlist;
     }
 
-    public void setPlaylist(List<CrowdMusicTrack> newList) {
+    public void setPlaylist(List<Track> newList) {
         playlist = newList;
         notifyClientview();
     }

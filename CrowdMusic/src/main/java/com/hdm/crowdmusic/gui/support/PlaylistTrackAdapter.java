@@ -8,9 +8,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.core.CrowdMusicClient;
-import com.hdm.crowdmusic.core.CrowdMusicTrack;
-import com.hdm.crowdmusic.core.streaming.actions.ICrowdMusicAction;
+import com.hdm.crowdmusic.core.Client;
+import com.hdm.crowdmusic.core.Track;
+import com.hdm.crowdmusic.core.streaming.actions.IAction;
 import com.hdm.crowdmusic.core.streaming.actions.IOnFailureHandler;
 import com.hdm.crowdmusic.core.streaming.actions.SimplePostTask;
 import com.hdm.crowdmusic.core.streaming.actions.Vote;
@@ -19,7 +19,7 @@ import com.hdm.crowdmusic.util.Constants;
 
 import java.util.List;
 
-public class PlaylistTrackAdapter extends ArrayAdapter<CrowdMusicTrack> {
+public class PlaylistTrackAdapter extends ArrayAdapter<Track> {
 
 
     private final Context context;
@@ -31,7 +31,7 @@ public class PlaylistTrackAdapter extends ArrayAdapter<CrowdMusicTrack> {
         }
     };
 
-    public PlaylistTrackAdapter(Context context, int textViewResourceId, List<CrowdMusicTrack> objects) {
+    public PlaylistTrackAdapter(Context context, int textViewResourceId, List<Track> objects) {
         super(context, textViewResourceId, objects);
         this.context = context;
     }
@@ -46,7 +46,7 @@ public class PlaylistTrackAdapter extends ArrayAdapter<CrowdMusicTrack> {
 
         }
 
-        final CrowdMusicTrack track = ((ArrayAdapter<CrowdMusicTrack>) this).getItem(position);
+        final Track track = ((ArrayAdapter<Track>) this).getItem(position);
 
         if (track != null) {
             TextView trackName = (TextView) v.findViewById(R.id.playlist_item_track);
@@ -79,9 +79,9 @@ public class PlaylistTrackAdapter extends ArrayAdapter<CrowdMusicTrack> {
                         {
                         ClientActivity activity = (ClientActivity) getContext();
 
-                        final CrowdMusicClient client = ((IOnClientRequestListener) activity).getClientData();
+                        final Client client = ((IOnClientRequestListener) activity).getClientData();
                         SimplePostTask<Vote> task = new SimplePostTask<Vote>(client.getServerIP(), Constants.PORT, null, noResponse);
-                        task.execute(new ICrowdMusicAction<Vote>() {
+                        task.execute(new IAction<Vote>() {
                             @Override
                             public String getPostTarget() {
                                 return "vote/up";
@@ -107,9 +107,9 @@ public class PlaylistTrackAdapter extends ArrayAdapter<CrowdMusicTrack> {
                         {
                             ClientActivity activity = (ClientActivity) getContext();
 
-                            final CrowdMusicClient client = ((IOnClientRequestListener) activity).getClientData();
+                            final Client client = ((IOnClientRequestListener) activity).getClientData();
                             SimplePostTask<Vote> task = new SimplePostTask<Vote>(client.getServerIP(), Constants.PORT, null, noResponse);
-                            task.execute(new ICrowdMusicAction<Vote>() {
+                            task.execute(new IAction<Vote>() {
                                 @Override
                                 public String getPostTarget() {
                                     return "vote/down";
