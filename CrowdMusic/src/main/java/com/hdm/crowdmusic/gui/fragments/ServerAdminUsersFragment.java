@@ -8,8 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.core.streaming.CrowdMusicUser;
-import com.hdm.crowdmusic.core.streaming.CrowdMusicUserList;
+import com.hdm.crowdmusic.core.streaming.User;
+import com.hdm.crowdmusic.core.streaming.UserList;
 import com.hdm.crowdmusic.gui.activities.ServerActivity;
 import com.hdm.crowdmusic.gui.support.UserAdminAdapter;
 
@@ -25,7 +25,7 @@ public class ServerAdminUsersFragment extends ListFragment implements PropertyCh
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.adapter =  new UserAdminAdapter(getActivity(),
-                R.layout.fragment_serveradminusers,new ArrayList<CrowdMusicUser>());
+                R.layout.fragment_serveradminusers,new ArrayList<User>());
         setListAdapter(adapter);
 
 
@@ -48,12 +48,12 @@ public class ServerAdminUsersFragment extends ListFragment implements PropertyCh
     public void setupAdapter(){
         if(isAdded())
         {
-        List<CrowdMusicUser> userList = ((ServerActivity) getActivity()).getServerData().getClientList();
+        List<User> userList = ((ServerActivity) getActivity()).getServerData().getClientList();
         setupAdapter(userList);
         }
     }
 
-    public void setupAdapter(final List<CrowdMusicUser> userList){
+    public void setupAdapter(final List<User> userList){
         Activity activity = getActivity();
         if (activity == null){
             return;
@@ -74,7 +74,7 @@ public class ServerAdminUsersFragment extends ListFragment implements PropertyCh
 
     }
 
-    public void addUser(CrowdMusicUser user){
+    public void addUser(User user){
         adapter.add(user);
         adapter.notifyDataSetChanged();
 
@@ -82,10 +82,10 @@ public class ServerAdminUsersFragment extends ListFragment implements PropertyCh
 
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-       if  (propertyChangeEvent.getNewValue() instanceof CrowdMusicUserList)
+       if  (propertyChangeEvent.getNewValue() instanceof UserList)
        {
-           CrowdMusicUserList list = (CrowdMusicUserList) propertyChangeEvent.getNewValue();
-            setupAdapter(new ArrayList<CrowdMusicUser>(list.getUserList()));
+           UserList list = (UserList) propertyChangeEvent.getNewValue();
+            setupAdapter(new ArrayList<User>(list.getUserList()));
        }
     }
 }

@@ -10,7 +10,7 @@ import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.core.devicelistener.CrowdDevicesBrowser;
+import com.hdm.crowdmusic.core.devicelistener.DevicesBrowser;
 import com.hdm.crowdmusic.core.devicelistener.DeviceDisplay;
 import com.hdm.crowdmusic.core.network.AccessPoint;
 import com.hdm.crowdmusic.util.Utility;
@@ -35,7 +35,7 @@ public class MainActivity extends ListActivity {
             upnpService = (AndroidUpnpService) service;
 
             // Refresh the list with all known devices
-            ((CrowdDevicesBrowser) registryListener).refresh(upnpService);
+            ((DevicesBrowser) registryListener).refresh(upnpService);
 
             // Getting ready for future device advertisements
             upnpService.getRegistry().addListener(registryListener);
@@ -59,7 +59,7 @@ public class MainActivity extends ListActivity {
         listAdapter =  new ServerListAdapter(this, R.layout.fragment_client_serverbrowser);
         setListAdapter(listAdapter);
 
-        registryListener = new CrowdDevicesBrowser(this, listAdapter);
+        registryListener = new DevicesBrowser(this, listAdapter);
 
         getApplicationContext().bindService(
                 new Intent(this, AndroidUpnpServiceImpl.class),
@@ -145,13 +145,13 @@ public class MainActivity extends ListActivity {
     }
 
     public void refreshServerList(View view) {
-        if (registryListener instanceof CrowdDevicesBrowser) {
+        if (registryListener instanceof DevicesBrowser) {
 
             upnpService.getRegistry().removeAllRemoteDevices();
             upnpService.getControlPoint().search(
                     new STAllHeader()
             );
-            ((CrowdDevicesBrowser)registryListener).refresh(upnpService);
+            ((DevicesBrowser)registryListener).refresh(upnpService);
         }
     }
 

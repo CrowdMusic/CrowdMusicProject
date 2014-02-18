@@ -18,7 +18,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimplePostTask<T> extends AsyncTask<ICrowdMusicAction<T>, Void, HttpResponse> {
+public class SimplePostTask<T> extends AsyncTask<IAction<T>, Void, HttpResponse> {
     private String serverIP;
     private int port;
     private IOnSuccessHandler onPostSuccessHandler;
@@ -35,12 +35,12 @@ public class SimplePostTask<T> extends AsyncTask<ICrowdMusicAction<T>, Void, Htt
     }
 
     @Override
-    public HttpResponse doInBackground(ICrowdMusicAction<T>... actions) {
+    public HttpResponse doInBackground(IAction<T>... actions) {
 
         HttpClient httpClient = new DefaultHttpClient();
 
         HttpResponse response = null;
-        for (ICrowdMusicAction<T> action: actions) {
+        for (IAction<T> action: actions) {
             HttpPost httpPost = new HttpPost("http://" + serverIP + ":" + port + "/" + action.getPostTarget());
             T param = action.getParam();
 

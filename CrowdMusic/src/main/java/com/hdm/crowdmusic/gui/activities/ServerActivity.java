@@ -8,19 +8,18 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.core.CrowdMusicServer;
-import com.hdm.crowdmusic.core.CrowdMusicTrack;
+import com.hdm.crowdmusic.core.Server;
+import com.hdm.crowdmusic.core.Track;
 import com.hdm.crowdmusic.core.streaming.HTTPServerService;
 import com.hdm.crowdmusic.core.streaming.IHttpServerService;
 import com.hdm.crowdmusic.core.streaming.IMediaPlayerService;
 import com.hdm.crowdmusic.core.streaming.MediaPlayerService;
-import com.hdm.crowdmusic.core.streaming.actions.CrowdMusicHandler;
+import com.hdm.crowdmusic.core.streaming.actions.Handler;
 import com.hdm.crowdmusic.core.streaming.actions.Executable;
 import com.hdm.crowdmusic.core.streaming.actions.Vote;
 import com.hdm.crowdmusic.gui.fragments.ServerAdminUsersFragment;
@@ -38,7 +37,7 @@ import static com.hdm.crowdmusic.R.layout;
 
 public class ServerActivity extends Activity implements IOnServerRequestListener, MediaPlayer.OnCompletionListener{
 
-    private CrowdMusicServer crowdMusicServer;
+    private Server server;
     private AndroidUpnpService upnpService;
     private IHttpServerService httpServerService;
     private IMediaPlayerService mediaService;
@@ -50,7 +49,7 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
             upnpService = (AndroidUpnpService) service;
 
             try {
-                upnpService.getRegistry().addDevice(crowdMusicServer.getLocalDevice());
+                upnpService.getRegistry().addDevice(server.getLocalDevice());
             } catch (RegistrationException e) {
                 e.printStackTrace();
             }
@@ -68,14 +67,14 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
             Log.i(Utility.LOG_TAG_MEDIA, "httpServerService connected.");
             httpServerService = (IHttpServerService) service;
 
-            httpServerService.registerHandler("/track/post", new CrowdMusicHandler<CrowdMusicTrack>(new Executable<CrowdMusicTrack>() {
+            httpServerService.registerHandler("/track/post", new Handler<Track>(new Executable<Track>() {
                 @Override
-                public void execute(CrowdMusicTrack postData) {
+                public void execute(Track postData) {
                     getServerData().getPlaylist().addTrack(postData);
                 }
             }));
 
-            httpServerService.registerHandler("/vote/up", new CrowdMusicHandler<Vote>(new Executable<Vote>() {
+            httpServerService.registerHandler("/vote/up", new Handler<Vote>(new Executable<Vote>() {
                 @Override
                 public void execute(final Vote postData) {
                     runOnUiThread(new Runnable() {
@@ -87,7 +86,7 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
                     });
                 }
             }));
-            httpServerService.registerHandler("/vote/down", new CrowdMusicHandler<Vote>(new Executable<Vote>() {
+            httpServerService.registerHandler("/vote/down", new Handler<Vote>(new Executable<Vote>() {
                 @Override
                 public void execute(final Vote postData) {
                     runOnUiThread(new Runnable() {
@@ -100,11 +99,11 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
                 }
             }));
 
-            httpServerService.registerHandler("/register", new CrowdMusicHandler<String>(
+            httpServerService.registerHandler("/register", new Handler<String>(
                 new Executable<String>() {
                 @Override
                 public void execute(final String postData) {
-                    Handler mainHandler = new Handler(getApplicationContext().getMainLooper());
+                    android.os.Handler mainHandler = new android.os.Handler(getApplicationContext().getMainLooper());
                     mainHandler.post(
 
                             new Runnable() {
@@ -119,7 +118,7 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
                             });
                 }
             }));
-            httpServerService.registerHandler("/unregister", new CrowdMusicHandler<String>(new Executable<String>() {
+            httpServerService.registerHandler("/unregister", new Handler<String>(new Executable<String>() {
                 @Override
                 public void execute(final String postData) {
                     runOnUiThread(new Runnable() {
@@ -244,7 +243,7 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
 
                 if (! mediaService.hasTrack())
                 {
-                    CrowdMusicTrack track = getServerData().getPlaylist().getNextTrack();
+                    Track track = getServerData().getPlaylist().getNextTrack();
                     if (track != null) {
                         mediaService.play(Utility.buildURL(track));
                     }
@@ -254,7 +253,7 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
                 }
                 return true;
             case id.action_next_track:
-                CrowdMusicTrack track = getServerData().getPlaylist().getNextTrack();
+                Track track = getServerData().getPlaylist().getNextTrack();
                 if (track != null) {
                     mediaService.play(Utility.buildURL(track));
                 }
@@ -271,14 +270,14 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
     private void setupCrowdMusicServer() {
         String ip = Utility.getWifiIpAddress();
         if (ip != null) {
-            crowdMusicServer = new CrowdMusicServer(this, ip, this);
+            server = new Server(this, ip, this);
         }
     }
 
     //TODO: Return copy instead of the real thing
     @Override
-    public CrowdMusicServer getServerData() {
-        return crowdMusicServer;
+    public Server getServerData() {
+        return server;
     }
 
     @Override
@@ -294,7 +293,7 @@ public class ServerActivity extends Activity implements IOnServerRequestListener
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-        CrowdMusicTrack track = getServerData().getPlaylist().getNextTrack();
+        Track track = getServerData().getPlaylist().getNextTrack();
         if (track != null) {
             mediaService.play(Utility.buildURL(track));
         }

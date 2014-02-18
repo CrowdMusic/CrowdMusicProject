@@ -10,8 +10,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.view.Menu;
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.core.CrowdMusicClient;
-import com.hdm.crowdmusic.core.CrowdMusicTrack;
+import com.hdm.crowdmusic.core.Client;
+import com.hdm.crowdmusic.core.Track;
 import com.hdm.crowdmusic.core.streaming.AudioRequestHandler;
 import com.hdm.crowdmusic.core.streaming.HTTPServerService;
 import com.hdm.crowdmusic.core.streaming.IHttpServerService;
@@ -26,7 +26,7 @@ import com.hdm.crowdmusic.util.Utility;
 
 public class ClientActivity extends Activity implements IOnClientRequestListener {
 
-    private CrowdMusicClient crowdMusicClient;
+    private Client client;
     private IHttpServerService httpService;
 
     private IOnFailureHandler noResponse;
@@ -51,26 +51,26 @@ public class ClientActivity extends Activity implements IOnClientRequestListener
                 httpService = (IHttpServerService) service;
 
                 httpService.registerHandler("/audio/*", new AudioRequestHandler(getApplicationContext()));
-                httpService.registerHandler("/track/request", new CrowdMusicHandler<CrowdMusicTrack>(new Executable<CrowdMusicTrack>() {
+                httpService.registerHandler("/track/request", new Handler<Track>(new Executable<Track>() {
                     @Override
-                    public void execute(final CrowdMusicTrack postData) {
-                        SimplePostTask<CrowdMusicTrack> task = new SimplePostTask<CrowdMusicTrack>(getClientData().getServerIP(), Constants.PORT, null, noResponse);
-                        task.execute(new ICrowdMusicAction<CrowdMusicTrack>() {
+                    public void execute(final Track postData) {
+                        SimplePostTask<Track> task = new SimplePostTask<Track>(getClientData().getServerIP(), Constants.PORT, null, noResponse);
+                        task.execute(new IAction<Track>() {
                             @Override
                             public String getPostTarget() {
                                 return "track/response";
                             }
 
                             @Override
-                            public CrowdMusicTrack getParam() {
+                            public Track getParam() {
                                 return postData;
                             }
                         });
                     }
                 }));
-                httpService.registerHandler("/postplaylist*", new CrowdMusicHandler<CrowdMusicTracklist>(new Executable<CrowdMusicTracklist>() {
+                httpService.registerHandler("/postplaylist*", new Handler<Tracklist>(new Executable<Tracklist>() {
                     @Override
-                    public void execute(final CrowdMusicTracklist postData) {
+                    public void execute(final Tracklist postData) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -92,7 +92,7 @@ public class ClientActivity extends Activity implements IOnClientRequestListener
         String serverIP = lastIntent.getStringExtra("serverIP");
 
         String clientIP = Utility.getWifiIpAddress();
-        crowdMusicClient = new CrowdMusicClient(this, clientIP, serverIP);
+        client = new Client(this, clientIP, serverIP);
 
         Intent httpIntent = new Intent(this, HTTPServerService.class);
         httpIntent.putExtra("ip", clientIP);
@@ -123,7 +123,7 @@ public class ClientActivity extends Activity implements IOnClientRequestListener
     @Override
     protected void onStart() {
         super.onStart();
-        crowdMusicClient.init();
+        client.init();
     }
 
     @Override
@@ -142,8 +142,8 @@ public class ClientActivity extends Activity implements IOnClientRequestListener
 
     //TODO: Just give a copy and not the real reference
     @Override
-    public CrowdMusicClient getClientData() {
-        return crowdMusicClient;
+    public Client getClientData() {
+        return client;
     }
 }
 

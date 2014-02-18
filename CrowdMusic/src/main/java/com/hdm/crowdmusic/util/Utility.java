@@ -1,7 +1,7 @@
 package com.hdm.crowdmusic.util;
 
 import android.util.Log;
-import com.hdm.crowdmusic.core.CrowdMusicTrack;
+import com.hdm.crowdmusic.core.Track;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -35,7 +35,7 @@ public class Utility {
         return null;
     }
 
-    public static String buildURL(CrowdMusicTrack track) {
+    public static String buildURL(Track track) {
         StringBuilder sb = new StringBuilder();
         sb.append("http://");
         sb.append(track.getIp());

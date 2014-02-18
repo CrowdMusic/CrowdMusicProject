@@ -6,6 +6,6 @@ import org.teleal.cling.binding.annotations.*;
         serviceId = @UpnpServiceId("CrowdMusic"),
         serviceType = @UpnpServiceType(value = "CrowdMusic", version = 1)
 )
-public class CrowdMusicUPnPService {
+public class UPnPService {
 
 }

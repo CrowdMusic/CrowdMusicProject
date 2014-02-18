@@ -12,11 +12,11 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.net.URLDecoder;
 
-public class CrowdMusicHandler<T> implements HttpRequestHandler {
+public class Handler<T> implements HttpRequestHandler {
 
     private final Executable<T> executable;
 
-    public CrowdMusicHandler(Executable<T> executable ) {
+    public Handler(Executable<T> executable) {
         this.executable = executable;
     }
     private Object getPostData(HttpEntity entity) {

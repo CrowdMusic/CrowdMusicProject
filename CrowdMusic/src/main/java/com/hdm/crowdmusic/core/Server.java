@@ -2,10 +2,10 @@ package com.hdm.crowdmusic.core;
 
 import android.app.Activity;
 import android.content.Context;
-import com.hdm.crowdmusic.core.streaming.CrowdMusicUser;
-import com.hdm.crowdmusic.core.streaming.CrowdMusicUserList;
-import com.hdm.crowdmusic.core.streaming.actions.CrowdMusicTracklist;
-import com.hdm.crowdmusic.core.streaming.actions.ICrowdMusicAction;
+import com.hdm.crowdmusic.core.streaming.User;
+import com.hdm.crowdmusic.core.streaming.UserList;
+import com.hdm.crowdmusic.core.streaming.actions.Tracklist;
+import com.hdm.crowdmusic.core.streaming.actions.IAction;
 import com.hdm.crowdmusic.core.streaming.actions.IOnFailureHandler;
 import com.hdm.crowdmusic.core.streaming.actions.SimplePostTask;
 import com.hdm.crowdmusic.gui.fragments.ServerPlaylistFragment;
@@ -27,24 +27,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class CrowdMusicServer {
+public class Server {
 
-    public static DeviceIdentity CROWD_MUSIC_SERVER_IDENTITY = new DeviceIdentity(UDN.uniqueSystemIdentifier("CrowdMusicServer"));
+    public static DeviceIdentity CROWD_MUSIC_SERVER_IDENTITY = new DeviceIdentity(UDN.uniqueSystemIdentifier("Server"));
     private LocalDevice localDevice;
 
-    private CrowdMusicPlaylist playlist;
+    private Playlist playlist;
 
     private String serverIP;
-    private CrowdMusicUserList userList;
+    private UserList userList;
     private final PropertyChangeSupport pcs;
     private PropertyChangeListener serverView;
     private Context context;
 
-    public CrowdMusicServer(Context context, String serverIP, Activity parentActivity) {
+    public Server(Context context, String serverIP, Activity parentActivity) {
         this.serverIP = serverIP;
-        this.playlist = new CrowdMusicPlaylist(this);
+        this.playlist = new Playlist(this);
         this.pcs = new PropertyChangeSupport(this);
-        this.userList = new CrowdMusicUserList();
+        this.userList = new UserList();
         try {
             this.localDevice = createDevice();
         } catch (ValidationException e) {
@@ -62,7 +62,7 @@ public class CrowdMusicServer {
 
         DeviceDetails details =
                 new DeviceDetails(
-                        "CrowdMusicServer " + android.os.Build.MODEL,
+                        "Server " + android.os.Build.MODEL,
                         new ManufacturerDetails("HdM"),
                         new ModelDetails(
                                 "CrowdMusic",
@@ -71,8 +71,8 @@ public class CrowdMusicServer {
                         )
                 );
 
-        LocalService<CrowdMusicUPnPService> crowdMusicService = new AnnotationLocalServiceBinder().read(CrowdMusicUPnPService.class);
-        crowdMusicService.setManager(new DefaultServiceManager(crowdMusicService, CrowdMusicUPnPService.class));
+        LocalService<UPnPService> crowdMusicService = new AnnotationLocalServiceBinder().read(UPnPService.class);
+        crowdMusicService.setManager(new DefaultServiceManager(crowdMusicService, UPnPService.class));
 
         return new LocalDevice(identity, type, details, crowdMusicService);
     }
@@ -80,14 +80,14 @@ public class CrowdMusicServer {
     public String getServerIP() {
         return serverIP;
     }
-    public List<CrowdMusicUser> getClientList() { return new ArrayList(userList.getUserList()); } //TODO: Return a copy, not the real one
+    public List<User> getClientList() { return new ArrayList(userList.getUserList()); }
     public LocalDevice getLocalDevice() {
         return localDevice;
     }
 
     public void registerClient(String clientIP) {
-        CrowdMusicUser user = new CrowdMusicUser(clientIP);
-        userList.addUser(user); // TODO: update only when the user is new
+        User user = new User(clientIP);
+        userList.addUser(user);
         pcs.firePropertyChange( "users", null, userList);
 
     }
@@ -107,7 +107,7 @@ public class CrowdMusicServer {
     }
     public void notifyAllClients() {
 
-        for (final CrowdMusicUser user: userList.getUserList()) {
+        for (final User user: userList.getUserList()) {
 
             IOnFailureHandler noResponse = new IOnFailureHandler() {
 
@@ -118,8 +118,8 @@ public class CrowdMusicServer {
                 }
             };
 
-            SimplePostTask<CrowdMusicTracklist> task = new SimplePostTask<CrowdMusicTracklist>(user.getIp(), Constants.PORT, null, noResponse);
-            task.execute(new ICrowdMusicAction<CrowdMusicTracklist>(){
+            SimplePostTask<Tracklist> task = new SimplePostTask<Tracklist>(user.getIp(), Constants.PORT, null, noResponse);
+            task.execute(new IAction<Tracklist>(){
 
                 @Override
                 public String getPostTarget() {
@@ -127,8 +127,8 @@ public class CrowdMusicServer {
                 }
 
                 @Override
-                public CrowdMusicTracklist getParam() {
-                    return new CrowdMusicTracklist(getPlaylist().getPlaylist());
+                public Tracklist getParam() {
+                    return new Tracklist(getPlaylist().getPlaylist());
                 }
             });
         }
@@ -143,7 +143,7 @@ public class CrowdMusicServer {
         }
     }
 
-    public CrowdMusicPlaylist getPlaylist() {
+    public Playlist getPlaylist() {
         return playlist;
     }
 

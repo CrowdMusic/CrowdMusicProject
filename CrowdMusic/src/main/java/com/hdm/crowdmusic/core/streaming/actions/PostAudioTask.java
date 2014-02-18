@@ -3,7 +3,7 @@ package com.hdm.crowdmusic.core.streaming.actions;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.hdm.crowdmusic.core.CrowdMusicTrack;
+import com.hdm.crowdmusic.core.Track;
 import com.hdm.crowdmusic.util.Utility;
 
 import org.apache.http.HttpResponse;
@@ -19,7 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PostAudioTask extends AsyncTask<CrowdMusicTrack, Void, HttpResponse> {
+public class PostAudioTask extends AsyncTask<Track, Void, HttpResponse> {
     private String serverIP;
     private int port;
 
@@ -29,12 +29,12 @@ public class PostAudioTask extends AsyncTask<CrowdMusicTrack, Void, HttpResponse
     }
 
     @Override
-    public HttpResponse doInBackground(CrowdMusicTrack... params) {
+    public HttpResponse doInBackground(Track... params) {
 
         HttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost("http://" + serverIP + ":" + port);
 
-        CrowdMusicTrack track = params[0];
+        Track track = params[0];
 
         try {
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(4);

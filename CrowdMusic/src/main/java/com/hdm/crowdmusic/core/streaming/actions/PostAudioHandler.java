@@ -2,7 +2,7 @@ package com.hdm.crowdmusic.core.streaming.actions;
 
 import android.content.Context;
 import android.util.Log;
-import com.hdm.crowdmusic.core.CrowdMusicTrack;
+import com.hdm.crowdmusic.core.Track;
 import com.hdm.crowdmusic.util.Utility;
 import org.apache.http.*;
 import org.apache.http.protocol.HttpContext;
@@ -31,9 +31,9 @@ public class PostAudioHandler implements HttpRequestHandler {
 
         if (httpRequest instanceof HttpEntityEnclosingRequest) {
             HttpEntity entity = ((HttpEntityEnclosingRequest) httpRequest).getEntity();
-            CrowdMusicTrack track = getPostData(entity);
+            Track track = getPostData(entity);
             // TODO: Angucken....
-            //CrowdMusicPlaylist.getInstance().addTrack(track);
+            //Playlist.getInstance().addTrack(track);
             httpResponse.setStatusCode(HttpStatus.SC_OK);
             return;
         }
@@ -41,7 +41,7 @@ public class PostAudioHandler implements HttpRequestHandler {
         httpResponse.setStatusCode(HttpStatus.SC_BAD_REQUEST);
     }
 
-    private CrowdMusicTrack getPostData(HttpEntity entity) {
+    private Track getPostData(HttpEntity entity) {
         int id;
         String ip;
         String artist;
@@ -56,7 +56,7 @@ public class PostAudioHandler implements HttpRequestHandler {
             artist = parameters[2].replace("artist=", "").replace("+", " ").replace("%3C", "<").replace("%3E", ">");
             trackName = parameters[3].replace("track=", "").replace("+", " ");
 
-            return new CrowdMusicTrack(id, ip, artist, trackName);
+            return new Track(id, ip, artist, trackName);
         } catch (IOException e) {
             Log.e(Utility.LOG_TAG_HTTP, "Error while extracting post data: " + e.getMessage());
             return null;

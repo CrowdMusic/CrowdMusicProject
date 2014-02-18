@@ -7,13 +7,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import com.hdm.crowdmusic.R;
-import com.hdm.crowdmusic.core.CrowdMusicTrack;
+import com.hdm.crowdmusic.core.Track;
 
 import java.util.List;
 
-public class LocalFilesTrackAdapter extends ArrayAdapter<CrowdMusicTrack> {
+public class LocalFilesTrackAdapter extends ArrayAdapter<Track> {
 
-    public LocalFilesTrackAdapter(Context context, int textViewResourceId, List<CrowdMusicTrack> objects) {
+    public LocalFilesTrackAdapter(Context context, int textViewResourceId, List<Track> objects) {
         super(context, textViewResourceId, objects);
     }
 
@@ -27,7 +27,7 @@ public class LocalFilesTrackAdapter extends ArrayAdapter<CrowdMusicTrack> {
 
         }
 
-        CrowdMusicTrack track = ((ArrayAdapter<CrowdMusicTrack>) this).getItem(position);
+        Track track = ((ArrayAdapter<Track>) this).getItem(position);
 
         if (track != null) {
             TextView trackName = (TextView) v.findViewById(R.id.localfileslist_item_track);
